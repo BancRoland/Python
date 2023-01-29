@@ -1,0 +1,41 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import struct
+
+# def convI32(v):
+# 	num=v[3]+256*v[2]+256**2*v[1]+256**3*v[0]
+# 	return num
+
+# def dd(v):
+# 	return(v*2)
+
+# size=2**3
+
+# fig, axes = plt.subplots()
+# fig.show()
+# fig.canvas.draw()
+# line = axes.plot(np.zeros(size))[0]
+# background = fig.canvas.copy_from_bbox(axes.bbox)
+
+
+file = open("pipe", "rb")
+byte = file.read(8)
+while byte:
+    byte = file.read(8)
+    print(f'M1  M2  M3  M5  M6  M7  M8')
+    print(f'{byte[0]}   {byte[1]}   {byte[2]}   {byte[3]}   {byte[4]}   {byte[5]}   {byte[6]}   {byte[7]}')
+    print("----")
+    #num2=np.array(struct.unpack(">" + "i" * size, byte))
+
+    # fig.canvas.restore_region(background)
+    # line.set_ydata(num2)
+    # axes.draw_artist(line)
+    # fig.canvas.blit(axes.bbox)
+
+
+    # plt.ion()
+    # plt.clf()
+    # plt.plot(num2)
+    # # plt.ylim([-1, 1])
+    # plt.show()
+    # plt.pause(.000001)
