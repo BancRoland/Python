@@ -6,9 +6,9 @@ k_B=1.380649E-23 #[J/K] Boltzmann állandó
 R_S=696_340_000 #[m] földtávolság
 R_T=150E9 #[m] földtávolság
 
-f_min=100e6
-f_max=2E15
-RES=100
+# DVB-S re számítva
+f_min=10e9
+f_max=13e9
 
 # # látható tartományra számítva
 # f_min=400E12
@@ -19,7 +19,7 @@ RES=100
 # f_max=2E15
 
 # f_step=1e6
-f_step=(f_max-f_min)/RES
+f_step=(f_max-f_min)/100
 f=np.arange(f_min,f_max,f_step)
 
 c=3E8 #[m/s] speed of light
@@ -33,7 +33,6 @@ lmbda=c/f
 B=2*h*(f**3)/(c**2*(np.exp(h*f/k_B/T)-1))
 plt.plot(f,B,'.-')
 plt.grid()
-plt.title(f'Nap felsznére számított sugárintenzitás')
 plt.xlabel("frekvencia [Hz]")
 plt.ylabel("Intenzitás [W/m^2/srad]")
 plt.show()
@@ -51,7 +50,6 @@ print(f'Adott sávra vett Napállandó= {10*np.log10(S*1000)} dBm')
 Z=B*A_S*np.pi/A_T
 plt.plot(f,Z,'.-')
 plt.grid()
-plt.title(f'Napból felületegységre érkező teljesítményeloszlás\nAdott tartományra számított Napállandó= \n{S} W/m^2')
 plt.xlabel("frekvencia [Hz]")
 plt.ylabel("Intenzitás [W/m^2/Hz]")
 plt.show()
