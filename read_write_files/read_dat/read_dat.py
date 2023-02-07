@@ -19,8 +19,8 @@ print(len(samples))
 # print(samples[0:10])
 
 plt.figure()
-plt.plot(np.real(samples[0::]))
-plt.plot(np.imag(samples[1::]))
+plt.plot(np.real(samples))
+plt.plot(np.imag(samples))
 plt.show()
 
 plt.figure()

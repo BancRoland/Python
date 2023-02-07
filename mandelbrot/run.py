@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 def mandel(c,lmax):
 	b=[0+0j, 0+0j]
-	for i in range(50):
+	for i in range(RANGE):
 		b[0]=b[1]
 		b[1]=b[0]**2+c
 		if abs(b[1]) > lMax:
@@ -12,8 +12,9 @@ def mandel(c,lmax):
 	
 	
 #my_dpi=96
+RANGE=1000	#iterációs mélység -> javít a körvonalakon
 lMax=2
-res=200
+res=100
 size=0.01
 cent=0.358-0.6440j
 
