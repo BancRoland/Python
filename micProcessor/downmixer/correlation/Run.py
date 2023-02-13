@@ -10,14 +10,12 @@ import struct
 # 	return(v*2)
 
 fs=44100
-fm=3844
+fm=1000
 
-RATIO=1
-
-size=int(fs/RATIO)
+size=int(fs/10)
 
 alp=0.01
-DEC=10
+DEC=1
 
 
 ang=np.arange(size)/fs*2*np.pi*fm
