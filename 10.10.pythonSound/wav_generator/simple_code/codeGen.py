@@ -4,7 +4,7 @@ from scipy.io.wavfile import write
 
 
 Nz=13      #kitöltőnullák
-sr=130      #samprate
+sr=100      #samprate
 fs=44100    
 f=1000      #modFrq
 rep=10      #repeat
@@ -57,7 +57,7 @@ plt.plot(code21,'.-')
 plt.title(f'bitrate: {sr} simbol/sec, sampFrq: {fs} Hz,\n codeLen: {len(code)}, zeros: {Nz}')
 plt.grid()
 plt.savefig('code.png')
-plt.show()
+#plt.show()
 
 
 scaled = np.int16(code4 * 32767)

@@ -4,10 +4,10 @@ from scipy.io.wavfile import write
 
 
 Nz=13      #kitöltőnullák
-sr=130      #samprate
+sr=100      #samprate
 fs=44100    
 f=1000      #modFrq
-rep=10      #repeat
+rep=1      #repeat
 
 
 def inc(v, R):
@@ -40,12 +40,23 @@ def resa(v,fs,b):
     w=dec(inc(v,fs),b)
     return(w)
 
+def encode(m,c):
+    w=np.zeros(len(m)*len(c))
+    for i in range(len(m)):
+        w[(i*len(c)):((i+1)*len(c))]=m[i]*c
+    return(w)
 
 
+codeM0=[1,1,1,1,1,0,0,1,1,0,1,0,1]
 
-code=[1,1,1,1,1,0,0,1,1,0,1,0,1]
-code1=np.array(code)*2-1
-code11=np.concatenate([code1,np.zeros(Nz)])
+codeC=[1,1,1,1,1,0,0,1,1,0,1,0,1]
+
+codeM=np.array(codeM0)*2-1
+code1=np.array(codeC)*2-1
+code10=encode(codeM,code1)
+plt.plot(code10,'.-')
+plt.show()
+code11=np.concatenate([code10,np.zeros(Nz)])
 code2=repeat(code11,rep)
 code21=np.concatenate([np.zeros(Nz),code2])
 #code3=resa(code21,fs,sr)
@@ -54,7 +65,7 @@ code4=upmix(code3,f,fs)
 
 
 plt.plot(code21,'.-')
-plt.title(f'bitrate: {sr} simbol/sec, sampFrq: {fs} Hz,\n codeLen: {len(code)}, zeros: {Nz}')
+plt.title(f'bitrate: {sr} simbol/sec, sampFrq: {fs} Hz,\n codeLen: {len(codeC)}, zeros: {Nz}')
 plt.grid()
 plt.savefig('code.png')
 plt.show()
