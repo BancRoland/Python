@@ -64,3 +64,9 @@ python3 parsarg6.py 8 9 -vq
 python3 parsarg6.py 10 11
 # 10^11 == 100000000000
 
+python3 parsarg7.py -r 10
+# 314.159
+python3 parsarg7.py -r 10 -pi 4
+# 400.0
+# meg tudok adni betűvel egy változót, és kötelezővé tudom tenni
+
