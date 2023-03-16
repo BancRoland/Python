@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.io.wavfile import write
+import csv
 
 
 Nz=13      #kitöltőnullák
@@ -9,6 +10,9 @@ fs=44100
 f=1000      #modFrq
 rep=2     #repeat
 QPSK_N=16  # 4*4 es QAM
+
+
+
 
 
 # beadott v vektort R szeresére incrementálja
@@ -55,6 +59,30 @@ def encode(m,c):
     return(w)
 
 
+codeR=[0,0,0,0,0,0,0,0,0,0]
+
+with open('in.txt', newline='') as file:
+    reader = csv.reader(file, delimiter=' ')
+    for row in reader:
+
+        #print(len(row))
+        
+        for d in range(len(row)):
+            a=([f'{ord(c):08b}' for c in row[d]])
+            #print(a)
+
+    b=''.join(a)
+    #print(b)
+
+    for i in range(int(len(b)/4)):
+        c=(b[4*i:4*i+4])
+        #print(c)
+        codeR.append(int(c,2))
+
+codeR=np.array(codeR)
+print(codeR)
+print(len(codeR))
+print(type(codeR[0]))
 
 
 # codeM0=np.array([-3-3j, -1-3j, 1-3j, 3-3j,  -3-1j, -1-1j, 1-1j, 3-1j,  -3+1j, -1+1j, 1+1j, 3+1j,  -3+3j, -1+3j, 1+3j, 3+3j])
@@ -62,14 +90,18 @@ codeM0=np.zeros(QPSK_N)+1j*np.zeros(QPSK_N)
 for i in range(QPSK_N):
     codeM0[i]=np.exp(i*1j*2*np.pi/QPSK_N)
 
+codeM=codeM0/np.max(np.abs(codeM0))     #Normált konstelláiós sorozat
+
 codeC=[1,1,1,1,1,0,0,1,1,0,1,0,1]   #ez a alap kód, ezt ne buzeráld
-code1=(np.array(codeC)+1j*np.zeros(len(codeC)))*2-1
+codeB13=(np.array(codeC)+1j*np.zeros(len(codeC)))*2-1
 
-codeM=codeM0
+# codeR=np.random.randint(QPSK_N, size=1000)
+# codeR=np.array([0,0,0,0,0,0,0,0,3,1,4,1,5,8,2,3])
+# print(codeR)
+# print(len(codeR))
+# print(type(codeR[0]))
 
-code10=encode(codeM,code1)
-# plt.plot(np.real(code10),'.-')
-# plt.plot(np.imag(code10),'.-')
+code10=encode(codeM[codeR],codeB13)
 
 plt.plot(np.real(codeM),np.imag(codeM),'o:')
 plt.title(f'bitrate: {sr} simbol/sec, sampFrq: {fs} Hz,\n codeLen: {len(codeC)}, zeros: {Nz}')

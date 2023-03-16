@@ -8,7 +8,7 @@ sr=100      #samprate
 fs=44100    
 f=1000      #modFrq
 rep=2     #repeat
-QPSK_N=16  # 4*4 es QAM
+QPSK_N=8  # 4*4 es QAM
 
 
 # beadott v vektort R szeresére incrementálja

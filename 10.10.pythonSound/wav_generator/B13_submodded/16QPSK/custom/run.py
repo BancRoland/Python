@@ -7,7 +7,7 @@ Nz=13      #kitöltőnullák
 sr=100      #samprate
 fs=44100    
 f=1000      #modFrq
-rep=2     #repeat
+rep=10   #repeat
 QPSK_N=16  # 4*4 es QAM
 
 
@@ -62,14 +62,20 @@ codeM0=np.zeros(QPSK_N)+1j*np.zeros(QPSK_N)
 for i in range(QPSK_N):
     codeM0[i]=np.exp(i*1j*2*np.pi/QPSK_N)
 
+codeM=codeM0/np.max(np.abs(codeM0))     #Normált konstelláiós sorozat
+
 codeC=[1,1,1,1,1,0,0,1,1,0,1,0,1]   #ez a alap kód, ezt ne buzeráld
-code1=(np.array(codeC)+1j*np.zeros(len(codeC)))*2-1
+codeB13=(np.array(codeC)+1j*np.zeros(len(codeC)))*2-1
 
-codeM=codeM0
+header=np.array([0,0,0,0,0,0,0,0])
 
-code10=encode(codeM,code1)
-# plt.plot(np.real(code10),'.-')
-# plt.plot(np.imag(code10),'.-')
+codeR=np.random.randint(QPSK_N, size=20)
+codeR=np.array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16])
+
+codeR=np.concatenate([header,codeR])
+
+code10=encode(codeM[codeR%QPSK_N],codeB13)
+
 
 plt.plot(np.real(codeM),np.imag(codeM),'o:')
 plt.title(f'bitrate: {sr} simbol/sec, sampFrq: {fs} Hz,\n codeLen: {len(codeC)}, zeros: {Nz}')
