@@ -5,7 +5,7 @@ echo files larger than $LIM:
 find . -size +$LIM
 
 echo
-echo *.png >> .gitignore
+echo *.png > .gitignore
 echo *.PNG >> .gitignore
 echo *.log >> .gitignore
 echo *.LOG >> .gitignore
