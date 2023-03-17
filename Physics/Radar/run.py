@@ -14,9 +14,9 @@ args=parser.parse_args()
 
 cFrq=args.cFrq # centerFrequency[Hz]
 sr=100e6     #sample rate [samp/sec]
-Ncode=16   #correlation code samples []
-Nzeros=128 #zeros for range []
-dSamp=1024   #dopplerSamples
+Ncode=1024   #correlation code samples []
+Nzeros=6144 #zeros for range []
+dSamp=512   #dopplerSamples
 
 c=3e8
 
