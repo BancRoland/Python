@@ -8,8 +8,8 @@ k_B=1.380649E-23 #[J/K] Boltzmann állandó
 R_S=696_340_000 #[m] földtávolság
 R_T=150E9 #[m] földtávolság
 
-f_min=100e6
-f_max=2E15
+f_min=400e12
+f_max=790e12
 RES=100
 
 # # látható tartományra számítva
@@ -42,19 +42,19 @@ plt.show()
 
 A_S=4*R_S**2*np.pi
 A_T=4*R_T**2*np.pi
-P_plnk=np.sum(B*f_step)*A_S*np.pi #itt nem kell szteradián 4-es szorzója, mert Lambert felület
+P_plnk=np.sum(B*f_step)*A_S*np.pi #itt nem kell a szterdián 4-es szorzója, mert Lambert felület
 P_stp=A_S*sigma*T**4
 print(f'Vizsgált frekvenciasáv:\n\033[1m{f_min:.2e} Hz - {f_max:.2e} Hz\033[0m')
 print(f'output according to Plank\t\033[1m{P_plnk:.2e} W\033[0m')
 print(f'output according to Stephan\t\033[1m{P_stp:.2e} W\033[0m')
 S=P_plnk/A_T
-print(f'Adott sávra vett Napállandó:\t\033[1m{S:.2f} W/m^2\033[0m')
+print(f'Adott sávra vett Napállandó:\t\033[1m{S:.2e} W/m^2\033[0m')
 print(f'Adott sávra vett Napállandó:\t\033[1m{10*np.log10(S*1000):.2f} dBm\033[0m')
 
 Z=B*A_S*np.pi/A_T
 plt.plot(f,Z,'.-')
 plt.grid()
-plt.title(f'Napból felületegységre érkező teljesítményeloszlás\nAdott tartományra számított Napállandó= \n{S} W/m^2')
+plt.title(f'Napból felületegységre érkező teljesítményeloszlás\nAdott tartományra számított Napállandó= \n{S:.2e} W/m^2')
 plt.xlabel("frekvencia [Hz]")
 plt.ylabel("Intenzitás [W/m^2/Hz]")
 plt.show()
