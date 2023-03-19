@@ -1,0 +1,35 @@
+#!/bin/bash
+
+BITRATE=130
+FS=44100
+MFRQ=1000
+
+DATE=`date "+%F_%T"`
+
+bash compile.sh
+mkfifo pipe
+python3 plotter.py &
+
+VOLVAL=$(($1))
+
+if (( $VOLVAL > 0 && $VOLVAL <=100 ))
+then
+amixer -D pulse sset Master $VOLVAL%
+else
+amixer -D pulse sset Master 10%
+fi
+amixer sset 'Headphone Mic Boost',0 1
+
+#arecord -r 44100 -f S32_LE -d 2 -t raw - > mic_$DATE.i32
+#arecord -r 10000 -f S32_LE -d 10 -t raw - > pipe
+#arecord -r 44100 -f FLOAT_LE -d 0 -t raw - | ./mix.out 10 | ./lpf.out 0.8 > pipe
+#arecord -r 44100 -f FLOAT_LE -d 0 -t raw - | ./wire.out | ./mix.out 44100 1000 | lpf.out 0.99 | ./decimate.out 10 > pipe
+#arecord -r 44100 -f FLOAT_LE -d 0 -t raw - | ./wire.out | ./mix.out 44100 1000 | lpf.out 0.99 | ./repeat.out 13 | ./decimate.out 4410 | ./fir.out barker13.cf32 > pipe
+#arecord -r $FS -f FLOAT_LE -d 0 -t raw - | ./wire.out | ./mix.out $FS $MFRQ | lpf.out 0.99 | ./resamp.out $BITRATE $FS | ./fir.out barker13.cf32 > pipe
+arecord -r $FS -f FLOAT_LE -d 0 -t raw - | ./wire.out | ./mix.out $FS $MFRQ | lpf.out 0.99 | ./resamp.out 1 441 | ./fir.out barker13.cf32 > pipe
+
+#cp mic_$DATE.i32 input.i32
+
+#python3 run.pys
+
+##cat mic_$DATE.i32 | ./corrDet_dr210 > out.txt

@@ -12,20 +12,25 @@ dstr = now.strftime("%Y-%m-%d_%H-%M-%S")
 # with open("out.dat", mode="rb") as input:
 #     samples = input.read()
 
-samples=np.fromfile('out1.dat', dtype=np.complex64)
+samples=np.fromfile('c96_384_1x0.bin', dtype=np.complex64)
 
 
 print(len(samples))
 # print(samples[0:10])
 
 plt.figure()
-plt.plot(np.real(samples))
-plt.plot(np.imag(samples))
+plt.plot(np.real(samples),'.-')
+plt.plot(np.imag(samples),'.-')
+plt.plot(np.abs(samples),'--', color='grey', alpha=0.5)
+plt.plot(-np.abs(samples),'--', color='grey', alpha=0.5)
+plt.legend(["Real","Imag","Abs"])
+# plt.title(title)
+plt.grid()
 plt.show()
 
-plt.figure()
-plt.plot(np.abs(fftpack.fft(samples)))
-plt.show()
+# plt.figure()
+# plt.plot(np.abs(fftpack.fft(samples)))
+# plt.show()
 
 # plt.xlabel('xcím')
 # plt.ylabel('ycím')

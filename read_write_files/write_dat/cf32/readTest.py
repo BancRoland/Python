@@ -12,7 +12,7 @@ dstr = now.strftime("%Y-%m-%d_%H-%M-%S")
 # with open("out.dat", mode="rb") as input:
 #     samples = input.read()
 
-samples=np.fromfile('out1.dat', dtype=np.complex64)
+samples=np.fromfile('out.cf32', dtype=np.complex64)
 
 
 print(len(samples))
