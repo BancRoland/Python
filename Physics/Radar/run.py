@@ -12,9 +12,15 @@ def loadbar(a,f):
     print(o)
 
 
-parser = argparse.ArgumentParser(description="calculate the area of circle with radius r")
+parser = argparse.ArgumentParser(description="calculate the parameters of an impulse radar")
 
-parser.add_argument("-cFrq","--cFrq", help="Frequency of the carrier wave [Hz] ", nargs='?', type=float, default=10e9)
+parser.add_argument("-c","--c", help="speed of wave [m/s] ", nargs='?', type=float, default=3e8)
+parser.add_argument("-cFrq","--cFrq", help="Frequency of the carrier wave [Hz] ", nargs='?', type=float, required=True)
+parser.add_argument("-sr","--samprate", help="Samplerate of the signalflow [samp/sec] ", nargs='?', type=float, required=True)
+parser.add_argument("-Nc","--Ncode", help="code samples number [samples] ", nargs='?', type=int, required=True)
+parser.add_argument("-Nz","--Nzeros", help="zero samples number [samples] ", nargs='?', type=int, required=True)
+parser.add_argument("-dS","--dSamp", help="doppler samples number [line of samples] ", nargs='?', type=int, required=True)
+
 
 # parser.add_argument("-r","--radius", help="radius of the circle", nargs='?', type=float, const=1, default=7, required=True)
 
@@ -23,15 +29,17 @@ parser.add_argument("-cFrq","--cFrq", help="Frequency of the carrier wave [Hz] "
 args=parser.parse_args()
 # answer=args.radius**2*args.pi
 
+c=args.c
+
 cFrq=args.cFrq # centerFrequency[Hz]
-sr=100e6     #sample rate [samp/sec]
-Ncode=1024   #correlation code samples []
-Nzeros=6144 #zeros for range []
-dSamp=512   #dopplerSamples
+sr=args.samprate     #sample rate [samp/sec]
+Ncode=args.Ncode   #correlation code samples []
+Nzeros=args.Nzeros #zeros for range []
+dSamp=args.dSamp   #dopplerSamples
 
-c=3e8
 
-print("\n-------------EM Wave-------------")
+print("\n-------------Wave-------------")
+print(f'c= \t\t\033[1m{c} m/s\033[0m')
 print(f'cFrq= \t\t\033[1m{cFrq/1e9} GHz\033[0m')
 print(f'lambda= \t\033[1m{c/cFrq} m\033[0m')
 print("\n-------------CODE-------------")
