@@ -18,6 +18,11 @@ echo *.o >> .gitignore
 echo *.cf32 >> .gitignore
 echo *.wav >> .gitignore
 echo *.i32 >> .gitignore
+echo *.bmp >> .gitignore
+echo *.BMP >> .gitignore
+echo *.ci16 >> .gitignore
+echo *.CI16 >> .gitignore
+
 
 echo .gitignore file:
 echo
