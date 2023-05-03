@@ -12,6 +12,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-f","--file", help="file to read from", nargs='?', type=str, required=True)
 args = parser.parse_args()
 
+
 now = datetime.now()
 dstr = now.strftime("%Y-%m-%d_%H-%M-%S")
 
@@ -19,8 +20,8 @@ dstr = now.strftime("%Y-%m-%d_%H-%M-%S")
 # with open("out.dat", mode="rb") as input:
 #     samples = input.read()
 
-samples=np.fromfile(args.file, dtype=np.complex64)
-
+samples0=np.fromfile(args.file, dtype=np.int16)
+samples=samples0[0::2]+1j*samples0[1::2]
 
 print(len(samples))
 # print(samples[0:10])
