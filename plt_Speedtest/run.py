@@ -20,5 +20,6 @@ for i in range(1, 2000):
     line.set_ydata(np.random.rand(100))
     axes.draw_artist(line)
     fig.canvas.blit(axes.bbox)
+    plt.pause(0.001)
 
 print('FPS:' , 2000/(time.time()-tstart))
