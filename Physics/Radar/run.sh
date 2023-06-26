@@ -1,11 +1,11 @@
 #!/bin/bash
 
 CFRQ=10e9   #centerFrequency[Hz]
-SR=100e6    #sample rate [samp/sec]
-NCODE=1024  #correlation code samples []
-NZEROS=6144 #zeros for range []
+SR=10e6    #sample rate [samp/sec]
+NCODE=16  #correlation code samples []
+NZEROS=128 #zeros for range []
 DSAMP=256   #dopplerSamples []
-DDEC=1      #dopplerDecimation []
+DDEC=16     #dopplerDecimation []
 POW=3.2     #Peak power [W]
 RCS=1       #Radar cross section [m^2]
 GAIN=29.5   #Antenna gain [dB]
