@@ -49,12 +49,12 @@ plt.ylim([-1.5, 1.5])
 
 plt.show()
 
-# x=np.arange(-alpha,alpha,alpha/100)
+x=np.arange(-alpha,alpha,alpha/100)
 
-# beta=D/lmbda*np.sin(x*m.pi/180)
+beta=D/lmbda*np.sin(x*m.pi/180)
 
-# I=D*np.sin(beta/2)/(beta/2)*np.cos(x)
+I=D*np.sin(beta/2)/(beta/2)*np.cos(x)
 
-# plt.plot(x,I)
-# plt.xlabel("szögérték [fok]")
-# plt.show()
+plt.plot(x,I)
+plt.xlabel("szögérték [fok]")
+plt.show()
