@@ -3,6 +3,8 @@ import argparse
 import math
 import matplotlib.pyplot as plt
 
+RmaxVmax=0
+
 # def loadbar(a,f):
 #     o="|"
 #     for i in range(int(f)):
@@ -65,7 +67,7 @@ print(f'Codes= \t\t\033[1m{Ncode} samp\033[0m')
 print(f'Zeros= \t\t\033[1m{Nzeros} samp\033[0m')
 fullLen=Ncode+Nzeros
 print(f'Full length= \t\033[1m{fullLen} samp\033[0m')
-PRF=sr/fullLen
+PRF=sr/fullLen  #T=fullen/sr
 print(f'PRF= \t\t\033[1m{PRF/1000:.2f} kHz\033[0m')
 fillFactor=100*Ncode/fullLen
 print(f'FillFactor= \t\033[1m{fillFactor:.2f} %\033[0m')
@@ -78,17 +80,22 @@ R_min=Ncode/sr*c/2
 print(f'Min Range= \t\033[1m{R_min:,.2f} m \033[0m'.replace(',', ' '))
 R_unamb=fullLen/sr*c/2
 print(f'Unamb. range=\t\033[1m{R_unamb:,.2f} m \033[0m'.replace(',', ' '))
-R_max=Nzeros/sr*c/2
+R_max=Nzeros/sr*c/2 #=c*Nzeros*T0/2
 print(f'Max Range= \t\033[1m{R_max:,} m \033[0m'.replace(',', ' '))
-rangeRes=fullLen/sr*c/2/fullLen
+rangeRes=c/sr/2#=T0*c/2
 print(f'Range Res= \t\033[1m{rangeRes:.2f} m\033[0m')
-blindSpeed=PRF*c/cFrq/2/dDec
+blindSpeed=PRF*c/cFrq/2/dDec#=lmbda/(2*T)/dDec
 print(f'Blind speed= \t\033[1m{blindSpeed:.2f} m/sec = {blindSpeed*3.6:.2f} km/h\033[0m')
 vmax=blindSpeed/2
 print(f'Max velocity= \t\033[1m+-{vmax:.2f} m/sec = {vmax*3.6:.2f} km/h\033[0m')
-print(f'velocity res= \t\033[1m{blindSpeed/dSamp:.2f} m/sec = {blindSpeed/dSamp*3.6:.2f} km/h\033[0m\n')
-print(f'minimal time in one range cell= \t\033[1m{rangeRes/vmax:.2f} sec\033[0m')
-print(f'max possible doppler samples= \t\033[1m{rangeRes/vmax*sr/fullLen:.0f}\033[0m\n')    #so the target doesnt get out of the range resolution
+vres=blindSpeed/dSamp
+print(f'velocity res= \t\033[1m{vres:.2f} m/sec = {vres*3.6:.2f} km/h\033[0m\n')
+# print(f'minimal time in one range cell= \t\033[1m{rangeRes/vmax:.2f} sec\033[0m')
+print(f'max possible doppler samples for max speed= \t\033[1m{rangeRes/vmax*sr/fullLen/dDec:.0f}\033[0m')    #so the target doesnt get out of the range resolution
+print(f'max possible doppler samples for res speed= \t\033[1m{rangeRes/vres*sr/fullLen/dDec:.0f}\033[0m')    #so the target doesnt get out of the range resolution
+Tc=dDec*dSamp*fullLen/sr
+print(f'Time coherence required= \t\033[1m{Tc:.3f} sec\033[0m\n')    #so the target stays coherent
+
 print(f'')
 print(f'max possible velocity without spreading = \t\033[1m{rangeRes/(dDec*dSamp*(fullLen/sr)):.2f} m/sec \t= {rangeRes/(dDec*dSamp*(fullLen/sr))*3.6:.2f} km/h\033[0m')    #so the target doesnt get out of the range resolution
 
@@ -106,7 +113,7 @@ print(f'Ant gain= \t\033[1m{G_dB:.2f} dB\033[0m')
 Gain=10**(G_dB/10.0)
 
 print(f'')
-print(f'Theorical maximum Range= \t\033[1m{math.pow((P_avg*Gain**2*rcs*lmbd**2)/((4*math.pi)**3*k*Temp*Bdop),1/4):,.0f} m\033[0m'.replace(',', ' '))
+print(f'Theoretical maximum Range= \t\033[1m{math.pow((P_avg*Gain**2*rcs*lmbd**2)/((4*math.pi)**3*k*Temp*Bdop),1/4):,.0f} m\033[0m'.replace(',', ' '))
 L=125.9
 TH=20.9
 print(f'Maximum Range with losses= \t\033[1m{math.pow((P_avg*Gain**2*rcs*lmbd**2)/((4*math.pi)**3*k*Temp*Bdop*L*TH),1/4):,.0f} m\033[0m'.replace(',', ' '))
@@ -125,7 +132,7 @@ if R_test!=0.0:
 
 print(f'')
 print(f'Threshold=   \033[1m{10*math.log10(TH):.2f} dB\033[0m')
-print(f'NoiseLevel=  \033[1m{10*math.log10(L):.2f} dB\033[0m')
+print(f'Losses=  \033[1m{10*math.log10(L):.2f} dB\033[0m')
 
 
 
@@ -179,3 +186,50 @@ plt.ylabel("SNR [dB]")
 plt.title("SNR értékek adott céltárgyakra", fontsize = 20)
 plt.savefig('plot.png')
 plt.show()
+
+
+plt.figure(figsize=(8, 5))
+V=np.arange(0,10*vres,10*vres/100)
+Tcoh=lmbd/2/V
+# plt.axvline(x=R_min, color='g', linestyle='--')
+# plt.text(R_min, 1, f'R_min', rotation=90, fontsize = 10, color='g', va='baseline', ha='right')
+plt.axhline(y=vres*3.6, color='k', linestyle='--')
+plt.axvline(x=Tc, color='k', linestyle='--')
+
+plt.axhline(y=3.6/10, color='g', linestyle='--')
+plt.axhline(y=3.6/5, color='r', linestyle='--')
+plt.axvline(x=0.1, color='r', linestyle='--')
+# plt.text(R_max, 1, f'R_max', rotation=90, fontsize = 10, color='r', va='baseline', ha='right')
+# plt.axvline(x=R_unamb, color='k', linestyle='-')
+# plt.text(R_unamb, 1, f'R_unamb', rotation=90, fontsize = 10, color='k', va='baseline', ha='left')
+# plt.axhline(13.2, color='k', linestyle=':')
+# plt.text(0, 13.2+1, 'Original Threshold = 13.2 dB', fontsize = 10, va='baseline', ha='left')
+# plt.axhline(TLlim, color='k', linestyle=':')
+# plt.text(0, TLlim+1, f'TL limit = {TLlim} dB', fontsize = 10, va='baseline', ha='left')
+# # plt.axhline(PnoiseLoss_dB, color='k', linestyle='-')
+# # plt.axhline(PnoiseTrsh_dB, color='k', linestyle='-')
+# plt.xlim([0,R_unamb])
+# plt.ylim([0,80])
+# # plt.yscale('log')
+# plt.legend([RCStext[i]+str(RCSs[i])+" m^2" for i in range(3)])
+plt.plot(Tcoh,V*3.6,'o-')
+plt.grid(True)
+plt.xlabel("koherenciaidő [sec]")
+plt.ylabel("sebességfelbontás [km/h]")
+plt.title("Koherenciaidő és sebességfelbontás kapcsolata", fontsize = 20)
+# plt.savefig('plot.png')
+plt.show()
+
+if RmaxVmax:
+    plt.figure(figsize=(8, 5))
+    R=np.arange(0,10*R_max,rangeRes)
+    Vm=(c**2)/(8*cFrq*R*dDec)
+    plt.axhline(y=vmax*3.6, color='k', linestyle='--')
+    plt.axvline(x=R_max, color='k', linestyle='--')
+    plt.plot(R,Vm*3.6,'o-')
+    plt.grid(True)
+    plt.xlabel("R_max [m]")
+    plt.ylabel("V_max [km/h]")
+    plt.title("R_max és V_max kapcsolata", fontsize = 20)
+    # plt.savefig('plot.png')
+    plt.show()
