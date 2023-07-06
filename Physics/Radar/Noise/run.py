@@ -18,7 +18,7 @@ RmaxVmax=0
 
 parser = argparse.ArgumentParser(description="calculate the parameters of an impulse radar")
 
-parser.add_argument("-c","--c", help="speed of wave [m/s] ", nargs='?', type=float, default=3e8)
+parser.add_argument("-c","--c", help="speed of wave [m/s] ", nargs='?', type=float, default=299792458)
 parser.add_argument("-cFrq","--cFrq", help="Frequency of the carrier wave [Hz] ", nargs='?', type=float, required=True)
 parser.add_argument("-sr","--samprate", help="Samplerate of the signalflow [samp/sec] ", nargs='?', type=float, required=True)
 parser.add_argument("-Nc","--Ncode", help="code samples number [samples] ", nargs='?', type=int, required=True)
@@ -29,7 +29,9 @@ parser.add_argument("-T","--Temp", help="Temperature for noise [K]", nargs='?', 
 parser.add_argument("-P","--Pow", help="Peak power of the transmitter [Watt]", nargs='?', type=float, default=1.0)
 parser.add_argument("-RCS","--RCS", help="Radar cross section of a target [m^2]", nargs='?', type=float, default=1.0)
 parser.add_argument("-G","--Gain", help="Antenna gain [dB]", nargs='?', type=float, default=1.0)
-parser.add_argument("-RT","--TestD", help="Test distance for SNR [m]", nargs='?', type=float, default=0.0)
+parser.add_argument("-RT","--TestR", help="Test distance for SNR [m]", nargs='?', type=float, default=0.0)
+parser.add_argument("-Rmx","--RmaxD", help="Desired maximum distance [m]", nargs='?', type=float, default=8000.0)
+parser.add_argument("-Rmn","--RminD", help="Desired minimum distance [m]", nargs='?', type=float, default=1000.0)
 
 
 # parser.add_argument("-r","--radius", help="radius of the circle", nargs='?', type=float, const=1, default=7, required=True)
@@ -52,23 +54,58 @@ Temp=args.Temp      # Temperature for noise [K]
 Pow=args.Pow        # Peak power of the transmitter [Watt]
 rcs=args.RCS        # Radar cross section [m^2]
 G_dB=args.Gain      # Antenna gain [dB]
-R_test=args.TestD    # Antenna gain [dB]
+R_test=args.TestR    # Antenna gain [dB]
+
+RmaxD=args.RmaxD
+RminD=args.RminD
+
+# RmaxD=8000
+# RminD=1000
+RumbD=RmaxD+RminD
+
+#-------BEAGLE PARAMS-------
+
+TsweepB=0.0005
+TburstB=TsweepB*128
+VmaxB=c/cFrq/4/TsweepB
+VresB=c/cFrq/2/TburstB
 
 
 print("\n-------------Wave-------------")
-print(f'c= \t\t\033[1m{c:,} m/s\033[0m'.replace(',', ' '))
-print(f'cFrq= \t\t\033[1m{cFrq/1e9} GHz\033[0m')
+print(f'c= \t\033[1m{c:,} m/s\033[0m'.replace(',', ' '))
+print(f'cFrq= \t\033[1m{cFrq/1e9} GHz\033[0m')
 lmbd=c/cFrq
-print(f'lambda= \t\033[1m{lmbd} m\033[0m')
+print(f'lambda= \t\033[1m{lmbd:.3f} m\033[0m')
+
+print("\n-------------For given expectations-------------")
+# print(f'fullLen*dSamp*dDec should be= \t\033[1m{lmbd*sr/2/VresB:,.2f}\033[0m'.replace(',', ' '))
+dSampD=2*VmaxB/VresB
+print(f'dSamp should be= \t\033[1m{dSampD:.2f} samp\033[0m')
+# print(f'fullLen*dDec should be= \t\033[1m{lmbd*sr/4/VmaxB:.2f} samp\033[0m')
+NzerosD=2*sr*RmaxD/c
+print(f'Nzeros should be= \t\033[1m{NzerosD:.2f} samp\033[0m')
+NonesD=2*sr*RminD/c
+print(f'Ncodes should be= \t\033[1m{NonesD:.2f} samp\033[0m')
+NfullD=NonesD+NzerosD
+print(f'Nfull should be= \t\033[1m{NfullD:.2f} samp\033[0m')
+dDecD=lmbd*sr/4/VmaxB/NfullD
+print(f'dDec should be= \t\033[1m{dDecD:.2f}\033[0m')
+print(f'dDec*dSamp should be= \t\033[1m{dDecD*dSampD:.2f}\033[0m')
+print(f'Nfull should be (if range is flexible)= \t\033[1m{lmbd*sr/2/VresB/(np.floor(dDecD)*dSampD):.2f} samp\033[0m')
+print(f'Nzeros should be (if range is flexible)= \t\033[1m{lmbd*sr/2/VresB/(np.floor(dDecD)*dSampD)-NonesD:.2f} samp\033[0m'),
+print(f'Nzeros should be (based on input dSamp*dDec)= \t\033[1m{lmbd*sr/2/VresB/(dSamp*dDec)-NonesD:.2f} samp\033[0m')
+
+# print(f'For Beagle equiv full length should be= \t\033[1m{} samp\033[0m')
+
 
 print("\n-------------CODE-------------")
 print(f'samprate= \t\033[1m{sr/1e6} MHz\033[0m')
-print(f'Codes= \t\t\033[1m{Ncode} samp\033[0m')
-print(f'Zeros= \t\t\033[1m{Nzeros} samp\033[0m')
+print(f'Codes= \t\033[1m{Ncode} samp\033[0m')
+print(f'Zeros= \t\033[1m{Nzeros} samp\033[0m')
 fullLen=Ncode+Nzeros
 print(f'Full length= \t\033[1m{fullLen} samp\033[0m')
 PRF=sr/fullLen  #T=fullen/sr
-print(f'PRF= \t\t\033[1m{PRF/1000:.2f} kHz\033[0m')
+print(f'PRF= \t\033[1m{PRF/1000:.2f} kHz\033[0m')
 fillFactor=100*Ncode/fullLen
 print(f'FillFactor= \t\033[1m{fillFactor:.2f} %\033[0m')
 # loadbar(fillFactor/2,100/2)
@@ -77,11 +114,11 @@ print(f'doppler Decimation= \t\033[1m{dDec} \033[0m')
 
 print("\n-------------OPERATION-------------")
 R_min=Ncode/sr*c/2
-print(f'Min Range= \t\033[1m{R_min:,.2f} m \033[0m'.replace(',', ' '))
+print(f'Min Range= \t\033[1m{R_min:,.2f} m\033[0m'.replace(',', ' '))
 R_unamb=fullLen/sr*c/2
-print(f'Unamb. range=\t\033[1m{R_unamb:,.2f} m \033[0m'.replace(',', ' '))
+print(f'Unamb. range=\t\033[1m{R_unamb:,.2f} m\033[0m'.replace(',', ' '))
 R_max=Nzeros/sr*c/2 #=c*Nzeros*T0/2
-print(f'Max Range= \t\033[1m{R_max:,} m \033[0m'.replace(',', ' '))
+print(f'Max Range= \t\033[1m{R_max:,.2f} m\033[0m'.replace(',', ' '))
 rangeRes=c/sr/2#=T0*c/2
 print(f'Range Res= \t\033[1m{rangeRes:.2f} m\033[0m')
 blindSpeed=PRF*c/cFrq/2/dDec#=lmbda/(2*T)/dDec
@@ -97,10 +134,10 @@ Tc=dDec*dSamp*fullLen/sr
 print(f'Time coherence required= \t\033[1m{Tc:.3f} sec\033[0m\n')    #so the target stays coherent
 
 print(f'')
-print(f'max possible velocity without spreading = \t\033[1m{rangeRes/(dDec*dSamp*(fullLen/sr)):.2f} m/sec \t= {rangeRes/(dDec*dSamp*(fullLen/sr))*3.6:.2f} km/h\033[0m')    #so the target doesnt get out of the range resolution
+print(f'max possible velocity without spreading = \t\033[1m{rangeRes/(dDec*dSamp*(fullLen/sr)):.2f} m/sec = {rangeRes/(dDec*dSamp*(fullLen/sr))*3.6:.2f} km/h\033[0m')    #so the target doesnt get out of the range resolution
 
 print("\n-------------Power factors-------------")
-print(f'RCS =               \033[1m{rcs:.2f} m^2\033[0m')
+print(f'RCS =\t\033[1m{rcs:.2f} m^2\033[0m')
 print(f'Peak power= \t\033[1m{Pow:.2f} Watt\033[0m')
 P_avg=Pow*fillFactor/100
 print(f'Average power= \t\033[1m{P_avg:.2f} Watt\033[0m')
@@ -121,18 +158,24 @@ print(f'Maximum Range with losses= \t\033[1m{math.pow((P_avg*Gain**2*rcs*lmbd**2
 Pmax=(P_avg*Gain**2*rcs*lmbd**2)/((4*math.pi)**3*R_max**4)
 print(f'')
 print(f'SNR value at:')
-print(f'MAX dist=    \033[1m{10*math.log10(Pmax/Pnoise/L):.2f} dB\033[0m')
+print(f'MAX dist=\t\033[1m{10*math.log10(Pmax/Pnoise/L):.2f} dB\033[0m')
 Pmin=(P_avg*Gain**2*rcs*lmbd**2)/((4*math.pi)**3*R_min**4)
-print(f'MIN dist=    \033[1m{10*math.log10(Pmin/Pnoise/L):.2f} dB\033[0m')
+print(f'MIN dist=\t\033[1m{10*math.log10(Pmin/Pnoise/L):.2f} dB\033[0m')
+
+Ptest=(P_avg*Gain**2*rcs*lmbd**2)/((4*math.pi)**3*2000**4)
+print(f'At 2000 m\033[0m =\t\033[1m{10*math.log10(Ptest/Pnoise/L):.2f} dB\033[0m')
+
+Ptest=(P_avg*Gain**2*rcs*lmbd**2)/((4*math.pi)**3*3000**4)
+print(f'At 3000 m\033[0m =\t\033[1m{10*math.log10(Ptest/Pnoise/L):.2f} dB\033[0m')
 
 
 if R_test!=0.0:
     Ptest=(P_avg*Gain**2*rcs*lmbd**2)/((4*math.pi)**3*R_test**4)
-    print(f'\033[1m{R_test:.0f} m\033[0m =     \033[1m{10*math.log10(Ptest/Pnoise/L):.2f} dB\033[0m')
+    print(f'At \033[1m{R_test:.0f} m\033[0m =\t\033[1m{10*math.log10(Ptest/Pnoise/L):.2f} dB\033[0m'),
 
 print(f'')
-print(f'Threshold=   \033[1m{10*math.log10(TH):.2f} dB\033[0m')
-print(f'Losses=  \033[1m{10*math.log10(L):.2f} dB\033[0m')
+print(f'Threshold=\t\033[1m{10*math.log10(TH):.2f} dB\033[0m')
+print(f'Losses=\t\033[1m{10*math.log10(L):.2f} dB\033[0m')
 
 
 
@@ -184,39 +227,50 @@ plt.grid(True)
 plt.xlabel("céltárgy távolság [m]")
 plt.ylabel("SNR [dB]")
 plt.title("SNR értékek adott céltárgyakra", fontsize = 20)
+plt.text(R_unamb*0.99, 10, f'sr= {sr/1e6:.1f} MHz\nNc= {Ncode}\nNz= {Nzeros}\ndS= {dSamp}\ndD= {dDec}', fontsize = 10, va='bottom', ha='right')
 plt.savefig('plot.png')
 plt.show()
 
 
 plt.figure(figsize=(8, 5))
-V=np.arange(0,10*vres,10*vres/100)
+V=np.arange(vres/100,10*vres,10*vres/100)
+
+Vbeag=c/cFrq/2/TburstB
 Tcoh=lmbd/2/V
 # plt.axvline(x=R_min, color='g', linestyle='--')
 # plt.text(R_min, 1, f'R_min', rotation=90, fontsize = 10, color='g', va='baseline', ha='right')
 plt.axhline(y=vres*3.6, color='k', linestyle='--')
 plt.axvline(x=Tc, color='k', linestyle='--')
 
-plt.axhline(y=3.6/10, color='g', linestyle='--')
-plt.axhline(y=3.6/5, color='r', linestyle='--')
-plt.axvline(x=0.1, color='r', linestyle='--')
+# plt.axhline(y=3.6/10, color='g', linestyle='--')
+# plt.axhline(y=Vbeag*3.6, color='r', linestyle='--')
+plt.plot([0, 2*TburstB], [Vbeag*3.6, Vbeag*3.6], color='r', linestyle='--', label='Beagle')
+plt.plot([TburstB, TburstB], [0, 2*Vbeag*3.6], color='r', linestyle='--')
+
+plt.plot([0, 2*TburstB], [vres*3.6, vres*3.6,], color='k', linestyle='--', label='Kuvik')
+plt.plot([Tc, Tc], [0, 2*Vbeag*3.6], color='k', linestyle='--')
 # plt.text(R_max, 1, f'R_max', rotation=90, fontsize = 10, color='r', va='baseline', ha='right')
 # plt.axvline(x=R_unamb, color='k', linestyle='-')
 # plt.text(R_unamb, 1, f'R_unamb', rotation=90, fontsize = 10, color='k', va='baseline', ha='left')
+
 # plt.axhline(13.2, color='k', linestyle=':')
 # plt.text(0, 13.2+1, 'Original Threshold = 13.2 dB', fontsize = 10, va='baseline', ha='left')
 # plt.axhline(TLlim, color='k', linestyle=':')
 # plt.text(0, TLlim+1, f'TL limit = {TLlim} dB', fontsize = 10, va='baseline', ha='left')
 # # plt.axhline(PnoiseLoss_dB, color='k', linestyle='-')
 # # plt.axhline(PnoiseTrsh_dB, color='k', linestyle='-')
-# plt.xlim([0,R_unamb])
-# plt.ylim([0,80])
+plt.xlim([0,2*TburstB])
+plt.ylim([0,2*Vbeag*3.6])
 # # plt.yscale('log')
 # plt.legend([RCStext[i]+str(RCSs[i])+" m^2" for i in range(3)])
-plt.plot(Tcoh,V*3.6,'o-')
+plt.legend()
+plt.plot(Tcoh,V*3.6,'-')
+plt.plot(Tc,vres*3.6, 'ko',)
 plt.grid(True)
 plt.xlabel("koherenciaidő [sec]")
 plt.ylabel("sebességfelbontás [km/h]")
 plt.title("Koherenciaidő és sebességfelbontás kapcsolata", fontsize = 20)
+plt.text(0.001, 2*Vbeag*3.6*0.99, f'sr= {sr/1e6:.1f} MHz\nNc= {Ncode}\nNz= {Nzeros}\ndS= {dSamp}\ndD= {dDec}', fontsize = 10, va='top', ha='left')
 # plt.savefig('plot.png')
 plt.show()
 

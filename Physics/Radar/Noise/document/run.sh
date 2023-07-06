@@ -12,11 +12,8 @@ POW=3.2         #Peak power [W]
 RCS=0.5         #Radar cross section [m^2]
 GAIN=29.5       #Antenna gain [dB]
 
-Rmax=1050       #Maximum distance [m]
-Rmin=1000       #Minimum distance [m]
+# Rmax=1050       #Maximum distance [m]
+# Rmin=1000       #Minimum distance [m]
 
 
-
-cat header.txt
-
-python3 run.py -cFrq $CFRQ -sr $SR -Nc $NCODE -Nz $NZEROS -dS $DSAMP -dD $DDEC -P $POW -RCS $RCS -G $GAIN -RT 6000 -Rmx $Rmax -Rmn $Rmin
+python3 run.py -cFrq $CFRQ -sr $SR -Nc $NCODE -Nz $NZEROS -dS $DSAMP -dD $DDEC -P $POW -RCS $RCS -G $GAIN -RT 6000
