@@ -40,9 +40,10 @@ parser.add_argument("-RT","--TestR", help="Test distance for SNR [m]", nargs='?'
 
 
 #EZEKET KELLL ÁLLÍTGATNI:
-Ncode=['Codes', 615, 308, 123, 61]
-Nzeros=['Zeros', 947, 474, 189, 95]
-dSamp=['DoppSamp', 4096, 4096, 4096, 4096]
+Ncode=['Codes', 3336, 1668, 667, 334]
+Nzeros=['Zeros', 4003, 2001, 801, 400]
+dSamp=['DoppSamp', 768, 768, 768, 768]
+
 
 
 

@@ -1,1 +1,5 @@
-47.365187, 18.428769, 208, 293, 80ffffff, dS=512 lehetséges DZK
+47.365187, 18.428769, 3800, 5353, 80ffffff, dS= 896.0 lehetséges DZK
+47.365187, 18.428769, 1900, 2677, 80ffffff, dS= 1792.0 lehetséges DZK
+47.365187, 18.428769, 950, 1338, 80ffffff, dS= 3584.0 lehetséges DZK
+47.365187, 18.428769, 475, 669, 80ffffff, dS= 7168.0 lehetséges DZK
+47.365187, 18.428769, 237, 335, 80ffffff, dS= 14336.0 lehetséges DZK
