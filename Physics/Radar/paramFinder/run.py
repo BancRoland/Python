@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 
 
 #EZEKET KELLL ÁLLÍTGATNI:
-srA=[100e6]
-# srA=[100e6, 50e6, 20e6, 10e6]
+# srA=[100e6]
+srA=[100e6, 50e6, 20e6, 10e6]
 multA=[1]   #Hányzorosaikat fogadom el a kettőhatványoknak DopplerMintaszának (1,3,5,7) jöhet szóba
 
 
@@ -54,19 +54,23 @@ TburstB=TsweepB*128
 VmaxB=c/cFrq/4/TsweepB
 VresB=c/cFrq/2/TburstB
 
+# Tburst=TburstB
+# Tburst=0.03755  #5500m cent.   R*2^k*4/c
+Tburst=0.04096  #6000m cent.   R*2^k*4/c
+
 
 
 naiveC=[]
 naiveZ=[]
 naiveS=[]
 
-velCell=2 #hanyadik távolságcella
+velCell=2 #hanyadik távolságcella az RV mátrixon egy gyalogos
 
 
 for i in [1]:
     for j in np.arange(5,15):
-        # print(f'{TburstB*c/2/(2**j*i)/2/1000:.3f} km')
-        print(f'{(c/cFrq/2*velCell)*c/2/(2**j*i)/2/1000:.3f} km')
+        print(f'{TburstB*c/2/(2**j*i)/2/1000:.3f} km')
+        # print(f'{(c/cFrq/2*velCell)*c/2/(2**j*i)/2/1000:.3f} km')
         
 
 
@@ -78,8 +82,8 @@ for sr in srA:
     print("\nNaive approach:")
     # print(f'Ncode=\t{Nc:.0f}\t->\t{Nc*c/sr/2:.2f} m\nNzeros=\t{Nz:.0f}\t->\t{(Nz)*c/sr/2:.2f} m')
     # print(f'dSamp=\t{TburstB*sr/(Nz+Nc):.2f}')
-
-    print(f'dSamp=\t{TburstB*sr/(Nz+Nc):.0f}')
+    
+    print(f'dSamp=\t{Tburst*sr/(Nz+Nc):.0f}')
     print(f'\nNfull=\t{Nc+Nz:.0f}')
     print(f'Ncode=\t{Nc:.0f}')
     print(f'Nzeros=\t{Nz:.0f}')
@@ -94,7 +98,7 @@ for sr in srA:
 
     naiveC=np.append(naiveC,Nc)
     naiveZ=np.append(naiveZ,Nz)
-    naiveS=np.append(naiveS,TburstB*sr/(Nz+Nc))
+    naiveS=np.append(naiveS,Tburst*sr/(Nz+Nc))
 
 
     print("\nFFT approach:")
@@ -102,17 +106,17 @@ for sr in srA:
         print(f'\n######-------dSamp MULTIP=\t{j}\t-------######\n')
         # print(f'log2(TburstB*c/(4*Rmax*{j}))={np.log2(TburstB*c/(4*Rmax*j)):.2f}')
         # print(f'log2(TburstB*c/(4*Rmax*{j}))={np.log2(TburstB*c/(4*Rmin*j)):.2f}')
-        if np.ceil(np.log2(TburstB*c/(4*Rmax*j)))==np.ceil(np.log2(TburstB*c/(4*Rmin*j))):    #megadott tartományba nem esik bele 2^x-el osztott fulltáv
+        if np.ceil(np.log2(Tburst*c/(4*Rmax*j)))==np.ceil(np.log2(Tburst*c/(4*Rmin*j))):    #megadott tartományba nem esik bele 2^x-el osztott fulltáv
             print(f"NO SOLUTIONS FOR 2^n*{j}!")
         else:
             # print(f"Solutions for 2^n*{j}:")
-            for i in np.arange(np.ceil(np.log2(TburstB*c/(4*Rmax*j))),np.ceil(np.log2(TburstB*c/(4*Rmin*j)))):
+            for i in np.arange(np.ceil(np.log2(Tburst*c/(4*Rmax*j))),np.ceil(np.log2(Tburst*c/(4*Rmin*j)))):
                 print(f'\n-------------Solutions for 2^{i:.0f}*{j}:')
                 # print(f'Ru=\t{TburstB/(2**i*j)*c/2:.2f}')
                 # print(f'Rc=\t{TburstB/(2**i*j)*c/4:.2f}')
                 # print(f'Rmin\t<\tRc\t<\tRmax')
                 # print(f'{Rmin}\t<\t{TburstB/(2**i*j)*c/4:.2f}\t<\t{Rmax}')
-                NfFrac=sr*TburstB/(2**i*j)
+                NfFrac=sr*Tburst/(2**i*j)
                 # print(f'Nfrac=\t{NfFrac:.2f}')
                 # print(f'dS=\t2^{i:.0f}*{j} = {2**i*j:.0f} Samples\t->\tRu=\t{c*TburstB/(2**i*j)/2/1000:,.3f} km')
                 if np.floor(NfFrac) == np.ceil(NfFrac):
