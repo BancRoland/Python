@@ -4,25 +4,15 @@ import math
 import matplotlib.pyplot as plt
 
 
+
 #EZEKET KELLL ÁLLÍTGATNI:
-# srA=[100e6]
+# srA=[10e6]
 srA=[100e6, 50e6, 20e6, 10e6]
-multA=[1]   #Hányzorosaikat fogadom el a kettőhatványoknak DopplerMintaszának (1,3,5,7) jöhet szóba
+multA=[1, 3 , 5, 7]   #Hányzorosaikat fogadom el a kettőhatványoknak DopplerMintaszának (1,3,5,7) jöhet szóba
 
 
-
-
-RmaxVmax=0
-
-# def loadbar(a,f):
-#     o="|"
-#     for i in range(int(f)):
-#         if i <= a:
-#             o=o+"#"
-#         else:
-#             o=o+"_"
-#     o=o+"|"
-#     print(o)
+# RmaxVmax=0
+vped=1
 
 
 parser = argparse.ArgumentParser(description="calculate the parameters of an impulse radar")
@@ -54,106 +44,152 @@ TburstB=TsweepB*128
 VmaxB=c/cFrq/4/TsweepB
 VresB=c/cFrq/2/TburstB
 
-# Tburst=TburstB
+Tburst=TburstB
 # Tburst=0.03755  #5500m cent.   R*2^k*4/c
-Tburst=0.04096  #6000m cent.   R*2^k*4/c
+# Tburst=0.04096  #6000m cent.   R*2^k*4/c
+
+Temp=290      # Temperature for noise [K]
+Pow=3.2        # Peak power of the transmitter [Watt]
+rcs=0.5        # Radar cross section [m^2]
+G_dB=29.5      # Antenna gain [dB]
+Gain=10**(G_dB/10.0)
+L=125.9
+R_test=Rmax
+TLlim=35
+lmbd=c/cFrq
+SNR_0=Pow*Gain**2*rcs*lmbd**2/((4*math.pi)**3*R_test**4)/(k*Temp)/L
+print(SNR_0)
+
+def docPars(nC, nZ, nS, srA, P):
+    
+    # print('SNR vals=[', end='')
+    # for i in np.arange(len(srA)):
+    #     # print(10*np.log10(nS[i]*nC[i]/srA[i]*SNR_0))
+    #     print(f'{10*np.log10(nS[i]*nC[i]/srA[i]*SNR_0):.1f}', end=' ')
+    #     # print(f'{nC[i]*nS[i]/srA[i]*1000:.1f}', end=' ')
+    #     # print(f'{nC*nS/srA[i]*1000}', end='')
+    # print(']')
+
+    print('SNR=[', end='')
+    for i in P:
+        print(f' {i:.2f}', end='')
+    print(']')
+
+    print('\nNcode=[\'Codes\'', end='')
+    for i in nC:
+        print(f', {i:.0f}', end='')
+    print(']')
+
+    print('Nzeros=[\'Zeros\'', end='')
+    for i in nZ:
+        print(f', {i:.0f}', end='')
+    print(']')
+
+    print('dSamp=[\'DoppSamp\'', end='')
+    for i in nS:
+        print(f', {i:.0f}', end='')
+    print(']')
+
+    print(f'RZmin={Rmin}')
+    print(f'RZmax={Rmax}')
 
 
-
+naiveP=[]
 naiveC=[]
 naiveZ=[]
 naiveS=[]
 
-velCell=2 #hanyadik távolságcella az RV mátrixon egy gyalogos
+pow2P=[]
+pow2C=[]
+pow2Z=[]
+pow2S=[]
 
+ipow2P=[]
+ipow2C=[]
+ipow2Z=[]
+ipow2S=[]
 
-for i in [1]:
-    for j in np.arange(5,15):
-        print(f'{TburstB*c/2/(2**j*i)/2/1000:.3f} km')
-        # print(f'{(c/cFrq/2*velCell)*c/2/(2**j*i)/2/1000:.3f} km')
+# svrC=[]
+# svrZ=[]
+# svrS=[]
         
-
 
 for sr in srA:
 
-    Nc=np.round(2*Rmin*sr/c)
-    Nz=np.round(2*Rmax*sr/c)
-    print(f"\n\n---sr=\t{sr/1e6} MS/s---\n\n")
-    print("\nNaive approach:")
-    # print(f'Ncode=\t{Nc:.0f}\t->\t{Nc*c/sr/2:.2f} m\nNzeros=\t{Nz:.0f}\t->\t{(Nz)*c/sr/2:.2f} m')
-    # print(f'dSamp=\t{TburstB*sr/(Nz+Nc):.2f}')
-    
-    print(f'dSamp=\t{Tburst*sr/(Nz+Nc):.0f}')
-    print(f'\nNfull=\t{Nc+Nz:.0f}')
-    print(f'Ncode=\t{Nc:.0f}')
-    print(f'Nzeros=\t{Nz:.0f}')
-    print(f'\nRu=\t{(Nc+Nz)/sr*c/2/1000:.3f} km')
-    print(f'Rmin=\t{Nc*c/sr/2/1000:.3f} km')
-    print(f'Rmax=\t{Nz*c/sr/2/1000:.3f} km')
+    Nc=np.floor(2*Rmin*sr/c)
+    Nz=np.ceil(2*Rmax*sr/c+1)
+    dS=Tburst*sr/(Nz+Nc)
+    P=10*np.log10(dS*Nc/sr*SNR_0)
+    # naive approach
 
-    
-    # Ncode=['Codes',3336,625,250,125]
-    # Nzeros=['Zeros',5000,2500,1000,500]
-    # dSamp=['DoppSamp',1024, 1024, 1024, 1024]
-
+    naiveP=np.append(naiveP,P)
     naiveC=np.append(naiveC,Nc)
     naiveZ=np.append(naiveZ,Nz)
-    naiveS=np.append(naiveS,Tburst*sr/(Nz+Nc))
+    naiveS=np.append(naiveS,dS)
 
 
-    print("\nFFT approach:")
-    for j in multA:
-        print(f'\n######-------dSamp MULTIP=\t{j}\t-------######\n')
-        # print(f'log2(TburstB*c/(4*Rmax*{j}))={np.log2(TburstB*c/(4*Rmax*j)):.2f}')
-        # print(f'log2(TburstB*c/(4*Rmax*{j}))={np.log2(TburstB*c/(4*Rmin*j)):.2f}')
-        if np.ceil(np.log2(Tburst*c/(4*Rmax*j)))==np.ceil(np.log2(Tburst*c/(4*Rmin*j))):    #megadott tartományba nem esik bele 2^x-el osztott fulltáv
-            print(f"NO SOLUTIONS FOR 2^n*{j}!")
-        else:
-            # print(f"Solutions for 2^n*{j}:")
-            for i in np.arange(np.ceil(np.log2(Tburst*c/(4*Rmax*j))),np.ceil(np.log2(Tburst*c/(4*Rmin*j)))):
-                print(f'\n-------------Solutions for 2^{i:.0f}*{j}:')
-                # print(f'Ru=\t{TburstB/(2**i*j)*c/2:.2f}')
-                # print(f'Rc=\t{TburstB/(2**i*j)*c/4:.2f}')
-                # print(f'Rmin\t<\tRc\t<\tRmax')
-                # print(f'{Rmin}\t<\t{TburstB/(2**i*j)*c/4:.2f}\t<\t{Rmax}')
-                NfFrac=sr*Tburst/(2**i*j)
-                # print(f'Nfrac=\t{NfFrac:.2f}')
-                # print(f'dS=\t2^{i:.0f}*{j} = {2**i*j:.0f} Samples\t->\tRu=\t{c*TburstB/(2**i*j)/2/1000:,.3f} km')
-                if np.floor(NfFrac) == np.ceil(NfFrac):
-                    Nf=[NfFrac]
-                else:
-                    Nf=[np.floor(NfFrac),np.ceil(NfFrac)]
-                # print(f'Possible Nfull=\t[{np.floor(NfFrac):.0f} ... {np.ceil(NfFrac):.0f}]')         
-                for k in Nf:
-                    print(f'\ndSamp=\t{2**i*j:.0f}={2**i:.0f}*{j}')
-                    print(f'\nNfull=\t{k:.0f}')
-                    Nc1=max(Nc,k-Nz)
-                    print(f'Ncode=\t{Nc1:.0f}')
-                    print(f'Nzeros=\t{k-Nc1:.0f}')
-                    print(f'\nRu=\t{k/sr*c/2/1000:.3f} km')
-                    print(f'Rmin=\t{Nc1*c/sr/2/1000:.3f} km')
-                    print(f'Rmax=\t{(k-Nc1)*c/sr/2/1000:.3f} km')
-                    # print(f'\nRmax/Rmin=\t{(k-Nc1)/Nc1:.2f}')
-                    # print(np.floor((k-Nc1)/Nc1))
-                    # print(np.ceil((k-Nc1)/Nc1))
-                    # print(k/np.floor((k-Nc1)/Nc1))
-                    # print(k/np.ceil((k-Nc1)/Nc1))
-                    print(f'\n-------')
+    #POW2 approach:
+    dS=2**np.floor(np.log2(Tburst*c/(2*Rmax)))
+    Nf=np.ceil(sr*Tburst/dS)
+    Nc=np.floor(min(2*Rmin*sr/c,2*(c*Tburst/dS/2-Rmax)*sr/c))
+    Nz=Nf-Nc
+    P=10*np.log10(dS*Nc/sr*SNR_0)
 
-print('\n\n\nNaive approaches')
-print('\nNcode=[\'Codes\'', end='')
-for i in naiveC:
-    print(f', {i:.0f}', end='')
-print(']')
+    pow2P=np.append(pow2P,P)
+    pow2C=np.append(pow2C,Nc)
+    pow2Z=np.append(pow2Z,Nz)
+    pow2S=np.append(pow2S,dS)
 
-print('Nzeros=[\'Zeros\'', end='')
-for i in naiveZ:
-    print(f', {i:.0f}', end='')
-print(']')
+print('\n\n\nNaive approach')
+docPars(naiveC, naiveZ, naiveS, srA, naiveP)
 
-print('dSamp=[\'DoppSamp\'', end='')
-for i in naiveS:
-    print(f', {i:.0f}', end='')
-print(']')
+# print('\n\n\nPOW2 approach')
+# docPars(pow2C, pow2Z, pow2S, srA, pow2P)
 
-                    
+
+print("\n\n\niPOW2 approach:", end=' ')
+for j in multA:
+    A=np.log2(Tburst*c/2/((Rmin+Rmax)*j))
+    # print(np.log2(Tburst*c/2/((Rmin+Rmax)*j)))
+
+    dS=2**np.floor(A)*j  
+    Nf=np.floor(sr*Tburst/dS)
+    Nc=np.floor(min(2*Rmin*sr/c,2*(Nf/sr*c/2-Rmax)*sr/c))
+    Nz=Nf-Nc
+    Pfloor=10*np.log10(dS*Nc/sr*SNR_0)
+
+    dS=2**np.ceil(A)*j  
+    Nf=np.floor(sr*Tburst/dS)
+    Nc=np.floor(min(2*Rmin*sr/c,2*(Nf/sr*c/2-Rmax)*sr/c))
+    Nz=Nf-Nc
+    Pceil=10*np.log10(dS*Nc/sr*SNR_0)
+
+    if Pfloor > Pceil:
+        i=np.floor(A)
+    else:
+        i=np.ceil(A)
+
+
+    ipow2P=[]   #POWER
+    ipow2C=[]   #CODE
+    ipow2Z=[]   #ZEROS
+    ipow2S=[]   #SAMPLES
+
+
+    
+    for sr in srA:
+        
+        dS=2**i*j  
+        Nf=np.floor(sr*Tburst/dS)
+        Nc=np.floor(min(2*Rmin*sr/c,2*(Nf/sr*c/2-Rmax)*sr/c))
+        Nz=Nf-Nc
+
+        P=10*np.log10(dS*Nc/sr*SNR_0)
+
+        ipow2P=np.append(ipow2P,P)
+        ipow2C=np.append(ipow2C,Nc)
+        ipow2Z=np.append(ipow2Z,Nz)
+        ipow2S=np.append(ipow2S,dS)
+
+    print(f'\n\niPOW2 approaches for 2^{i:.0f}*{j}:')
+    docPars(ipow2C, ipow2Z, ipow2S, srA, ipow2P)

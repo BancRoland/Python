@@ -17,3 +17,6 @@ GAIN=29.5       #Antenna gain [dB]
 
 
 python3 run.py -cFrq $CFRQ -sr $SR -Nc $NCODE -Nz $NZEROS -dS $DSAMP -dD $DDEC -P $POW -RCS $RCS -G $GAIN -RT 6000
+
+cd ./KML
+bash generate.sh $NCODE $NZEROS

@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 
 RmaxVmax=0
 
+Fa=47.365187
+Fl=18.428769
+Centre=f"{Fa}, {Fl}"
+
 # def loadbar(a,f):
 #     o="|"
 #     for i in range(int(f)):
@@ -40,9 +44,22 @@ parser.add_argument("-RT","--TestR", help="Test distance for SNR [m]", nargs='?'
 
 
 #EZEKET KELLL ÁLLÍTGATNI:
-Ncode=['Codes', 3336, 1668, 667, 334]
-Nzeros=['Zeros', 4003, 2001, 801, 400]
+# Ncode=['Codes', 3336, 1668, 667, 334]
+# Nzeros=['Zeros', 4003, 2001, 801, 400]
+# dSamp=['DoppSamp', 768, 768, 768, 768]
+
+Ncode=['Codes', 3335, 1667, 667, 333]
+Nzeros=['Zeros', 4998, 2499, 999, 500]
 dSamp=['DoppSamp', 768, 768, 768, 768]
+RZmin=5000.0
+RZmax=6000.0
+
+
+
+
+
+
+
 
 
 
@@ -51,8 +68,8 @@ dSamp=['DoppSamp', 768, 768, 768, 768]
 args=parser.parse_args()
 # answer=args.radius**2*args.pi
 
-RT1=5000
-RT2=6000
+RT1=RZmin
+RT2=RZmax
 
 c=args.c
 k=1.38e-23          # Boltzmann constant [J/K]
@@ -64,7 +81,7 @@ TH=20.9
 cFrq=9.9e9      # centerFrequency [Hz]
 sr=['samprate [MS/s]',100e6, 50e6, 20e6, 10e6]    # sample rate [samp/sec]
 
-dDec=['DoppDec',1, 1, 1, 1]      # doppler decimation value
+dDec=['DoppDec', 1, 1, 1, 1]      # doppler decimation value
 Temp=290      # Temperature for noise [K]
 Pow=3.2        # Peak power of the transmitter [Watt]
 rcs=0.5        # Radar cross section [m^2]
@@ -110,15 +127,15 @@ VresB=c/cFrq/2/TburstB
 
 lmbd=c/cFrq
 
+# print(Gain**2*lmbd**2/((4*math.pi)**3*R_test**4)/(k*Temp)/L)
 
-
-for i in np.arange(1,col+1):
+for i in np.arange(1,len(sr)):
     fullLen[i]=Ncode[i]+Nzeros[i]
     PRF[i]=sr[i]/fullLen[i]  #T=fullen/sr
     fillFactor[i]=100*Ncode[i]/fullLen[i]
     R_min[i]=Ncode[i]/sr[i]*c/2
     R_unamb[i]=fullLen[i]/sr[i]*c/2
-    R_max[i]=Nzeros[i]/sr[i]*c/2 #=c*Nzeros*T0/2
+    R_max[i]=(Nzeros[i]-1)/sr[i]*c/2 #=c*Nzeros*T0/2
     rangeRes[i]=c/sr[i]/2
     blindSpeed[i]=PRF[i]*c/cFrq/2/dDec[i]#=lmbda/(2*T)/dDec
     vmax[i]=blindSpeed[i]/2
@@ -190,8 +207,8 @@ rowPrint(SNR_T2,2)
 # print(f'SNR(Rmax,ped) [dB]\t\033[1m{10*math.log10(Pmax/Pnoise/L):.1f}\033[0m')
 # print(f'SNR(Rmin,ped) [dB]\t\033[1m{10*math.log10(Pmin/Pnoise/L):.1f}\033[0m')
 
-
-for srA in np.arange(1,5):
+# print(f'lenSR={len(sr)}')
+for srA in np.arange(1,len(sr)):
     R=np.arange(rangeRes[srA],2*R_unamb[srA],rangeRes[srA])
     Pnoise_dB=10*np.log10(Pnoise[srA])
     PnoiseLoss_dB=10*np.log10(Pnoise[srA]*L)
@@ -243,7 +260,7 @@ for srA in np.arange(1,5):
     bbox_props = dict(boxstyle="square", facecolor="white", edgecolor="gray", alpha=0.9)
     plt.text(0, 80, f'sr=   {sr[srA]/1e6:.1f} MHz\nNc=   {Ncode[srA]}\nNz=    {Nzeros[srA]}\ndS=   {dSamp[srA]}\ndD=    {dDec[srA]}', fontsize = 10, va='top', ha='left', bbox=bbox_props)
     plt.savefig(f'plot_{sr[srA]/1e6:.0f}.png')
-    plt.show()
+    # plt.show()
 
 
     plt.figure(figsize=(8, 5))
@@ -286,7 +303,7 @@ for srA in np.arange(1,5):
     plt.title("Koherenciaidő és sebességfelbontás kapcsolata", fontsize = 20)
     plt.text(0.001, 2*Vbeag*3.6*0.99, f'sr= {sr[srA]/1e6:.1f} MHz\nNc= {Ncode[srA]}\nNz= {Nzeros[srA]}\ndS= {dSamp[srA]}\ndD= {dDec[srA]}', fontsize = 10, va='top', ha='left', bbox=bbox_props)
     # plt.savefig('plot.png')
-    plt.show()
+    # plt.show()
 
     if RmaxVmax:
         plt.figure(figsize=(8, 5))
@@ -300,4 +317,20 @@ for srA in np.arange(1,5):
         plt.ylabel("V_max [km/h]")
         plt.title("R_max és V_max kapcsolata", fontsize = 20)
         # plt.savefig('plot.png')
-        plt.show()
+        # plt.show()
+
+with open("./KML/coordRing.txt", "w") as file:
+    file.write(f"{Centre}, {RZmin:.0f}, {RZmax:.0f}, 10ff0000, Relevancia Zóna\n")
+    file.write(f"{Centre}, {R_min[1]:.0f}, {R_max[1]:.0f}, 4000ff00, Detekciós Zóna\n")
+    file.write(f"{Centre}, {R_max[1]:.0f}, {R_min[1]+R_max[1]:.0f}, 400000ff, Áthallási Zóna\n")
+
+
+# echo -e "$CENTRE, $Rmin, 400000ff, ff000000, 3, Áthallási zóna 0" > coordCirc.txt
+
+with open("./KML/coordCirc.txt", "w") as file:
+    file.write(f"{Centre}, {R_min[1]:.0f}, 400000ff, ff000000, 3, Áthallási zóna 0")
+
+
+
+#  echo -e "$CENTRE, 6649, 9369, 80ffffff, dS=512 lehetséges DZK" > coordRing.txt
+
