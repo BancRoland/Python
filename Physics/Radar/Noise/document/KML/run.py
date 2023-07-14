@@ -2,11 +2,15 @@ import numpy as np
 import argparse
 import math
 import matplotlib.pyplot as plt
+import subprocess
+
 
 RmaxVmax=0
 
 Fa=47.365187
 Fl=18.428769
+DIR=125.82  #beam direction
+BW=20.8  #beamwidth
 Centre=f"{Fa}, {Fl}"
 
 # def loadbar(a,f):
@@ -20,37 +24,64 @@ Centre=f"{Fa}, {Fl}"
 #     print(o)
 
 
-def rowPrint(v,dec,mult=1):   #rowname    multiplier(for km and such)     decimal places
-    print(v[0], end="\t")
-    for i in range(len(v)-1):
-        print(f'{v[i+1]/mult:.{dec}f}', end="\t")
-    print()
+def rowPrint(v,dec,file,mult=1):   #rowname    multiplier(for km and such)     decimal places
+        file.write(f"{v[0]}\t")
+        for i in range(len(v)-1):
+            file.write(f'{v[i+1]/mult:.{dec}f}\t')
+        file.write("\n")
 
 
 parser = argparse.ArgumentParser(description="calculate the parameters of an impulse radar")
 
 parser.add_argument("-c","--c", help="speed of wave [m/s] ", nargs='?', type=float, default=299792458)
-parser.add_argument("-cFrq","--cFrq", help="Frequency of the carrier wave [Hz] ", nargs='?', type=float, required=True)
-parser.add_argument("-sr","--samprate", help="Samplerate of the signalflow [samp/sec] ", nargs='?', type=float, required=True)
-parser.add_argument("-Nc","--Ncode", help="code samples number [samples] ", nargs='?', type=int, required=True)
-parser.add_argument("-Nz","--Nzeros", help="zero samples number [samples] ", nargs='?', type=int, required=True)
-parser.add_argument("-dS","--dSamp", help="doppler samples number [line of samples] ", nargs='?', type=int, required=True)
-parser.add_argument("-dD","--dDec", help="doppler decimation value [samples] ", nargs='?', type=int, default=1)
-parser.add_argument("-T","--Temp", help="Temperature for noise [K]", nargs='?', type=int, default=290)
-parser.add_argument("-P","--Pow", help="Peak power of the transmitter [Watt]", nargs='?', type=float, default=1.0)
-parser.add_argument("-RCS","--RCS", help="Radar cross section of a target [m^2]", nargs='?', type=float, default=1.0)
-parser.add_argument("-G","--Gain", help="Antenna gain [dB]", nargs='?', type=float, default=1.0)
+# parser.add_argument("-cFrq","--cFrq", help="Frequency of the carrier wave [Hz] ", nargs='?', type=float, required=True)
+# parser.add_argument("-sr","--samprate", help="Samplerate of the signalflow [samp/sec] ", nargs='?', type=float, required=True)
+# parser.add_argument("-Nc","--Ncode", help="code samples number [samples] ", nargs='?', type=int, required=True)
+# parser.add_argument("-Nz","--Nzeros", help="zero samples number [samples] ", nargs='?', type=int, required=True)
+# parser.add_argument("-dS","--dSamp", help="doppler samples number [line of samples] ", nargs='?', type=int, required=True)
+# parser.add_argument("-dD","--dDec", help="doppler decimation value [samples] ", nargs='?', type=int, default=1)
+# parser.add_argument("-T","--Temp", help="Temperature for noise [K]", nargs='?', type=int, default=290)
+# parser.add_argument("-P","--Pow", help="Peak power of the transmitter [Watt]", nargs='?', type=float, default=1.0)
+# parser.add_argument("-RCS","--RCS", help="Radar cross section of a target [m^2]", nargs='?', type=float, default=1.0)
+# parser.add_argument("-G","--Gain", help="Antenna gain [dB]", nargs='?', type=float, default=1.0)
 parser.add_argument("-RT","--TestR", help="Test distance for SNR [m]", nargs='?', type=float, default=0.0)
+parser.add_argument("-DIR","--DIR", help="Beam azimut direction [deg]", nargs='?', type=float, default=0.0)
+parser.add_argument("-BW","--BW", help="Beam azimuth width [deg]", nargs='?', type=float, default=0.0)
+# -FA $Fa -FL $Fl -FALT $FAlt -FDIR $Fdir
+parser.add_argument("-FA","--FA", help="Geological altitude [deg]", nargs='?', type=float, default=0.0)
+parser.add_argument("-FL","--FL", help="Geological longitude [deg]", nargs='?', type=float, default=0.0)
+parser.add_argument("-FALT","--FALT", help="viewpoint height [m]", nargs='?', type=float, default=10000.0)
+parser.add_argument("-FDIR","--FDIR", help="wievpoint tilt [deg]", nargs='?', type=float, default=0.0)
+
+parser.add_argument("-RZMIN","--RZMIN", help="wievpoint tilt [deg]", nargs='?', type=float, default=0.0)
+parser.add_argument("-RZMAX","--RZMAX", help="wievpoint tilt [deg]", nargs='?', type=float, default=0.0)
+
+args=parser.parse_args()
+BW=args.BW
+DIR=args.DIR
+c=args.c
+R_test=args.TestR    # Antenna gain [dB]
+Fa=args.FA
+Fl=args.FL
+FAlt=args.FALT
+FDir=args.FDIR
+
+
 
 
 #EZEKET KELLL ÁLLÍTGATNI:
-# Ncode=['Codes', 3336, 1668, 667, 334]
-# Nzeros=['Zeros', 4003, 2001, 801, 400]
-# dSamp=['DoppSamp', 768, 768, 768, 768]
 
-Ncode=['Codes', 3335, 1667, 667, 333]
-Nzeros=['Zeros', 4998, 2499, 999, 500]
-dSamp=['DoppSamp', 768, 768, 768, 768]
+# sr=['samprate [MS/s]',100e6, 50e6, 20e6, 10e6]
+# Ncode=['Codes', 3335, 1667, 667, 333]
+# Nzeros=['Zeros', 4998, 2499, 999, 500]
+# dSamp=['DoppSamp', 768, 768, 768, 768]
+# RZmin=5000.0
+# RZmax=6000.0
+
+sr=['samprate [MS/s]', 100e6, 50e6, 20e6, 10e6]
+Ncode=['Codes', 3139, 1569, 627, 313]
+Nzeros=['Zeros', 4003, 2002, 801, 401]
+dSamp=['DoppSamp', 896, 896, 896, 896]
 RZmin=5000.0
 RZmax=6000.0
 
@@ -60,18 +91,10 @@ RZmax=6000.0
 
 
 
+RZmin=args.RZMIN
+RZmax=args.RZMAX
+fldrN=f"{RZmin:.0f}_{RZmax:.0f}"
 
-
-
-
-
-args=parser.parse_args()
-# answer=args.radius**2*args.pi
-
-RT1=RZmin
-RT2=RZmax
-
-c=args.c
 k=1.38e-23          # Boltzmann constant [J/K]
 
 col=4
@@ -79,7 +102,7 @@ L=125.9
 TH=20.9
 
 cFrq=9.9e9      # centerFrequency [Hz]
-sr=['samprate [MS/s]',100e6, 50e6, 20e6, 10e6]    # sample rate [samp/sec]
+
 
 dDec=['DoppDec', 1, 1, 1, 1]      # doppler decimation value
 Temp=290      # Temperature for noise [K]
@@ -87,7 +110,6 @@ Pow=3.2        # Peak power of the transmitter [Watt]
 rcs=0.5        # Radar cross section [m^2]
 G_dB=29.5      # Antenna gain [dB]
 Gain=10**(G_dB/10.0)
-R_test=args.TestR    # Antenna gain [dB]
 
 fullLen=['Full length',0,0,0,0]
 PRF=['PRF [kHz]',0,0,0,0]
@@ -105,18 +127,10 @@ Bdop=['Bdop',0,0,0,0]
 Pnoise=['-',0,0,0,0]
 SNRmax=[f'SNR(Rmax,ped) [dB]',0,0,0,0]
 SNRmin=[f'SNR(Rmin,ped) [dB]',0,0,0,0]
-SNR_T1=[f'SNR({RT1/1000:.0f}km,ped) [dB]',0,0,0,0]
-SNR_T2=[f'SNR({RT2/1000:.0f}km,ped) [dB]',0,0,0,0]
+SNR_T1=[f'SNR({RZmin/1000:.0f}km,ped) [dB]',0,0,0,0]
+SNR_T2=[f'SNR({RZmax/1000:.0f}km,ped) [dB]',0,0,0,0]
 
 
-
-
-# RmaxD=args.RmaxD
-# RminD=args.RminD
-
-# RmaxD=8000
-# RminD=1000
-# RumbD=RmaxD+RminD
 
 #-------BEAGLE PARAMS-------
 
@@ -152,60 +166,39 @@ for i in np.arange(1,len(sr)):
 
 
 for i in range(4):
-    Ptest=(P_avg[i+1]*Gain**2*rcs*lmbd**2)/((4*math.pi)**3*RT1**4)
+    Ptest=(P_avg[i+1]*Gain**2*rcs*lmbd**2)/((4*math.pi)**3*RZmin**4)
     SNR_T1[i+1]=10*math.log10(Ptest/Pnoise[i+1]/L)
-    Ptest=(P_avg[i+1]*Gain**2*rcs*lmbd**2)/((4*math.pi)**3*RT2**4)
+    Ptest=(P_avg[i+1]*Gain**2*rcs*lmbd**2)/((4*math.pi)**3*RZmax**4)
     SNR_T2[i+1]=10*math.log10(Ptest/Pnoise[i+1]/L)
     # print(f'SNR({RT/1000:.0f}km,ped) [dB]\t\033[1m{10*math.log10(Ptest/Pnoise/L):.1f}\033[0m')
 
 
 
-
-rowPrint(sr,0,1e6)
-rowPrint(Ncode,0)
-rowPrint(Nzeros,0)
-rowPrint(dSamp,0)
-rowPrint(dDec,0)
-rowPrint(fullLen,0)
-rowPrint(PRF,1,1000)
-rowPrint(fillFactor,1)
-rowPrint(rangeRes,2)
-rowPrint(R_min,3,1000)
-rowPrint(R_max,3,1000)
-rowPrint(R_unamb,3,1000)
-rowPrint(vres,2,1/3.6)
-rowPrint(blindSpeed,0,1/3.6)
-rowPrint(vmax,0,1/3.6)
-rowPrint(Tc,1,1/1000)
-rowPrint(SNRmin,2)
-rowPrint(SNRmax,2)
-rowPrint(SNR_T1,2)
-rowPrint(SNR_T2,2)
-
-# for i in range(len(Table)):
-#     print(Table[i][0], end="\t")
-#     for j in range(4):
-#         print(Table[i][j+1], end="\t")
-#         rowPrint(Table)
-#     print("")
-
-# print(Table[i][0], end="\t")
-# for j in range(4):
-#     print(Table[i][j+1], end="\t")
-#     rowPrint()
-# print("")
-
-    # print(Ncode[i], end='   ')
-    # print(Nzeros[i], end='   ')
-    # print(dSamp[i], end='   ')
-    # print(dDec[i], end='   ')
-    # print(fullLen[i], end='   ')
-    # print(PRF[i], end='   ')
-    # print(fillFactor[i], end='   ')
+with open("params.txt", "w") as file:
+    rowPrint(sr,0,file,1e6)
+    rowPrint(Ncode,0,file)
+    rowPrint(Nzeros,0,file)
+    rowPrint(dSamp,0,file)
+    rowPrint(dDec,0,file)
+    rowPrint(fullLen,0,file)
+    rowPrint(PRF,1,file,1000)
+    rowPrint(fillFactor,1,file)
+    rowPrint(rangeRes,2,file)
+    rowPrint(R_min,3,file,1000)
+    rowPrint(R_max,3,file,1000)
+    rowPrint(R_unamb,3,file,1000)
+    rowPrint(vres,2,file,1/3.6)
+    rowPrint(blindSpeed,0,file,1/3.6)
+    rowPrint(vmax,0,file,1/3.6)
+    rowPrint(Tc,1,file,1/1000)
+    rowPrint(SNRmin,2,file)
+    rowPrint(SNRmax,2,file)
+    rowPrint(SNR_T1,2,file)
+    rowPrint(SNR_T2,2,file)
 
 
-# print(f'SNR(Rmax,ped) [dB]\t\033[1m{10*math.log10(Pmax/Pnoise/L):.1f}\033[0m')
-# print(f'SNR(Rmin,ped) [dB]\t\033[1m{10*math.log10(Pmin/Pnoise/L):.1f}\033[0m')
+subprocess.run(['mv', 'params.txt', f'../{fldrN}/params.txt'], check=True)
+
 
 # print(f'lenSR={len(sr)}')
 for srA in np.arange(1,len(sr)):
@@ -213,21 +206,6 @@ for srA in np.arange(1,len(sr)):
     Pnoise_dB=10*np.log10(Pnoise[srA])
     PnoiseLoss_dB=10*np.log10(Pnoise[srA]*L)
     PnoiseTrsh_dB=10*np.log10(Pnoise[srA]*L*TH)
-
-    # for rcs in [0.5, 10, 100]:
-    #     P_refl=(P_avg*Gain**2*rcs*lmbd**2)/((4*math.pi)**3*R**4)
-    #     P_refl_dB=10*np.log10(P_refl)
-    #     plt.plot(R,P_refl_dB,'-.', color=(0,0,0))
-    # plt.axvline(x=R_min, color='r', linestyle='-')
-    # plt.axvline(x=R_max, color='b', linestyle='-')
-    # plt.axvline(x=R_unamb, color='k', linestyle='-')
-    # plt.axhline(Pnoise_dB, color='k', linestyle='-')
-    # plt.axhline(PnoiseLoss_dB, color='k', linestyle='-')
-    # plt.axhline(PnoiseTrsh_dB, color='k', linestyle='-')
-    # plt.xlim([0,2*R_unamb])
-    # # plt.yscale('log')
-    # plt.grid(True)
-    # plt.show()
 
     plt.figure(figsize=(8, 5))
     TLlim=35
@@ -259,7 +237,8 @@ for srA in np.arange(1,len(sr)):
     plt.title("SNR értékek adott céltárgyakra", fontsize = 20)
     bbox_props = dict(boxstyle="square", facecolor="white", edgecolor="gray", alpha=0.9)
     plt.text(0, 80, f'sr=   {sr[srA]/1e6:.1f} MHz\nNc=   {Ncode[srA]}\nNz=    {Nzeros[srA]}\ndS=   {dSamp[srA]}\ndD=    {dDec[srA]}', fontsize = 10, va='top', ha='left', bbox=bbox_props)
-    plt.savefig(f'plot_{sr[srA]/1e6:.0f}.png')
+    # subprocess.run(['mkdir', f'{R_min}', f"{Fa}", f"{Fl}", f"{FAlt}", f"{FDir}"], check=True)
+    plt.savefig(f'../{fldrN}/plot_{Ncode[srA]:.0f}_{Nzeros[srA]:.0f}_{sr[srA]/1e6:.0f}.png')
     # plt.show()
 
 
@@ -272,12 +251,10 @@ for srA in np.arange(1,len(sr)):
     # plt.text(R_min, 1, f'R_min', rotation=90, fontsize = 10, color='g', va='baseline', ha='right')
     plt.axhline(y=vres[srA]*3.6, color='k', linestyle='--')
     plt.axvline(x=Tc[srA], color='k', linestyle='--')
-
     # plt.axhline(y=3.6/10, color='g', linestyle='--')
     # plt.axhline(y=Vbeag*3.6, color='r', linestyle='--')
     plt.plot([0, 2*TburstB], [Vbeag*3.6, Vbeag*3.6], color='r', linestyle='--', label='Beagle')
     plt.plot([TburstB, TburstB], [0, 2*Vbeag*3.6], color='r', linestyle='--')
-
     plt.plot([0, 2*TburstB], [vres[srA]*3.6, vres[srA]*3.6,], color='k', linestyle='--', label='Kuvik')
     plt.plot([Tc[srA], Tc[srA]], [0, 2*Vbeag*3.6], color='k', linestyle='--')
     # plt.text(R_max, 1, f'R_max', rotation=90, fontsize = 10, color='r', va='baseline', ha='right')
@@ -317,20 +294,36 @@ for srA in np.arange(1,len(sr)):
         plt.ylabel("V_max [km/h]")
         plt.title("R_max és V_max kapcsolata", fontsize = 20)
         # plt.savefig('plot.png')
-        # plt.show()
-
-with open("./KML/coordRing.txt", "w") as file:
-    file.write(f"{Centre}, {RZmin:.0f}, {RZmax:.0f}, 10ff0000, Relevancia Zóna\n")
-    file.write(f"{Centre}, {R_min[1]:.0f}, {R_max[1]:.0f}, 4000ff00, Detekciós Zóna\n")
-    file.write(f"{Centre}, {R_max[1]:.0f}, {R_min[1]+R_max[1]:.0f}, 400000ff, Áthallási Zóna\n")
+        plt.show()
 
 
-# echo -e "$CENTRE, $Rmin, 400000ff, ff000000, 3, Áthallási zóna 0" > coordCirc.txt
+for i in np.arange(1,len(sr)):
+    with open("coordRing.txt", "w") as file:
+        file.write(f"{Centre}, {RZmin:.0f}, {RZmax:.0f}, 40ff0000, Relevancia Zóna\n")
+        file.write(f"{Centre}, {R_min[i]:.0f}, {R_max[i]:.0f}, 4000ff00, Detekciós Zóna\n")
+        file.write(f"{Centre}, {R_max[i]:.0f}, {R_min[i]+R_max[i]:.0f}, 400000ff, Áthallási Zóna\n")
 
-with open("./KML/coordCirc.txt", "w") as file:
-    file.write(f"{Centre}, {R_min[1]:.0f}, 400000ff, ff000000, 3, Áthallási zóna 0")
+    # echo -e "$CENTRE, $Rmin, 400000ff, ff000000, 3, Áthallási zóna 0" > coordCirc.txt
+
+    with open("coordCirc.txt", "w") as file:
+        file.write(f"{Centre}, {R_min[i]:.0f}, 400000ff, ff000000, 3, Áthallási zóna 0")
+
+    # echo -e "$CENTRE, $Rmin, $Rusd, $DIR, $BW, 4000ff00, Detektálási nyaláb" > coordRingSlice.txt
+
+    with open("coordRingSlice.txt", "w") as file:
+        file.write(f"{Centre}, {R_min[i]:.0f}, {R_max[i]:.0f}, {DIR}, {BW}, 4000ff00, Detektálási nyaláb\n")
+        file.write(f"{Centre}, {R_max[i]:.0f},  {R_min[i]+R_max[i]:.0f}, {DIR}, {BW}, 400000ff, Áthallási nyaláb\n")
+
+    # echo -e "$CENTRE, $Rmin, $DIR, $BW, 400000ff, ff000000, 3, Áthallási nyaláb 0" > coordSlice.txt
+    with open("coordSlice.txt", "w") as file:
+        file.write(f"{Centre}, {R_min[i]:.0f}, {DIR}, {BW}, 400000ff, ff000000, 3, Áthallási nyaláb 0\n")
+
+    with open("docName.txt", "w") as file:
+        file.write(f"{Ncode[i]}_{Nzeros[i]}")
 
 
+    #  echo -e "$CENTRE, 6649, 9369, 80ffffff, dS=512 lehetséges DZK" > coordRing.txt
+    # bash generate.sh $Fa $Fl $FAlt $Fdir
 
-#  echo -e "$CENTRE, 6649, 9369, 80ffffff, dS=512 lehetséges DZK" > coordRing.txt
-
+    result = subprocess.run(['bash', 'generate.sh', f"{Fa}", f"{Fl}", f"{FAlt}", f"{FDir}", f"{fldrN}"], check=True)
+    # print(result.stdout)

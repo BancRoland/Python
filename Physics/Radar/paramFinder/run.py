@@ -70,12 +70,24 @@ def docPars(nC, nZ, nS, srA, P):
     #     # print(f'{nC*nS/srA[i]*1000}', end='')
     # print(']')
 
+    # sr=['samprate [MS/s]',100e6, 50e6, 20e6, 10e6]
+    # Ncode=['Codes', 3335, 1667, 667, 333]
+    # Nzeros=['Zeros', 4998, 2499, 999, 500]
+    # dSamp=['DoppSamp', 768, 768, 768, 768]
+    # RZmin=5000.0
+    # RZmax=6000.0
+
     print('SNR=[', end='')
     for i in P:
         print(f' {i:.2f}', end='')
     print(']')
 
-    print('\nNcode=[\'Codes\'', end='')
+    print('\nsr=[\'samprate [MS/s]\'', end='')
+    for i in srA:
+        print(f', {i/1e6:.0f}e6', end='')
+    print(']')
+
+    print('Ncode=[\'Codes\'', end='')
     for i in nC:
         print(f', {i:.0f}', end='')
     print(']')
