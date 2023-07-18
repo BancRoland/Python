@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python3 csv_read.ps
+python3 csv_read.py

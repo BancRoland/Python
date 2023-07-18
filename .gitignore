@@ -19,6 +19,11 @@
 *.pdf
 *.PDF
 *.kml
+*.pipe
+*.PIPE
+pipe
+*.csv
+*.jpg
 
 *.c
 *.o

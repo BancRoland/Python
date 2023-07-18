@@ -2,24 +2,35 @@ import numpy as np
 import argparse
 import math
 import matplotlib.pyplot as plt
+import csv
 
 
 
 #EZEKET KELLL ÁLLÍTGATNI:
-# srA=[10e6]
-srA=[100e6, 50e6, 20e6, 10e6]
-multA=[1, 3 , 5, 7]   #Hányzorosaikat fogadom el a kettőhatványoknak DopplerMintaszának (1,3,5,7) jöhet szóba
+# srA=[100e6, 50e6, 20e6, 10e6]
+with open('IN_samprates.csv', newline='') as f:
+    reader = csv.reader(f, delimiter=' ')
+    for row in reader:
+        for d in range(len(row)):
+            srA = [eval(i) for i in row]
+
+# multA=[1, 3, 5, 7]   #Hányzorosaikat fogadom el a kettőhatványoknak DopplerMintaszának (1,3,5,7) jöhet szóba
+with open('IN_multipliers.csv', newline='') as f:
+    reader = csv.reader(f, delimiter=' ')
+    for row in reader:
+        for d in range(len(row)):
+            multA = [eval(i) for i in row]
 
 
-# RmaxVmax=0
-vped=1
+
+
+vped=1  #velocity of a pedestrian [m/s]
 
 
 parser = argparse.ArgumentParser(description="calculate the parameters of an impulse radar")
 
 parser.add_argument("-c","--c", help="speed of wave [m/s] ", nargs='?', type=float, default=299792458)
 parser.add_argument("-cFrq","--cFrq", help="Frequency of the carrier wave [Hz] ", nargs='?', type=float, required=True)
-parser.add_argument("-sr","--samprate", help="Samplerate of the signalflow [samp/sec] ", nargs='?', type=float, required=True)
 parser.add_argument("-Rmn","--RminD", help="Desired minimum distance [m]", nargs='?', type=float, default=1000.0)
 parser.add_argument("-Rmx","--RmaxD", help="Desired maximum distance [m]", nargs='?', type=float, default=8000.0)
 
@@ -29,12 +40,11 @@ c=args.c
 k=1.38e-23          # Boltzmann constant [J/K]
 
 cFrq=args.cFrq      # centerFrequency [Hz]
-sr=args.samprate    # sample rate [samp/sec]
 
 Rmin=args.RminD
 Rmax=args.RmaxD
-print(f'Rmin=\t{Rmin/1000:.0f} km')
-print(f'Rmax=\t{Rmax/1000:.0f} km')
+print(f'Rmin=\t{Rmin:.0f} m')
+print(f'Rmax=\t{Rmax:.0f} m')
 
 
 #-------BEAGLE PARAMS-------
@@ -45,8 +55,7 @@ VmaxB=c/cFrq/4/TsweepB
 VresB=c/cFrq/2/TburstB
 
 Tburst=TburstB
-# Tburst=0.03755  #5500m cent.   R*2^k*4/c
-# Tburst=0.04096  #6000m cent.   R*2^k*4/c
+
 
 Temp=290      # Temperature for noise [K]
 Pow=3.2        # Peak power of the transmitter [Watt]
@@ -62,45 +71,30 @@ print(SNR_0)
 
 def docPars(nC, nZ, nS, srA, P):
     
-    # print('SNR vals=[', end='')
-    # for i in np.arange(len(srA)):
-    #     # print(10*np.log10(nS[i]*nC[i]/srA[i]*SNR_0))
-    #     print(f'{10*np.log10(nS[i]*nC[i]/srA[i]*SNR_0):.1f}', end=' ')
-    #     # print(f'{nC[i]*nS[i]/srA[i]*1000:.1f}', end=' ')
-    #     # print(f'{nC*nS/srA[i]*1000}', end='')
-    # print(']')
-
-    # sr=['samprate [MS/s]',100e6, 50e6, 20e6, 10e6]
-    # Ncode=['Codes', 3335, 1667, 667, 333]
-    # Nzeros=['Zeros', 4998, 2499, 999, 500]
-    # dSamp=['DoppSamp', 768, 768, 768, 768]
-    # RZmin=5000.0
-    # RZmax=6000.0
-
     print('SNR=[', end='')
     for i in P:
         print(f' {i:.2f}', end='')
-    print(']')
+    print(']\n')
 
-    print('\nsr=[\'samprate [MS/s]\'', end='')
+    print('samprate [MS/s]\t', end='')
     for i in srA:
-        print(f', {i/1e6:.0f}e6', end='')
-    print(']')
+        print(f'\t{i/1e6:.0f}e6', end='')
+    print('')
 
-    print('Ncode=[\'Codes\'', end='')
+    print('Codes []', end='')
     for i in nC:
-        print(f', {i:.0f}', end='')
-    print(']')
+        print(f'\t{i:.0f}', end='')
+    print('')
 
-    print('Nzeros=[\'Zeros\'', end='')
+    print('Zeros []', end='')
     for i in nZ:
-        print(f', {i:.0f}', end='')
-    print(']')
+        print(f'\t{i:.0f}', end='')
+    print('')
 
-    print('dSamp=[\'DoppSamp\'', end='')
+    print('DoppSamp []', end='')
     for i in nS:
-        print(f', {i:.0f}', end='')
-    print(']')
+        print(f'\t{i:.0f}', end='')
+    print('\n')
 
     print(f'RZmin={Rmin}')
     print(f'RZmax={Rmax}')
@@ -120,16 +114,12 @@ ipow2P=[]
 ipow2C=[]
 ipow2Z=[]
 ipow2S=[]
-
-# svrC=[]
-# svrZ=[]
-# svrS=[]
         
 
 for sr in srA:
 
     Nc=np.floor(2*Rmin*sr/c)
-    Nz=np.ceil(2*Rmax*sr/c+1)
+    Nz=np.ceil(2*Rmax*sr/c-1)
     dS=Tburst*sr/(Nz+Nc)
     P=10*np.log10(dS*Nc/sr*SNR_0)
     # naive approach
@@ -140,28 +130,26 @@ for sr in srA:
     naiveS=np.append(naiveS,dS)
 
 
-    #POW2 approach:
-    dS=2**np.floor(np.log2(Tburst*c/(2*Rmax)))
-    Nf=np.ceil(sr*Tburst/dS)
-    Nc=np.floor(min(2*Rmin*sr/c,2*(c*Tburst/dS/2-Rmax)*sr/c))
-    Nz=Nf-Nc
-    P=10*np.log10(dS*Nc/sr*SNR_0)
+    # #POW2 approach:
+    # dS=2**np.floor(np.log2(Tburst*c/(2*Rmax)))
+    # Nf=np.ceil(sr*Tburst/dS)
+    # Nc=np.floor(min(2*Rmin*sr/c,2*(c*Tburst/dS/2-Rmax)*sr/c))
+    # Nz=Nf-Nc
+    # P=10*np.log10(dS*Nc/sr*SNR_0)
 
-    pow2P=np.append(pow2P,P)
-    pow2C=np.append(pow2C,Nc)
-    pow2Z=np.append(pow2Z,Nz)
-    pow2S=np.append(pow2S,dS)
+    # pow2P=np.append(pow2P,P)
+    # pow2C=np.append(pow2C,Nc)
+    # pow2Z=np.append(pow2Z,Nz)
+    # pow2S=np.append(pow2S,dS)
 
 print('\n\n\nNaive approach')
 docPars(naiveC, naiveZ, naiveS, srA, naiveP)
 
-# print('\n\n\nPOW2 approach')
-# docPars(pow2C, pow2Z, pow2S, srA, pow2P)
-
-
+sr=100e6
 print("\n\n\niPOW2 approach:", end=' ')
 for j in multA:
     A=np.log2(Tburst*c/2/((Rmin+Rmax)*j))
+    # print(A)
     # print(np.log2(Tburst*c/2/((Rmin+Rmax)*j)))
 
     dS=2**np.floor(A)*j  
@@ -169,14 +157,16 @@ for j in multA:
     Nc=np.floor(min(2*Rmin*sr/c,2*(Nf/sr*c/2-Rmax)*sr/c))
     Nz=Nf-Nc
     Pfloor=10*np.log10(dS*Nc/sr*SNR_0)
+    # print(f'Pfloor={Pfloor}')
 
     dS=2**np.ceil(A)*j  
     Nf=np.floor(sr*Tburst/dS)
     Nc=np.floor(min(2*Rmin*sr/c,2*(Nf/sr*c/2-Rmax)*sr/c))
     Nz=Nf-Nc
     Pceil=10*np.log10(dS*Nc/sr*SNR_0)
+    # print(f'Pceil={Pceil}')
 
-    if Pfloor > Pceil:
+    if Pfloor > Pceil or np.isnan(Pceil):
         i=np.floor(A)
     else:
         i=np.ceil(A)

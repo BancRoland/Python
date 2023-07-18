@@ -6,6 +6,11 @@
 # Rmax=1420       #Maximum distance [m]
 # fftiA=(1 3 5 7)
 
+# Change the working directory to the script's directory
+script_dir="$(dirname "$(readlink -f "$0")")"
+cd "$script_dir" || exit
+
+
 Fa=$1
 Fl=$2
 

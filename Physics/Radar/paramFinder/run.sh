@@ -1,14 +1,21 @@
 #!/bin/bash
+# Impulse radar paramfinder - find how long the correlation code,
+#   and the following zeros should be in a period (fftSample) for given inputs.
+# Input:
+#   -   distance range for survailence. [ Rmin - Rmax ]
+#           This range will be inside the unambigutiy zone, but outside of the interference zone.
+#   -   multips:    for given RV integration time, it is preferred to have k*2^n amount of periods (fftSamples),
+#           where k,n are natural numbers, and k is preferably small.
+# Output:   
 
 CFRQ=9.9e9      #centerFrequency[Hz]
-SR=100e6        #sample rate [samp/sec]
-Rmin=5000       #Minimum distance [m]
-Rmax=6000       #Maximum distance [m]
+Rmin=575       #Minimum distance [m]
+Rmax=600       #Maximum distance [m]
+samprates="100e6 50e6 20e6 10e6"    #investigated samplerates [Hz]
+multips="1 3 5 7"   #investigated multipliers for the two-power samples []
 
 
+echo $samprates > IN_samprates.csv
+echo $multips > IN_multipliers.csv
 
-
-# cat header.txt
-
-python3 run.py -cFrq $CFRQ -sr $SR -Rmn $Rmin -Rmx $Rmax
-# python3 run.py -cFrq $CFRQ -sr $SR -Nc $NCODE -Nz $NZEROS -dS $DSAMP -dD $DDEC -P $POW -RCS $RCS -G $GAIN -RT 6000 -Rmx $Rmax -Rmn $Rmin
+python3 run.py -cFrq $CFRQ -Rmn $Rmin -Rmx $Rmax

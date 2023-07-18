@@ -2,8 +2,8 @@
 
 CFRQ=9.9e9      #centerFrequency[Hz]
 SR=10e6        #sample rate [samp/sec]
-Rmin=5000       #Minimum distance [m]
-Rmax=6000       #Maximum distance [m]
+Rmin=500       #Minimum distance [m]
+Rmax=1000       #Maximum distance [m]
 
 
 

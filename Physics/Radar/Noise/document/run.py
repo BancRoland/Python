@@ -3,6 +3,7 @@ import argparse
 import math
 import matplotlib.pyplot as plt
 import subprocess
+import csv
 
 
 # RmaxVmax=0
@@ -31,6 +32,7 @@ parser.add_argument("-FDIR","--FDIR", help="wievpoint tilt [deg]", nargs='?', ty
 
 parser.add_argument("-RZMIN","--RZMIN", help="wievpoint tilt [deg]", nargs='?', type=float, default=0.0)
 parser.add_argument("-RZMAX","--RZMAX", help="wievpoint tilt [deg]", nargs='?', type=float, default=0.0)
+parser.add_argument("-FLDRN","--FLDRN", help="Foldername", nargs='?', type=str, default="unnamed")
 
 args=parser.parse_args()
 BW=args.BW
@@ -41,36 +43,34 @@ Fa=args.FA
 Fl=args.FL
 FAlt=args.FALT
 FDir=args.FDIR
+fldrN=args.FLDRN
+
+RZmin=args.RZMIN
+RZmax=args.RZMAX
+
 Centre=f"{Fa}, {Fl}"
 
 
 
-#EZEKET KELLL ÁLLÍTGATNI:
+sr=['samprate [MS/s]']
+Ncode=['Codes']
+Nzeros=['Zeros']
+dSamp=['DoppSamp']
 
-# sr=['samprate [MS/s]',100e6, 50e6, 20e6, 10e6]
-# Ncode=['Codes', 3335, 1667, 667, 333]
-# Nzeros=['Zeros', 4998, 2499, 999, 500]
-# dSamp=['DoppSamp', 768, 768, 768, 768]
-# RZmin=5000.0
-# RZmax=6000.0
+with open('input.csv', newline='') as f:
+    reader = csv.reader(f, delimiter='\t')
+    sr=next(reader)
+    Ncode=next(reader)
+    Nzeros=next(reader)
+    dSamp=next(reader)
 
-sr=['samprate [MS/s]', 100e6, 50e6, 20e6, 10e6]
-Ncode=['Codes', 2250, 1125, 450, 225]
-Nzeros=['Zeros', 4000, 2000, 800, 400]
-dSamp=['DoppSamp', 1024, 1024, 1024, 1024]
-RZmin=4.0
-RZmax=5.0
-
-
-
-
+for i in range(len(sr)-1):
+    sr[i+1]=eval(sr[i+1])
+    Ncode[i+1]=eval(Ncode[i+1])
+    Nzeros[i+1]=eval(Nzeros[i+1])
+    dSamp[i+1]=eval(dSamp[i+1])
 
 
-
-
-# RZmin=args.RZMIN
-# RZmax=args.RZMAX
-fldrN=f"{RZmin:.0f}_{RZmax:.0f}"
 
 k=1.38e-23          # Boltzmann constant [J/K]
 
@@ -104,8 +104,8 @@ Bdop=['Bdop',0,0,0,0]
 Pnoise=['-',0,0,0,0]
 SNRmax=[f'SNR(Rmax,ped) [dB]',0,0,0,0]
 SNRmin=[f'SNR(Rmin,ped) [dB]',0,0,0,0]
-# SNR_T1=[f'SNR({RZmin:.0f}m,ped) [dB]',0,0,0,0]
-# SNR_T2=[f'SNR({RZmax:.0f}m,ped) [dB]',0,0,0,0]
+SNR_T1=[f'SNR({RZmin:.0f}m,ped) [dB]',0,0,0,0]
+SNR_T2=[f'SNR({RZmax:.0f}m,ped) [dB]',0,0,0,0]
 
 
 
@@ -142,12 +142,12 @@ for i in np.arange(1,len(sr)):
 
 
 
-# for i in range(len(sr)-1):
-#     Ptest=(P_avg[i+1]*Gain**2*rcs*lmbd**2)/((4*math.pi)**3*RZmin**4)
-#     SNR_T1[i+1]=10*math.log10(Ptest/Pnoise[i+1]/L)
-#     Ptest=(P_avg[i+1]*Gain**2*rcs*lmbd**2)/((4*math.pi)**3*RZmax**4)
-#     SNR_T2[i+1]=10*math.log10(Ptest/Pnoise[i+1]/L)
-#     # print(f'SNR({RT/1000:.0f}km,ped) [dB]\t\033[1m{10*math.log10(Ptest/Pnoise/L):.1f}\033[0m')
+for i in range(len(sr)-1):
+    Ptest=(P_avg[i+1]*Gain**2*rcs*lmbd**2)/((4*math.pi)**3*RZmin**4)
+    SNR_T1[i+1]=10*math.log10(Ptest/Pnoise[i+1]/L)
+    Ptest=(P_avg[i+1]*Gain**2*rcs*lmbd**2)/((4*math.pi)**3*RZmax**4)
+    SNR_T2[i+1]=10*math.log10(Ptest/Pnoise[i+1]/L)
+    # print(f'SNR({RT/1000:.0f}km,ped) [dB]\t\033[1m{10*math.log10(Ptest/Pnoise/L):.1f}\033[0m')
 
 
 
@@ -170,11 +170,11 @@ with open("params.txt", "w") as file:
     rowPrint(Tc,1,file,1/1000)
     rowPrint(SNRmin,2,file)
     rowPrint(SNRmax,2,file)
-    # rowPrint(SNR_T1,2,file)
-    # rowPrint(SNR_T2,2,file)
+    rowPrint(SNR_T1,2,file)
+    rowPrint(SNR_T2,2,file)
 
-subprocess.run(['mkdir', f'../{fldrN}'])
-subprocess.run(['mv', 'params.txt', f'../{fldrN}/params.txt'], check=True)
+subprocess.run(['mkdir', f'{fldrN}'])
+subprocess.run(['mv', 'params.txt', f'{fldrN}/params.txt'], check=True)
 
 
 # print(f'lenSR={len(sr)}')
@@ -215,7 +215,7 @@ for srA in np.arange(1,len(sr)):
     bbox_props = dict(boxstyle="square", facecolor="white", edgecolor="gray", alpha=0.9)
     plt.text(0, 80, f'sr=   {sr[srA]/1e6:.1f} MHz\nNc=   {Ncode[srA]}\nNz=    {Nzeros[srA]}\ndS=   {dSamp[srA]}\ndD=    {dDec[srA]}', fontsize = 10, va='top', ha='left', bbox=bbox_props)
     # subprocess.run(['mkdir', f'{R_min}', f"{Fa}", f"{Fl}", f"{FAlt}", f"{FDir}"], check=True)
-    plt.savefig(f'../{fldrN}/plot_{Ncode[srA]:.0f}_{Nzeros[srA]:.0f}_{sr[srA]/1e6:.0f}.png')
+    plt.savefig(f'./{fldrN}/plot_{Ncode[srA]:.0f}_{Nzeros[srA]:.0f}_{sr[srA]/1e6:.0f}.png')
     # plt.show()
 
 
@@ -259,48 +259,35 @@ for srA in np.arange(1,len(sr)):
     # plt.savefig('plot.png')
     # plt.show()
 
-    # if RmaxVmax:
-    #     plt.figure(figsize=(8, 5))
-    #     R=np.arange(0,10*R_max[srA],rangeRes[srA])
-    #     Vm=(c**2)/(8*cFrq*R*dDec)
-    #     plt.axhline(y=vmax*3.6, color='k', linestyle='--')
-    #     plt.axvline(x=R_max[srA], color='k', linestyle='--')
-    #     plt.plot(R,Vm*3.6,'o-')
-    #     plt.grid(True)
-    #     plt.xlabel("R_max [m]")
-    #     plt.ylabel("V_max [km/h]")
-    #     plt.title("R_max és V_max kapcsolata", fontsize = 20)
-    #     # plt.savefig('plot.png')
-    #     plt.show()
 
 
 for i in np.arange(1,len(sr)):
-    with open("coordRing.txt", "w") as file:
+    with open("./KML/coordRing.txt", "w") as file:
         file.write(f"{Centre}, {RZmin:.0f}, {RZmax:.0f}, 40ff0000, Relevancia Zóna\n")
         file.write(f"{Centre}, {R_min[i]:.0f}, {R_max[i]:.0f}, 4000ff00, Detekciós Zóna\n")
         file.write(f"{Centre}, {R_max[i]:.0f}, {R_min[i]+R_max[i]:.0f}, 400000ff, Áthallási Zóna\n")
 
     # echo -e "$CENTRE, $Rmin, 400000ff, ff000000, 3, Áthallási zóna 0" > coordCirc.txt
 
-    with open("coordCirc.txt", "w") as file:
+    with open("./KML/coordCirc.txt", "w") as file:
         file.write(f"{Centre}, {R_min[i]:.0f}, 400000ff, ff000000, 3, Áthallási zóna 0")
 
     # echo -e "$CENTRE, $Rmin, $Rusd, $DIR, $BW, 4000ff00, Detektálási nyaláb" > coordRingSlice.txt
 
-    with open("coordRingSlice.txt", "w") as file:
+    with open("./KML/coordRingSlice.txt", "w") as file:
         file.write(f"{Centre}, {R_min[i]:.0f}, {R_max[i]:.0f}, {DIR}, {BW}, 4000ff00, Detektálási nyaláb\n")
         file.write(f"{Centre}, {R_max[i]:.0f},  {R_min[i]+R_max[i]:.0f}, {DIR}, {BW}, 400000ff, Áthallási nyaláb\n")
 
     # echo -e "$CENTRE, $Rmin, $DIR, $BW, 400000ff, ff000000, 3, Áthallási nyaláb 0" > coordSlice.txt
-    with open("coordSlice.txt", "w") as file:
+    with open("./KML/coordSlice.txt", "w") as file:
         file.write(f"{Centre}, {R_min[i]:.0f}, {DIR}, {BW}, 400000ff, ff000000, 3, Áthallási nyaláb 0\n")
 
-    with open("docName.txt", "w") as file:
+    with open("./KML/docName.txt", "w") as file:
         file.write(f"{Ncode[i]}_{Nzeros[i]}")
 
 
     #  echo -e "$CENTRE, 6649, 9369, 80ffffff, dS=512 lehetséges DZK" > coordRing.txt
     # bash generate.sh $Fa $Fl $FAlt $Fdir
 
-    result = subprocess.run(['bash', 'generate.sh', f"{Fa}", f"{Fl}", f"{FAlt}", f"{FDir}", f"{fldrN}"], check=True)
+    result = subprocess.run(['bash', './KML/generate.sh', f"{Fa}", f"{Fl}", f"{FAlt}", f"{FDir}", f"{fldrN}"], check=True)
     # print(result.stdout)
