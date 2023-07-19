@@ -3,9 +3,9 @@ import numpy as np
 import math
 import cmath
 
-SR=1000
-fmax=SR/4
-n=10*SR
+SR=44100
+fmax=SR/1000
+n=2*SR
 f=np.arange(0,n)
 T=1/SR
 t=np.arange(0,n/SR,T)
