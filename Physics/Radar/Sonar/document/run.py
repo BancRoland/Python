@@ -90,17 +90,21 @@ rcs=0.5        # Radar cross section [m^2]
 G_dB=29.5      # Antenna gain [dB]
 Gain=10**(G_dB/10.0)
 
-fullLen=['Full length',0,0,0,0]
+fullLen=['N_F []',0,0,0,0]
 PRF=['PRF [Hz]',0,0,0,0]
+fc=['f_c [Hz]',0,0,0,0]
 fillFactor=['FillFactor [%]',0,0,0,0]
 R_min=['R_min [m]',0,0,0,0]
 R_unamb=['R_u [m]',0,0,0,0]
 R_max=['R_max [m]',0,0,0,0]
-rangeRes=['R_res [m]',0,0,0,0]
-blindSpeed=['v_blind [km/h]',0,0,0,0]
-vmax=['v_max [km/h]',0,0,0,0]
-vres=['v_res [km/h]',0,0,0,0]
-Tc=['T_coh [msec]',0,0,0,0]
+r_res=['R_res [m]',0,0,0,0]
+blindSpeed=['v_blind [m/s]',0,0,0,0]
+vmax=['v_max [m/s]',0,0,0,0]
+vres=['v_res [m/s]',0,0,0,0]
+T_c=['T_c [msec]',0,0,0,0]
+T0=['T_0 [msec]',0,0,0,0]
+T_B=['T_B [msec]',0,0,0,0]
+v_c=['v_c [m/s]',0,0,0,0]
 P_avg=['P_avg',0,0,0,0]
 Bdop=['Bdop',0,0,0,0]
 Pnoise=['-',0,0,0,0]
@@ -127,13 +131,16 @@ print(fullLen)
 print(sr)
 
 for i in np.arange(1,len(sr)):
+    fc[i]=cFrq
     fullLen[i]=Ncode[i]+Nzeros[i]
+    T0[i]=fullLen[i]/sr[i]
+    T_B[i]=T0[i]*dSamp[i]
     PRF[i]=sr[i]/fullLen[i]  #T=fullen/sr
     fillFactor[i]=100*Ncode[i]/fullLen[i]
     R_min[i]=Ncode[i]/sr[i]*c/2
     R_unamb[i]=fullLen[i]/sr[i]*c/2
     R_max[i]=(Nzeros[i]+1)/sr[i]*c/2 #=c*Nzeros*T0/2
-    rangeRes[i]=c/sr[i]/2
+    r_res[i]=c/sr[i]/2
     # blindSpeed[i]=PRF[i]*c/cFrq/2/dDec[i]#=lmbda/(2*T)/dDec
     blindSpeed[i]=c/(2*cFrq*fullLen[i]/sr[i])
     print(c)
@@ -142,7 +149,7 @@ for i in np.arange(1,len(sr)):
     print(sr[i])
     vmax[i]=blindSpeed[i]/2
     vres[i]=blindSpeed[i]/dSamp[i]
-    Tc[i]=dDec[i]*dSamp[i]*fullLen[i]/sr[i]
+    T_c[i]=dDec[i]*dSamp[i]*fullLen[i]/sr[i]
     P_avg[i]=Pow*fillFactor[i]/100
     Bdop[i]=PRF[i]/dDec[i]/dSamp[i]
     Pnoise[i]=k*Bdop[i]*Temp
@@ -150,6 +157,8 @@ for i in np.arange(1,len(sr)):
     SNRmax[i]=10*math.log10(Pmax/Pnoise[i]/L)
     Pmin=(P_avg[i]*Gain**2*rcs*lmbd**2)/((4*math.pi)**3*R_min[i]**4)
     SNRmin[i]=10*math.log10(Pmin/Pnoise[i]/L)
+    # vc[i]=c/2/dSamp[i]
+    v_c[i]=r_res[i]/T_B[i]
 
 
 
@@ -161,24 +170,28 @@ for i in range(len(sr)-1):
     # print(f'SNR({RT/1000:.0f}km,ped) [dB]\t\033[1m{10*math.log10(Ptest/Pnoise/L):.1f}\033[0m')
 
 
-
+print(f'\n')
 with open("params.txt", "w") as file:
     rowPrint(sr,0,file)
+    rowPrint(fc,0,file)
     rowPrint(Ncode,0,file)
     rowPrint(Nzeros,0,file)
     rowPrint(dSamp,0,file)
     rowPrint(dDec,0,file)
     rowPrint(fullLen,0,file)
-    rowPrint(PRF,1,file)
-    rowPrint(fillFactor,1,file)
-    rowPrint(rangeRes,2,file)
+    # rowPrint(PRF,1,file)
+    # rowPrint(fillFactor,1,file)
+    rowPrint(r_res,3,file)
     rowPrint(R_min,3,file)
     rowPrint(R_max,3,file)
     rowPrint(R_unamb,3,file)
-    rowPrint(vres,2,file,1/3.6)
-    rowPrint(blindSpeed,2,file,1/3.6)
-    rowPrint(vmax,2,file,1/3.6)
-    rowPrint(Tc,1,file,1/1000)
+    rowPrint(vres,3,file)
+    rowPrint(v_c,3,file)
+    rowPrint(blindSpeed,3,file)
+    rowPrint(vmax,3,file)
+    rowPrint(T_c,4,file)
+    rowPrint(T0,4,file)
+    rowPrint(T_B,4,file)
     # rowPrint(SNRmin,2,file)
     # rowPrint(SNRmax,2,file)
     # rowPrint(SNR_T1,2,file)
@@ -190,7 +203,7 @@ subprocess.run(['mv', 'params.txt', f'{fldrN}/params.txt'], check=True)
 
 # print(f'lenSR={len(sr)}')
 for srA in np.arange(1,len(sr)):
-    R=np.arange(rangeRes[srA],2*R_unamb[srA],rangeRes[srA])
+    R=np.arange(r_res[srA],2*R_unamb[srA],r_res[srA])
     Pnoise_dB=10*np.log10(Pnoise[srA])
     PnoiseLoss_dB=10*np.log10(Pnoise[srA]*L)
     PnoiseTrsh_dB=10*np.log10(Pnoise[srA]*L*TH)
@@ -238,13 +251,13 @@ for srA in np.arange(1,len(sr)):
     # plt.axvline(x=R_min, color='g', linestyle='--')
     # plt.text(R_min, 1, f'R_min', rotation=90, fontsize = 10, color='g', va='baseline', ha='right')
     plt.axhline(y=vres[srA]*3.6, color='k', linestyle='--')
-    plt.axvline(x=Tc[srA], color='k', linestyle='--')
+    plt.axvline(x=T_c[srA], color='k', linestyle='--')
     # plt.axhline(y=3.6/10, color='g', linestyle='--')
     # plt.axhline(y=Vbeag*3.6, color='r', linestyle='--')
     plt.plot([0, 2*TburstB], [Vbeag*3.6, Vbeag*3.6], color='r', linestyle='--', label='Beagle')
     plt.plot([TburstB, TburstB], [0, 2*Vbeag*3.6], color='r', linestyle='--')
     plt.plot([0, 2*TburstB], [vres[srA]*3.6, vres[srA]*3.6,], color='k', linestyle='--', label='Kuvik')
-    plt.plot([Tc[srA], Tc[srA]], [0, 2*Vbeag*3.6], color='k', linestyle='--')
+    plt.plot([T_c[srA], T_c[srA]], [0, 2*Vbeag*3.6], color='k', linestyle='--')
     # plt.text(R_max, 1, f'R_max', rotation=90, fontsize = 10, color='r', va='baseline', ha='right')
     # plt.axvline(x=R_unamb, color='k', linestyle='-')
     # plt.text(R_unamb, 1, f'R_unamb', rotation=90, fontsize = 10, color='k', va='baseline', ha='left')
@@ -261,7 +274,7 @@ for srA in np.arange(1,len(sr)):
     # plt.legend([RCStext[i]+str(RCSs[i])+" m^2" for i in range(3)])
     plt.legend()
     plt.plot(Tcoh,V*3.6,'-')
-    plt.plot(Tc[srA],vres[srA]*3.6, 'ko',)
+    plt.plot(T_c[srA],vres[srA]*3.6, 'ko',)
     plt.grid(True)
     plt.xlabel("koherenciaidő [sec]")
     plt.ylabel("sebességfelbontás [km/h]")
