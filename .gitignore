@@ -19,12 +19,6 @@
 *.pdf
 *.PDF
 *.kml
-*.pipe
-*.PIPE
-pipe
-*.csv
-*.jpg
-*.txt
 
 *.c
 *.o
