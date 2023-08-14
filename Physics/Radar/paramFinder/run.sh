@@ -9,8 +9,8 @@
 # Output:   
 
 CFRQ=9.9e9      #centerFrequency[Hz]
-Rmin=575       #Minimum distance [m]
-Rmax=600       #Maximum distance [m]
+Rmin=120       #Minimum distance [m]
+Rmax=300       #Maximum distance [m]
 samprates="100e6 50e6 20e6 10e6"    #investigated samplerates [Hz]
 multips="1 3 5 7"   #investigated multipliers for the two-power samples []
 
