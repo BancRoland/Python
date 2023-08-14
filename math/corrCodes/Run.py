@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 
-LEN=32
-N=32
+LEN=16
+N=128
 
 def WRK(V):
     V=np.array(V)
@@ -31,32 +31,39 @@ A=[1,1,1,1,1,-1,-1,1,1,-1,1,-1,1]
 # Z=np.concatenate([B,C,D,E])
 
 
-Z4=WRK_QPSK(np.floor(4*np.random.rand(LEN*N)))
+Z40=WRK_QPSK(np.floor(4*np.random.rand(LEN*N)))
+Z4=np.concatenate([Z40,np.zeros(1000)])
 # Z2=WRK(np.floor(2*np.random.rand(LEN*N)))
 
-# for i in range(N):
-#     plt.plot((np.correlate(Z2,Z2[LEN*i:LEN*(i+1)-1],'full')),'.')
-# plt.show()
-
-Z4P=[]
+IMG=np.zeros([0,3062])
 for i in range(N):
-    Z4P=np.concatenate([np.concatenate([Z4P,np.zeros(1000)]),Z4[LEN*i:LEN*(i+1)-1],np.zeros(1000)])
+    corr=np.correlate(Z4,Z4[LEN*i:LEN*(i+1)-1],'full')
+    print(len(corr))
+    for j in range(10):
+        IMG=np.vstack([IMG,corr])
+    # plt.plot(corr,'.')
+plt.imshow(np.abs(IMG))
+plt.show()
+
+# Z4P=[]
+# for i in range(N):
+#     Z4P=np.concatenate([np.concatenate([Z4P,np.zeros(1000)]),Z4[LEN*i:LEN*(i+1)-1],np.zeros(1000)])
 
 # plt.step(np.real(Z4P),'.-')
 # plt.step(np.imag(Z4P),'.-')
 # plt.show()
 
-out=np.correlate(Z4,Z4P,'full')
-plt.plot(np.real(out),'.-')
-plt.plot(np.imag(out),'.-')
-plt.show()
+# out=np.correlate(Z4,Z4P,'full')
+# plt.plot(np.real(out),'.-')
+# plt.plot(np.imag(out),'.-')
+# plt.show()
 
-W=1999
-IMG=np.zeros([0,W])
-for i in range(30):
-    IMG=np.vstack([IMG,out[i*W:(i+1)*W]])
-plt.imshow(np.abs(IMG))
-plt.show()
+# W=1999
+# IMG=np.zeros([0,W])
+# for i in range(30):
+#     IMG=np.vstack([IMG,out[i*W:(i+1)*W]])
+# plt.imshow(np.abs(IMG))
+# plt.show()
 
 # for i in range(N):
 #     plt.plot((np.correlate(Z4,Z4[LEN*i:LEN*(i+1)-1],'full')),'.')
