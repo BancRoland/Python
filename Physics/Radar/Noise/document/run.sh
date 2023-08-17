@@ -3,8 +3,8 @@
 DATE=`date "+%F_%T"`
 
 #FOR testvalues!
-Rmax=3000       #Maximum distance [m]
-Rmin=2500       #Minimum distance [m]
+Rmax=6000       #Maximum distance [m]
+Rmin=5000       #Minimum distance [m]
 
 
 # # CSÁKVÁR
