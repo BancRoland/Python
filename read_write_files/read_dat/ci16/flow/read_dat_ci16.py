@@ -20,32 +20,15 @@ dstr = now.strftime("%Y-%m-%d_%H-%M-%S")
 # with open("out.dat", mode="rb") as input:
 #     samples = input.read()
 
-samples0=np.fromfile(args.file, dtype=np.uint8, count=200000, offset=0)
-samples=samples0[0::2]+1j*samples0[1::2]
-samples=samples-128*(1+1j)
-
-samples=samples[11800:12200]
-samp2=np.zeros(len(samples))
-
-alpha=0.1
-
-for i in range(len(samples)-1):
-    samp2[i+1]=samp2[i]*(1-alpha)+alpha*np.abs(samples[i])
-
-plt.figure()
-plt.plot(np.abs(samples),'o-')
-plt.plot(np.abs(samp2),'o-')
-# plt.legend(["Real","Imag","Abs"])
-plt.grid()
-plt.show()
+# samples0=np.fromfile(args.file, dtype=np.int16, count=200000, offset=0)
+# samples=samples0[0::2]+1j*samples0[1::2]
+# # samples=samples-128*(1+1j)
 
 
 
-
-# for P in range(1000):
-#     samples0=np.fromfile(args.file, dtype=np.uint8, count=200000, offset=P*200000)
-#     samples=samples0[0::2]+1j*samples0[1::2]
-#     samples=samples-128*(1+1j)
+for P in range(1000):
+    samples0=np.fromfile(args.file, dtype=np.int16, count=200000, offset=P*200000)
+    samples=samples0[0::2]+1j*samples0[1::2]
 
 #     print(len(samples))
 #     # print(samples[0:10])
@@ -56,16 +39,16 @@ plt.show()
 #     plt.grid()
 #     plt.show()
 
-#     # plt.figure()
-#     # # plt.plot(samples,'.-')
-#     # plt.plot(np.real(samples),'.-')
-#     # plt.plot(np.imag(samples),'.-')
-#     # plt.plot(np.abs(samples),'--', color='grey', alpha=0.5)
-#     # plt.plot(-np.abs(samples),'--', color='grey', alpha=0.5)
-#     # plt.legend(["Real","Imag","Abs"])
-#     # # plt.title(title)
-#     # plt.grid()
-#     # plt.show()
+    plt.figure()
+    # plt.plot(samples,'.-')
+    plt.plot(np.real(samples),'.-')
+    plt.plot(np.imag(samples),'.-')
+    plt.plot(np.abs(samples),'--', color='grey', alpha=0.5)
+    plt.plot(-np.abs(samples),'--', color='grey', alpha=0.5)
+    plt.legend(["Real","Imag","Abs"])
+    # plt.title(title)
+    plt.grid()
+    plt.show()
 
 #     # plt.figure()
 #     # plt.plot(np.abs(fftpack.fft(samples)))
