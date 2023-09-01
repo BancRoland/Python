@@ -26,7 +26,6 @@ pipe
 *.jpg
 *.txt
 
-*.c
 *.o
 
 *.i8
