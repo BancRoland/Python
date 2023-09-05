@@ -1,3 +1,5 @@
 #!/bin/sh
-# This is a comment!
+
+# pip install --user sounddevice --break-system-packages
+
 python3 plot.py

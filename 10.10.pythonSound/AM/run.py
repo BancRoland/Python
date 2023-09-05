@@ -9,9 +9,9 @@ import time
 
 m=0.5        #modulációs mélység
 fc=1_000    #vivő
-fm=100      #moduláló
+fm=10      #moduláló
 fs=44100
-T=1
+T=5
 t = np.arange(0,T,1/fs)
 C = np.sin(2*np.pi*fc*t)
 M = np.sin(2*np.pi*fm*t)
