@@ -1,0 +1,4 @@
+title = "My Application"
+author = "John Doe"
+port = 8080
+enabled = true
