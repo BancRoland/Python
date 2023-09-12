@@ -67,7 +67,7 @@ plt.plot(ValueS,'o')
 plt.grid()
 plt.show()
 
-integ=[0]
+integ=[2128151]
 for i in ValueS:
     integ.append(integ[-1]+i)
 
@@ -98,6 +98,7 @@ for i in range(len(ValueS)):
 plt.hist(np.log10(outV), bins=100, edgecolor='black')
 plt.show()
 
+# print(2445601-integ[-1])
 
 # plt.plot(Date,Value,'o')
 # # plt.plot(Date,np.abs(Value),'o')

@@ -36,5 +36,5 @@ for T0 in Tl:
 plt.ylim([0,10])
 plt.grid(True)
 plt.legend(['jún.21','júl.21','aug.21','sept.21','okt.21','nov.21', 'dec.21'])
-plt.show()
 plt.savefig('books_read.png')
+plt.show()
