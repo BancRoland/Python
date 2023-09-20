@@ -27,8 +27,7 @@ ZEROS=121
 # cplot(np.fft.fftshift(B))
 
 LEN=100
-
-fc=800e3/3/2
+fc=800e3/3
 fs=800e3
 f=fc/fs
 x=np.arange(-LEN//2,LEN//2)+0.5
@@ -49,4 +48,6 @@ out=np.convolve(noise,hx, mode='same')
 print(len(out))
 plt.plot(np.log10(np.abs(np.fft.fft(noise))),'.')
 plt.plot(np.log10(np.abs(np.fft.fft(out))),'.')
+plt.axvline(len(out)*fc/fs,color="gray",linestyle="--",alpha=0.9)
+plt.axvline(len(out)*(1-fc/fs),color="gray",linestyle="--",alpha=0.9)
 plt.show()
