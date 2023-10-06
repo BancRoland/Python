@@ -87,3 +87,5 @@ pipe
 *.CF32
 *.cuf32
 *.CUF32
+
+*.html
