@@ -89,3 +89,4 @@ pipe
 *.CUF32
 
 *.html
+*.pyc
