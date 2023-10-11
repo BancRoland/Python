@@ -15,21 +15,71 @@ import matplotlib.font_manager
 # font.set_family('serif')
 # font.set_name('Times New Roman')
 
+Y_sol=365.2422*24   #[hour]
+D_sol=24
+D_sid=1/(1/D_sol+1/Y_sol)
+
+    # S=vMp.rotZ(np.array([1,0,0]),D*D_sol/Y_sol*2*np.pi)
+    # S=vMp.rotX(S,23.5/180*np.pi)
+    # S=vMp.rotZ(S,-((D*D_sol/D_sid+H/D_sol)*2*np.pi))
+    # S=vMp.rotY(S,(90-GeoLat)/180*np.pi) #X irányba van észak
+
+    # # S=eclipticCoord(D*86400)
+    # # S=eclip2eqat(S)
+    # # S=equatRot(D*86400,S)
+    # # S=equat2horiz(S,GeoLat)
+
+
+def eclipticCoord(t):   #t: [sec]   secounds passed since spring equinox
+    # v=np.array([1,0,0])
+    # S=vMp.rotZ(v,D*D_sol/Y_sol*2*np.pi)
+    # S=vMp.rotZ(v,(t/60/60)/Y_sol*2*np.pi)
+    # S=vMp.rotZ(v,D*D_sol/Y_sol*2*np.pi)
+    S=vMp.rotZ(np.array([1,0,0]),t/86400*D_sol/Y_sol*2*np.pi)
+    return S
+
+def eclip2eqat(v):
+    S=vMp.rotX(v,23.5/180*np.pi)
+    return S
+
+def equatRot(t,v):
+    # S=vMp.rotZ(v,-((D/86400*D_sol/D_sid+H/D_sol)*2*np.pi))
+    S=vMp.rotZ(v,-(((t/86400/D_sid)*D_sol)*2*np.pi))
+    # S=vMp.rotZ(v,-(((t/60/60)/D_sid+H/D_sol)*2*np.pi))
+    return S
+
+def equat2horiz(v,GeoLat):  #GeoLat [deg]
+    S=vMp.rotY(v,(90-GeoLat)/180*np.pi) #X irányba van észak
+    return S
+
+def getHoriz(t,GeoLat):
+    ecV=eclipticCoord(t)
+    eqV=eclip2eqat(ecV)
+    eqV2=equatRot(t,eqV)
+    horiz=equat2horiz(eqV2,GeoLat)
+    return horiz
+
+
 
 axialTilt=23.5047   # [deg] around x axis
 
 GeoLat=47.19961979580085    # [deg]
-GeoLon=18.401830866143445   # [deg]
+# GeoLon=18.401830866143445   # [deg]
+# GMT=1
 
-GMT=1
+GeoLon=0   # [deg]
+GMT=0
 
 HourDiff=GeoLon/360*24-GMT
 print(HourDiff)
 
 
 
-WallAzmt=157    # [deg], right side is free
-xlim=[-3,2.5]
+# WallAzmt=157    # [deg], right side is free
+WallAzmt=90    # [deg], right side is free
+# xlim=[-3,2.5]
+# ylim=[-6,3]
+xlim=[-1,1]
 ylim=[-6,3]
 
 
@@ -63,12 +113,10 @@ Hours=np.arange(0,2*np.pi,2*np.pi/24)
 
 # plt.figure(figsize=(8, 16))
 
-Y_sol=365.2422*24
-D_sol=24
-D_sid=1/(1/D_sol+1/Y_sol)
 
 #for analemmas
 Hours=np.arange(12,20)
+# Hours=np.array([12])
 Dates=np.arange(0,365,7)
 for H in Hours:
     H=H+HourDiff
@@ -76,17 +124,33 @@ for H in Hours:
     Vy=[]
     Vz=[]
     for D in Dates:
-        S=vMp.rotZ(np.array([1,0,0]),D*D_sol/Y_sol*2*np.pi)
-        S=vMp.rotX(S,23.5/180*np.pi)
-        S=vMp.rotZ(S,-((D*D_sol/D_sid+H/D_sol)*2*np.pi))
-        S=vMp.rotY(S,(90-GeoLat)/180*np.pi) #X irányba van észak
-        I=vMp.LPitrsect(n,P,S,L)
+        # # S0=vMp.rotZ(np.array([1,0,0]),D*D_sol/Y_sol*2*np.pi)
+        # # print(f"ecliptics:  {S0} {eclipticCoord(D*86400)}")
+        # S0=eclipticCoord(D*86400)
+        # print(f"S0={S0}")
+        # # S1=vMp.rotX(S0,23.5/180*np.pi)
+        # # print(f"equats: {S1} {eclip2eqat(S0)}")
+        # S1=eclip2eqat(S0)
+        # print(f"S1={S1}")
+        # # S2=vMp.rotZ(S1,-((D*D_sol/D_sid+H/D_sol)*2*np.pi))
+        # # print(f"days:   {S2} {equatRot(D,S1)}")
+        # S2=equatRot((D*86400+H*60*60),S1)
+        # print(f"S2={S2}")
+        # # S3=vMp.rotY(S2,(90-GeoLat)/180*np.pi) #X irányba van észak
+        # # print(f"horiz:  {S3} {equat2horiz(S2,GeoLat)}")
+        # S3=equat2horiz(S2,GeoLat)
+        # print(f"S3={S3}")
+        
+        S3=getHoriz(D*86400+H*60*60,GeoLat)
+
+
+        I=vMp.LPitrsect(n,P,S3,L)
 
         # I=LayPlane(n,I)
         I=vMp.rotZ(I,azmt-np.pi/2)
         I=vMp.rotY(I,np.pi/2)
 
-        if np.dot(n,S)>0:
+        if np.dot(n,S3)>0:
             Vx.append(I[0])
             Vy.append(I[1])
             Vz.append(I[2])
