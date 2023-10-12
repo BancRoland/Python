@@ -3,10 +3,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import sys
-sys.path.append("/home/roland/Desktop/Python/math/matrices/Rodrigues_rot")
-import banc_vectorManip as vMp
+
 from matplotlib.font_manager import FontProperties
 import matplotlib.font_manager
+import os
+
+# Get the home directory of the current user
+home_directory = os.path.expanduser("~")
+sys.path.append(home_directory+"/Desktop/Python/math/matrices/Rodrigues_rot")
+
+import banc_vectorManip as vMp
 
 # from Rodrigues_rot import banc_vectorManip
 
@@ -146,7 +152,6 @@ for H in Hours:
 
 
         I=vMp.LPitrsect(n,P,S3,L)
-
         # I=LayPlane(n,I)
         I=vMp.rotZ(I,azmt-np.pi/2)
         I=vMp.rotY(I,np.pi/2)
@@ -158,9 +163,26 @@ for H in Hours:
     if len(Vx)>0:
         plt.plot(np.multiply(-1,Vy), Vx, color="black", alpha=0.8)
 
+
+# for single point
+H=12
+D=366/2-1
+H=H+HourDiff
+S=getHoriz(D*86400+H*60*60,GeoLat)
+I=vMp.LPitrsect(n,P,S,L)
+I=vMp.rotZ(I,azmt-np.pi/2)
+I=vMp.rotY(I,np.pi/2)
+if np.dot(n,S)>0:
+    plt.scatter(np.multiply(-1,I[1]), I[0], color="red", alpha=0.8, marker="o")
+
 #for dotted lines of extremes
-Hours=np.arange(0,24,0.1)
-Dates=np.array([0,1/4,2/4,3/4])
+# Hours=np.arange(0,24,0.1)
+Hours=np.arange(8,16,0.1)
+Dates=np.multiply(365.25,np.array([0,1/4,2/4,3/4]))
+print(f"Dates1={Dates}")
+# Dates=np.array([0,365.25/4,365.25*3/4])
+Dates=np.array([365.25/4])
+print(f"Dates2={Dates}")
 for D in Dates:
     Vx=[]
     Vy=[]
@@ -196,7 +218,7 @@ polarIntersect=vMp.rotY(polarIntersect,np.pi/2)
 plt.scatter(np.multiply(-1,polarIntersect[1]), polarIntersect[0], color="black", alpha=0.8, marker=".")
 plt.scatter(0, 0, color="black", alpha=0.8, marker="o")
 
-Hours=np.arange(12,20)
+Hours=np.arange(4,20)
 Hours_Labels=["XII","I","II","III","IIII","V","VI","VII","VIII","IX","X","XI","XII","I","II","III","IIII","V","VI","VII","VIII","IX","X","XI"]
 Dates=np.array([1/4,3/4])
 for D in Dates:
