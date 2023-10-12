@@ -67,6 +67,7 @@ GeoLat=47.19961979580085    # [deg]
 # GeoLon=18.401830866143445   # [deg]
 # GMT=1
 
+# GeoLat=90    # [deg]
 GeoLon=0   # [deg]
 GMT=0
 
@@ -79,7 +80,7 @@ print(HourDiff)
 WallAzmt=90    # [deg], right side is free
 # xlim=[-3,2.5]
 # ylim=[-6,3]
-xlim=[-1,1]
+xlim=[-10,10]
 ylim=[-6,3]
 
 
@@ -115,7 +116,7 @@ Hours=np.arange(0,2*np.pi,2*np.pi/24)
 
 
 #for analemmas
-Hours=np.arange(12,20)
+Hours=np.arange(4,20)
 # Hours=np.array([12])
 Dates=np.arange(0,365,7)
 for H in Hours:
@@ -166,13 +167,16 @@ for D in Dates:
     Vz=[]
     for H in Hours:
         H=H+HourDiff
-        S=vMp.rotZ(np.array([1,0,0]),D*2*np.pi)
-        S=vMp.rotX(S,23.5/180*np.pi)
-        S=vMp.rotZ(S,-((D+H/D_sol)*2*np.pi))
-        S=vMp.rotY(S,(90-47)/180*np.pi) #X irányba van észak
+        # S=vMp.rotZ(np.array([1,0,0]),D*2*np.pi)
+        # S=vMp.rotX(S,23.5/180*np.pi)
+        # S=vMp.rotZ(S,-((D+H/D_sol)*2*np.pi))
+        # S=vMp.rotY(S,(90-GeoLat)/180*np.pi) #X irányba van észak
+        S=getHoriz(D*86400+H*60*60,GeoLat)
         I=vMp.LPitrsect(n,P,S,L)
         I=vMp.rotZ(I,azmt-np.pi/2)
         I=vMp.rotY(I,np.pi/2)
+
+        
 
         if np.dot(n,S)>0:
             Vx.append(I[0])
@@ -184,7 +188,7 @@ for D in Dates:
 
 
 #for numbers of hours
-NP=vMp.rotY(z,(90-47)/180*np.pi)
+NP=vMp.rotY(z,(90-GeoLat)/180*np.pi)
 polarIntersect=vMp.LPitrsect(n,P,NP,L)
 polarIntersect=vMp.rotZ(polarIntersect,azmt-np.pi/2)
 polarIntersect=vMp.rotY(polarIntersect,np.pi/2)
@@ -200,13 +204,15 @@ for D in Dates:
     Vy=[]
     for h in range(len(Hours)):
         H=Hours[h]+HourDiff
-        S=vMp.rotZ(np.array([1,0,0]),D*2*np.pi)
-        S=vMp.rotX(S,23.5/180*np.pi)
-        S=vMp.rotZ(S,-((D+H/D_sol)*2*np.pi))
-        S=vMp.rotY(S,(90-47)/180*np.pi) #X irányba van észak, Y irányba nyugat
+        # S=vMp.rotZ(np.array([1,0,0]),D*2*np.pi)
+        # S=vMp.rotX(S,23.5/180*np.pi)
+        # S=vMp.rotZ(S,-((D+H/D_sol)*2*np.pi))
+        # S=vMp.rotY(S,(90-GeoLat)/180*np.pi) #X irányba van észak, Y irányba nyugat
+        S=getHoriz(D*86400+H*60*60,GeoLat)
         I=vMp.LPitrsect(n,P,S,L)
         I=vMp.rotZ(I,azmt-np.pi/2)
         I=vMp.rotY(I,np.pi/2)
+        
         I=polarIntersect+1.1*(I-polarIntersect)
         I_N=polarIntersect+1.05*(I-polarIntersect)
 
@@ -225,33 +231,33 @@ for D in Dates:
 # plt.quiver(0,0,1,1)
 
 
-#for analemma direction
-Hours=np.arange(12,13)
-Dates=np.arange(0,365,7)
-for H in Hours:
-    H=H+HourDiff
-    Vx=[]
-    Vy=[]
-    Vz=[]
-    for D in Dates:
-        S=vMp.rotZ(np.array([1,0,0]),D*D_sol/Y_sol*2*np.pi)
-        S=vMp.rotX(S,23.5/180*np.pi)
-        S=vMp.rotZ(S,-((D*D_sol/D_sid+H/D_sol)*2*np.pi))
-        S=vMp.rotY(S,(90-47)/180*np.pi) #X irányba van észak
-        I=vMp.LPitrsect(n,P,S,L)
+# #for analemma direction
+# Hours=np.arange(12,13)
+# Dates=np.arange(0,365,7)
+# for H in Hours:
+#     H=H+HourDiff
+#     Vx=[]
+#     Vy=[]
+#     Vz=[]
+#     for D in Dates:
+#         S=vMp.rotZ(np.array([1,0,0]),D*D_sol/Y_sol*2*np.pi)
+#         S=vMp.rotX(S,23.5/180*np.pi)
+#         S=vMp.rotZ(S,-((D*D_sol/D_sid+H/D_sol)*2*np.pi))
+#         S=vMp.rotY(S,(90-GeoLon)/180*np.pi) #X irányba van észak
+#         I=vMp.LPitrsect(n,P,S,L)
 
-        # I=LayPlane(n,I)
-        I=vMp.rotZ(I,azmt-np.pi/2)
-        I=vMp.rotY(I,np.pi/2)
+#         # I=LayPlane(n,I)
+#         I=vMp.rotZ(I,azmt-np.pi/2)
+#         I=vMp.rotY(I,np.pi/2)
 
-        if np.dot(n,S)>0 and np.dot(z,S)>0:
-            Vx.append(I[0])
-            Vy.append(I[1])
-            Vz.append(I[2])
-    if len(Vx)>0:
-        # plt.plot(np.multiply(-1,Vy), Vx, color="black", alpha=0.8)
-        for i in [5,19,30,46]:
-            plt.quiver(-Vy[i],Vx[i],-Vy[i+1]+Vy[i],Vx[i+1]-Vx[i])
+#         if np.dot(n,S)>0 and np.dot(z,S)>0:
+#             Vx.append(I[0])
+#             Vy.append(I[1])
+#             Vz.append(I[2])
+#     if len(Vx)>0:
+#         # plt.plot(np.multiply(-1,Vy), Vx, color="black", alpha=0.8)
+#         for i in [5,19,30,46]:
+#             plt.quiver(-Vy[i],Vx[i],-Vy[i+1]+Vy[i],Vx[i+1]-Vx[i])
 
 
 
@@ -262,4 +268,5 @@ plt.plot([-10, 10],[0,0],'--',alpha=0.5, color="black")
 # plt.grid()
 plt.gca().set_aspect('equal')
 plt.text(xlim[1],ylim[0],f"Lon: {GeoLon:.3f}\nLat: {GeoLat:.3f}\nGMT +{GMT}", horizontalalignment='right', verticalalignment='bottom')
+plt.grid()
 plt.show()
