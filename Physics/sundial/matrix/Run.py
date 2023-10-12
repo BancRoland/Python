@@ -65,7 +65,59 @@ def getHoriz(t,GeoLat):
     horiz=equat2horiz(eqV2,GeoLat)
     return horiz
 
+def horizOfDate(D,GeoLat,H):
+    S=vMp.rotZ(np.array([1,0,0]),D*2*np.pi)
+    S=vMp.rotX(S,23.5/180*np.pi)
+    S=vMp.rotZ(S,-((D+H/D_sol)*2*np.pi))
+    S=vMp.rotY(S,(90-GeoLat)/180*np.pi) #X irányba van észak
+    # ecV=eclipticCoord(D*86400)
+    # eqV=eclip2eqat(ecV)
+    # eqV2=equatRot((D+H/D_sol)*86400,eqV)
+    # horiz=equat2horiz(eqV2,GeoLat)
+    return S
 
+def middleSun(D):
+    return vMp.rotZ(np.array([1,0,0]),D*2*np.pi)
+
+
+def getEquat(t):
+    ecV=eclipticCoord(t)
+    eqV=eclip2eqat(ecV)
+    return eqV
+
+# def TimeEq():
+#     Dates=np.arange(0,365,1)
+#     diff_arr=[]
+#     H=0
+#     for D in Dates:
+#         S=vMp.rotZ(np.array([1,0,0]),D*D_sol/Y_sol*2*np.pi)
+#         S=vMp.rotX(S,23.5/180*np.pi)
+#         S=vMp.rotZ(S,-((D*D_sol/D_sid+H/D_sol)*2*np.pi))
+
+#         diff_arr.append(np.arctan2(S[1],S[0])/2/np.pi*24*60)
+
+#     plt.plot(diff_arr)
+#     plt.grid()
+#     plt.xlabel("time since spring eq [days]")
+#     plt.ylabel("diff in Retascence [deg]")
+#     plt.title("Difference in rectascence between actual sun and fictive equatorial middlesun")
+#     plt.show()
+
+def TimeEq2():
+    B=[]
+    C=[]
+    for D in np.arange(0,366):
+        b=np.arctan2(getEquat(D*86400)[1],getEquat(D*86400)[0])
+        c=np.arctan2(middleSun(D/365.25)[1],middleSun(D/365.25)[0])
+        B.append(b)
+        C.append(c)
+    E=np.array(B)-np.array(C)
+    plt.plot(E/2/np.pi*60*24)
+    plt.grid()
+    plt.xlabel("time since spring eq [days]")
+    plt.ylabel("diff in Retascence [deg]")
+    plt.title("Difference in rectascence between actual sun and fictive equatorial middlesun")
+    plt.show()
 
 axialTilt=23.5047   # [deg] around x axis
 
@@ -73,7 +125,7 @@ GeoLat=47.19961979580085    # [deg]
 # GeoLon=18.401830866143445   # [deg]
 # GMT=1
 
-# GeoLat=90    # [deg]
+GeoLat=90    # [deg]
 GeoLon=0   # [deg]
 GMT=0
 
@@ -86,8 +138,8 @@ print(HourDiff)
 WallAzmt=90    # [deg], right side is free
 # xlim=[-3,2.5]
 # ylim=[-6,3]
-xlim=[-10,10]
-ylim=[-6,3]
+xlim=[-0.5,0.5]
+ylim=[-0.5,0.5]
 
 
 x=np.array([1,0,0])
@@ -120,6 +172,9 @@ Hours=np.arange(0,2*np.pi,2*np.pi/24)
 
 # plt.figure(figsize=(8, 16))
 
+# TimeEq()
+
+TimeEq2()
 
 #for analemmas
 Hours=np.arange(4,20)
@@ -131,25 +186,7 @@ for H in Hours:
     Vy=[]
     Vz=[]
     for D in Dates:
-        # # S0=vMp.rotZ(np.array([1,0,0]),D*D_sol/Y_sol*2*np.pi)
-        # # print(f"ecliptics:  {S0} {eclipticCoord(D*86400)}")
-        # S0=eclipticCoord(D*86400)
-        # print(f"S0={S0}")
-        # # S1=vMp.rotX(S0,23.5/180*np.pi)
-        # # print(f"equats: {S1} {eclip2eqat(S0)}")
-        # S1=eclip2eqat(S0)
-        # print(f"S1={S1}")
-        # # S2=vMp.rotZ(S1,-((D*D_sol/D_sid+H/D_sol)*2*np.pi))
-        # # print(f"days:   {S2} {equatRot(D,S1)}")
-        # S2=equatRot((D*86400+H*60*60),S1)
-        # print(f"S2={S2}")
-        # # S3=vMp.rotY(S2,(90-GeoLat)/180*np.pi) #X irányba van észak
-        # # print(f"horiz:  {S3} {equat2horiz(S2,GeoLat)}")
-        # S3=equat2horiz(S2,GeoLat)
-        # print(f"S3={S3}")
-        
         S3=getHoriz(D*86400+H*60*60,GeoLat)
-
 
         I=vMp.LPitrsect(n,P,S3,L)
         # I=LayPlane(n,I)
@@ -166,9 +203,10 @@ for H in Hours:
 
 # for single point
 H=12
-D=366/2-1
+D=1/4
 H=H+HourDiff
-S=getHoriz(D*86400+H*60*60,GeoLat)
+# S=getHoriz(D*86400+H*60*60,GeoLat)
+S=horizOfDate(D, GeoLat, H)
 I=vMp.LPitrsect(n,P,S,L)
 I=vMp.rotZ(I,azmt-np.pi/2)
 I=vMp.rotY(I,np.pi/2)
@@ -176,29 +214,20 @@ if np.dot(n,S)>0:
     plt.scatter(np.multiply(-1,I[1]), I[0], color="red", alpha=0.8, marker="o")
 
 #for dotted lines of extremes
-# Hours=np.arange(0,24,0.1)
-Hours=np.arange(8,16,0.1)
-Dates=np.multiply(365.25,np.array([0,1/4,2/4,3/4]))
-print(f"Dates1={Dates}")
-# Dates=np.array([0,365.25/4,365.25*3/4])
-Dates=np.array([365.25/4])
-print(f"Dates2={Dates}")
+# Hours=np.arange(8,16,0.1)
+# Dates=np.multiply(365.2422,np.array([0,1/4,2/4,3/4]))
+Hours=np.arange(0,24,0.1)
+Dates=np.array([0,1/4,2/4,3/4])
 for D in Dates:
     Vx=[]
     Vy=[]
     Vz=[]
     for H in Hours:
         H=H+HourDiff
-        # S=vMp.rotZ(np.array([1,0,0]),D*2*np.pi)
-        # S=vMp.rotX(S,23.5/180*np.pi)
-        # S=vMp.rotZ(S,-((D+H/D_sol)*2*np.pi))
-        # S=vMp.rotY(S,(90-GeoLat)/180*np.pi) #X irányba van észak
-        S=getHoriz(D*86400+H*60*60,GeoLat)
+        S=horizOfDate(D, GeoLat, H)
         I=vMp.LPitrsect(n,P,S,L)
         I=vMp.rotZ(I,azmt-np.pi/2)
         I=vMp.rotY(I,np.pi/2)
-
-        
 
         if np.dot(n,S)>0:
             Vx.append(I[0])
@@ -218,19 +247,15 @@ polarIntersect=vMp.rotY(polarIntersect,np.pi/2)
 plt.scatter(np.multiply(-1,polarIntersect[1]), polarIntersect[0], color="black", alpha=0.8, marker=".")
 plt.scatter(0, 0, color="black", alpha=0.8, marker="o")
 
-Hours=np.arange(4,20)
+Hours=np.arange(0,24)
 Hours_Labels=["XII","I","II","III","IIII","V","VI","VII","VIII","IX","X","XI","XII","I","II","III","IIII","V","VI","VII","VIII","IX","X","XI"]
-Dates=np.array([1/4,3/4])
+Dates=np.array([1/4])
 for D in Dates:
     Vx=[]
     Vy=[]
     for h in range(len(Hours)):
         H=Hours[h]+HourDiff
-        # S=vMp.rotZ(np.array([1,0,0]),D*2*np.pi)
-        # S=vMp.rotX(S,23.5/180*np.pi)
-        # S=vMp.rotZ(S,-((D+H/D_sol)*2*np.pi))
-        # S=vMp.rotY(S,(90-GeoLat)/180*np.pi) #X irányba van észak, Y irányba nyugat
-        S=getHoriz(D*86400+H*60*60,GeoLat)
+        S=horizOfDate(D, GeoLat, H)
         I=vMp.LPitrsect(n,P,S,L)
         I=vMp.rotZ(I,azmt-np.pi/2)
         I=vMp.rotY(I,np.pi/2)
@@ -238,8 +263,8 @@ for D in Dates:
         I=polarIntersect+1.1*(I-polarIntersect)
         I_N=polarIntersect+1.05*(I-polarIntersect)
 
-        if np.dot(n,S)>0 and D==1/4:
-            plt.text(-1*I_N[1], I_N[0], Hours_Labels[h], horizontalalignment='center', verticalalignment='center', size=12, weight="bold", font="serif")
+        if np.dot(n,S)>0:
+            plt.text(-1*I_N[1], I_N[0], Hours_Labels[Hours[h]], horizontalalignment='center', verticalalignment='center', size=12, weight="bold", font="serif")
                     
             Vx=np.zeros(2)
             Vx[0]=I[0]
