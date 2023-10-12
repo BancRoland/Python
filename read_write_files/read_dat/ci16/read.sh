@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python3 read_dat.py -f c13_120_1x0.ci16
+python3 read_dat_ci16.py -f /home/bancr/Desktop/FM_ref_ch.ci16
