@@ -28,6 +28,7 @@ Y_sol=365.2422*24   #[hour]
 D_sol=24
 D_sid=1/(1/D_sol+1/Y_sol)
 YEAR=2030
+Y_sec=365.2422*86400   #[hour]
 
 axialTilt=23.5047   # [deg] around x axis
 
@@ -36,6 +37,7 @@ GeoLon=18.401830866143445   # [deg]
 # GeoLat=51.48    # [deg]
 # GeoLon=-0.0015   # [deg]
 GMT=1
+ToSE= (78+22/24+24/60/24)*86400  #[sec] 2023. 03. 20. 22:24
 
 WallAzmt=157    # [deg], right side is free
 # WallAzmt=90    # [deg], right side is free
@@ -55,7 +57,7 @@ x=np.array([1,0,0])
 y=np.array([0,1,0])
 z=np.array([0,0,1])
 O=np.array([0,0,0])
-RotAx=vMp.rotX(z,23.5/180*np.pi)
+# RotAx=vMp.rotX(z,axialTilt/180*np.pi) #UPDATED later
 
 
 def eclipticCoord(t):   #t: [sec]   secounds passed since spring equinox
@@ -104,13 +106,57 @@ def FindZero():
         if H >=0:
             return d
 
-def getEquatEoT(t): #[sec]
+def getEclipticEoT(t): #[sec] time passed since jan. 1. 0:00
     d=t/86400
-    D=6.24004077+0.01720197*(365.25*(YEAR-2000)+d+FindZero())
+    D=6.24004077+0.01720197*(365.25*(YEAR-2000)+d)
+    # D=0
     delta_t=(-7.658*np.sin(D)+9.863*np.sin(2*D+3.5932))
 
     delta_t=np.array(delta_t)/60/24*np.pi*2
-    
+    # print(f"delta_t= {delta_t}")
+
+    v=middleSun(t)
+    v=vMp.rotZ(v,-delta_t)
+
+    return v
+
+
+def FindEclipAx():
+    A=getEclipticEoT(ToSE)
+    angSE=vMp.XY_plane_angleDiff(A,x)
+    print(f"equinox angle:{angSE/np.pi*180}")
+    RotAx0=vMp.rotX(z,axialTilt/180*np.pi)
+    print(f"RotAx0:  {RotAx0}")
+    RotAx=vMp.rotZ(RotAx0,angSE)
+    print(f"RotAx:  {RotAx}")
+    return RotAx
+
+RotAx=FindEclipAx()
+
+def getEquatEoT(t): #[sec]
+    v=getEclipticEoT(t)
+    v=vMp.LPitrsect(RotAx,O,z,v)
+    v=vMp.norm(v)
+
+    return v
+
+def getHoriz_EoT(t,GeoLat): #[sec]
+    eqV=getEquatEoT(t)
+    eqV2=equatRot(t,eqV)
+    horiz=equat2horiz(eqV2,GeoLat)
+    return horiz
+
+
+
+def getEquatEoT0(t): #[sec]
+    d=t/86400
+    D=6.24004077+0.01720197*(365.25*(YEAR-2000)+d+FindZero())
+    D=0
+    delta_t=(-7.658*np.sin(D)+9.863*np.sin(2*D+3.5932))
+
+    delta_t=np.array(delta_t)/60/24*np.pi*2
+    # print(f"delta_t= {delta_t}")
+
     v=middleSun(t)
     v=vMp.rotZ(v,-delta_t)
     v=vMp.LPitrsect(RotAx,O,z,v)
@@ -118,7 +164,7 @@ def getEquatEoT(t): #[sec]
 
     return v
 
-def getHoriz_EoT(t,GeoLat): #[sec]
+def getHoriz_EoT0(t,GeoLat): #[sec]
     eqV=getEquatEoT(t)
     eqV2=equatRot(t,eqV)
     horiz=equat2horiz(eqV2,GeoLat)
@@ -180,7 +226,7 @@ def analemmaCheck():
     H=12
     azmtA=[]
     elevA=[]
-    for D in np.arange(0,366):
+    for D in np.arange(0,365):
         S=getHoriz_EoT(D*86400+H*60*60,GeoLat)
         # S=getHoriz(D*86400+H*60*60,GeoLat)
         azmt0,elev0=horiz2AzEl(S)
@@ -191,18 +237,23 @@ def analemmaCheck():
     plt.plot([0, 366],[90-GeoLat+axialTilt,90-GeoLat+axialTilt],':',alpha=1, color="black")
     plt.plot([0, 366],[90-GeoLat-axialTilt,90-GeoLat-axialTilt],':',alpha=1, color="black")
 
-    # azmt=[]
-    # elev=[]
+    azmt=[]
+    elev=[]
     # for D in [12,43,74,104,135,166,196,227,257,288,319,348]:
-    #     S=getHoriz_EoT((D-2)*86400+H*60*60,GeoLat)
-    #     azmt0,elev0=horiz2AzEl(S)
-    #     azmt.append(azmt0/np.pi*180)
-    #     elev.append(elev0/np.pi*180)
-    # plt.plot(azmt,elev,'ko')
+    texts=[" Jan 1"," Feb 1"," Mar 1"," Apr 1"," May 1"," Jun 1"," Jul 1"," Aug 1"," Sep 1"," Oct 1"," Nov 1"," Dec 1"]
+    dates=[0,31,59,90,120,151,181,212,243,273,304,334]
+    for Di in range(len(dates)):
+        S=getHoriz_EoT((dates[Di])*86400+H*60*60,GeoLat)
+        azmt0,elev0=horiz2AzEl(S)
+        azmt.append(azmt0/np.pi*180)
+        elev.append(elev0/np.pi*180)
+        plt.text(azmt0/np.pi*180,elev0/np.pi*180,texts[Di])
+    plt.plot(azmt,elev,'ko')
 
     azmtA=[]
     elevA=[]
-    for D in [0,91,182,274]:
+    # for D in [0,91,182,274]:
+    for D in [171,355,78,265]:
         S=getHoriz_EoT((D)*86400+H*60*60,GeoLat)
         # S=getHoriz((D)*86400+H*60*60,GeoLat)
         azmt0,elev0=horiz2AzEl(S)
@@ -211,6 +262,7 @@ def analemmaCheck():
     plt.plot(azmtA,elevA,'o',color=[0,1,0])
 
     plt.grid()
+    plt.title("Horizontal position of the Sun at Greenwhich every day at 12:00")
     plt.xlabel("Azimuth[˚]")
     plt.ylabel("Altitude[˚]")
     plt.xlim([176,185])
@@ -241,13 +293,17 @@ Hours=np.arange(0,2*np.pi,2*np.pi/24)
 
 # TimeEq_EoT()    #ellenőrzésnek, hogy megfelelő-e az időegyenlet implementálása
 
-# analemmaCheck()
+analemmaCheck()
+
+print(getEquatEoT(0))
+
 
 plt.figure(figsize=(5, 8), dpi=100)
 
 #for analemmas with EoT
 Hours=np.arange(12,20)
-Dates=np.arange(0,365,7)
+Hours=np.array([12])
+Dates=np.arange(0,365,1)
 for H in Hours:
     H=H+HourDiff
     Vx=[]
@@ -275,7 +331,8 @@ for H in Hours:
                 Vz2.append(I[2])
 
     if len(Vx)>0:
-        plt.plot(np.multiply(-1,Vy), Vx, color="black", alpha=0.8, linestyle='-')
+        # plt.plot(np.multiply(-1,Vy), Vx, ".", color="black", alpha=0.8)#, linestyle='o')
+        plt.plot(np.multiply(-1,Vy), Vx, '.-', color="black", alpha=0.2)
     if len(Vx2)>0:
         plt.plot(np.multiply(-1,Vy2), Vx2, color="black", alpha=0.2, linestyle='-')
 
@@ -304,18 +361,20 @@ for H in Hours:
 #         plt.plot(np.multiply(-1,Vy), Vx, color="black", alpha=0.2, linewidth=1)
 
 
-# # For single point
-# H=12
-# D=0
-# H=H+HourDiff
-# # S=getHoriz(D*86400+H*60*60,GeoLat)
-# # S=horizOfDate(D, GeoLat, H)
-# S=getHoriz_EoT(D*86400+H*60*60,GeoLat)
-# I=vMp.LPitrsect(nWall,O,S,nWall)
-# I=vMp.rotZ(I,azmt-np.pi/2)
-# I=vMp.rotY(I,(np.pi/2-dep))
-# if np.dot(nWall,S)>0:
-#     plt.scatter(np.multiply(-1,I[1]), I[0], color="green", alpha=0.8, marker="o")
+# For single point
+H=12
+D0=[171,355,78,265]
+H=H+HourDiff
+# S=getHoriz(D*86400+H*60*60,GeoLat)
+# S=horizOfDate(D, GeoLat, H)
+for D in D0:
+    S=getHoriz_EoT(D*86400+H*60*60,GeoLat)
+    # S=getHoriz_EoT(ToSE,GeoLat)
+    I=vMp.LPitrsect(nWall,O,S,nWall)
+    I=vMp.rotZ(I,azmt-np.pi/2)
+    I=vMp.rotY(I,(np.pi/2-dep))
+    if np.dot(nWall,S)>0:
+        plt.scatter(np.multiply(-1,I[1]), I[0], color="green", alpha=0.8, marker="o")
 
 
 
