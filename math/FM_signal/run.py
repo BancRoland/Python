@@ -41,8 +41,6 @@ fc=10e3
 FIR_LEN=100
 SIG_LEN=64000
 
-
-
 hx=FIR_taps(fc,fs,FIR_LEN)
 window=(1-np.cos(np.arange(0,len(hx))/len(hx)*2*np.pi))/2
 hx=HannWindow(hx)
