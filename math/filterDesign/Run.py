@@ -31,7 +31,8 @@ plt.plot(hx)
 plt.plot(np.abs(np.fft.fft(hx)))
 plt.show()
 
-for i in [1, 2, 4, 64, 71]:
+# for i in [1, 2, 4, 64, 71]:
+for i in [71]:
     I=i-1
     plt.plot(np.arange(len(hx)*(1+i))/(len(hx)*(1+i)),20*np.log10(np.abs(np.fft.fft(np.concatenate([np.zeros(i*len(hx)),hx],)))),'.-', alpha=0.5)
 plt.show()

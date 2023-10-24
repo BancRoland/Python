@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import sys
+import csv_read
 
 from matplotlib.font_manager import FontProperties
 import matplotlib.font_manager
@@ -59,13 +60,15 @@ z=np.array([0,0,1])
 O=np.array([0,0,0])
 # RotAx=vMp.rotX(z,axialTilt/180*np.pi) #UPDATED later
 
+EOT_TABLE=csv_read.getEOT_csv()
+
 
 def eclipticCoord(t):   #t: [sec]   secounds passed since spring equinox
     S=vMp.rotZ(np.array([1,0,0]),t/86400*D_sol/Y_sol*2*np.pi)
     return S
 
 def eclip2eqat(v):
-    S=vMp.rotX(v,23.5/180*np.pi)
+    S=vMp.rotX(v,axialTilt/180*np.pi)
     return S
 
 def equatRot(t,v):
@@ -84,13 +87,13 @@ def getHoriz(t,GeoLat):     #[sec]
 
 def horizOfDate(D,GeoLat,H):    #[year rat 0-1] [deg] [hour]
     S=vMp.rotZ(np.array([1,0,0]),D*2*np.pi)
-    S=vMp.rotX(S,23.5/180*np.pi)
+    S=vMp.rotX(S,axialTilt/180*np.pi)
     S=vMp.rotZ(S,-((D+H/D_sol)*2*np.pi))
     S=vMp.rotY(S,(90-GeoLat)/180*np.pi) #X irányba van észak
     return S
 
 def middleSun(D):   #sec
-    D=D/86400/365.25
+    D=D/Y_sec
     return vMp.rotZ(x,D*2*np.pi)
 
 def getEquat(t):    #[sec]
@@ -106,12 +109,196 @@ def FindZero():
         if H >=0:
             return d
 
-def getEclipticEoT(t): #[sec] time passed since jan. 1. 0:00
+def getEoT_simple(t): #[sec] time passed since jan. 1. 0:00
     d=t/86400
     D=6.24004077+0.01720197*(365.25*(YEAR-2000)+d)
     # D=0
     delta_t=(-7.658*np.sin(D)+9.863*np.sin(2*D+3.5932))
+    return delta_t
 
+def getEoT_TABLE(t):    #[sec] time passed since jan. 1. 0:00
+    d=int(t/86400)%365
+    return -1*np.array(EOT_TABLE[d])/60
+
+def getEoT_Fourier(t):  #[sec] time passed since jan. 1. 0:00
+    t=t-12*86400    # WTF
+    JD_2000     = getJulianDate(2000,1,1,0)
+    JD_days     = t/86400 - JD_2000
+    Cycle = (4 * JD_days) % 1461.
+    Theta = Cycle * 0.004301
+    EoT1 = 7.353 * np.sin(1 * Theta + 6.209)
+    EoT2 = 9.927 * np.sin(2 * Theta + 0.37)
+    EoT3 = 0.337 * np.sin(3 * Theta + 0.304)
+    EoT4 = 0.232 * np.sin(4 * Theta + 0.715)
+    EoT = 0.019 + EoT1 + EoT2 + EoT3 + EoT4
+    return -1*EoT
+
+def getEoT_original(Y,M,D,UT):  #[year][month][date] Something fishy    https://articles.adsabs.harvard.edu//full/1989MNRAS.238.1529H/0001529.000.html
+    # step A
+    # Y=2000
+    # M=1
+    # D=1
+    # UT=12
+    if M>2:
+        y=Y
+        m=M-3
+    else:
+        y=Y-1
+        m=M+9
+
+    J=int(365.25*(y+4712))+(30.6*m+0.5)+59+D-0.5
+    G=38-int(3*int(49+y/100)/4)
+    JD=J+G  #Julian Date
+    print(f"JD= {JD}")  # ez ok
+    #step B
+    t=(JD+UT/24-2451545.0)/36525
+    print(f"t=  {t}")
+    if Y>=1650 and Y<=1900:
+        dT=0
+    else:
+        dT=int(-3.36+1.35*(t+2.33)**2)*1e-8
+    print(f"dT= {dT}")
+    T=t+dT
+    print(f"T=  {T}")
+    #step C
+    ST=100.4606-36000.77005*t+0.000388*t**2-3e-8*t**3   # [deg]
+    print(f"ST= {ST}    {ST%360}    ?   {6.69276/24*360}   {18.72561/24*360}")
+    #step D
+    L=280.46607+36000.76980*T+0.0003025*T**2    # [deg]
+    G=357.528+35999.0503*T  # [deg]
+    eps=23.4393-0.01300*T-0.0000002*T**2+0.0000005*T**3 # [deg]
+    C=(1.9146-0.00484*T-0.000014*T**2)*np.sin(G/180*np.pi)+(0.01999-0.00008*T)*np.sin(2*G/180*np.pi)    # [deg]
+    print(f"L=   {L}    G=  {G} eps=    {eps}   C=   {C}")
+    Lo=L+C-0.0057   # [deg]
+    yi=(np.tan(eps/180*np.pi/2)**2)
+    f=180/np.pi
+    alph=Lo-yi*f*np.sin(2*Lo/180*np.pi)+0.5*yi**2*f*np.sin(4*Lo/180*np.pi)  # [deg]
+    print(f"alpha=  {alph}")
+    # step E
+    # E=(ST+alph)-(15*UT-180)
+    E=(ST+alph)
+    if E>10:
+        E=E-360
+    print(f"E=  {E}")
+    return(E)
+
+def getJulianDate(Y,M,D,UT):  #[year][month][date]
+    # step A
+    # Y=2000
+    # M=1
+    # D=1
+    # UT=12
+    if M>2:
+        y=Y
+        m=M-3
+    else:
+        y=Y-1
+        m=M+9
+
+    J=int(365.25*(y+4712))+(30.6*m+0.5)+59+D-0.5
+    G=38-int(3*int(49+y/100)/4)
+    JD=J+G  #Julian Date
+    print(f"JD= {JD}")  # ez ok
+    return JD
+
+def getEoT2_0(t0):  #[sec] time passed since 2000.01.01. 00:00
+    JD=getJulianDate(2023,1,1,0)-getJulianDate(2000,1,1,0)
+    #step B
+    t=(JD+t0/86400)/36525
+    print(f"t=  {t}")
+    #assumed Y>1900
+    dT=int(-3.36+1.35*(t+2.33)**2)*1e-8
+    T=t+dT
+    #step C
+    ST=100.4606-36000.77005*t+0.000388*t**2-3e-8*t**3   # [deg]
+    # ST=280.88
+    print(f"ST= {ST}")
+    #step D
+    L=280.46607+36000.76980*T+0.0003025*T**2    # [deg]
+    G=357.528+35999.0503*T  # [deg]
+    eps=23.4393-0.01300*T-0.0000002*T**2+0.0000005*T**3 # [deg]
+    C=(1.9146-0.00484*T-0.000014*T**2)*np.sin(G/180*np.pi)+(0.01999-0.00008*T)*np.sin(2*G/180*np.pi)    # [deg]
+    print(f"L=   {L}    G=  {G} eps {eps}   C   {C}")
+    Lo=L+C-0.0057   # [deg]
+    yi=(np.tan(eps/180*np.pi)**2)/2
+    f=180/np.pi
+    alph=Lo-yi*f*np.sin(2*Lo/180*np.pi)+0.5*yi**2*f*np.sin(4*Lo/180*np.pi)  # [deg]
+    print(f"alpha=  {alph}")
+    # step E
+    UT=(t0-int(t0/86400)*86400)/3600
+    E=(ST+alph)-(15*UT-180)
+    if E>10:
+        E=E-360
+    print(f"E=  {E}")
+    return(E)
+
+# def getEqtPos2(Y,M,D): # wikipedia alapján https://en.wikipedia.org/wiki/Position_of_the_Sun
+#     # step A
+#     if M>2:
+#         y=Y
+#         m=M-3
+#     else:
+#         y=Y-1
+#         m=M+9
+
+#     J=int(365.25*(y+4712))+(30.6*m+0.5)+59+D-0.5
+#     G=38-int(3*int(49+y/100)/4)
+#     JD=J+G  #Julian Date
+#     n=JD-2451545
+#     L=(280.460+(0.9856474*n))%360
+#     g=357.528+0.9856003*n
+#     lamb=L+1.915*np.sin(g/180*np.pi)+0.020*np.sin(2*g/180*np.pi)
+    
+#     eps=23.439-0.0000004*n
+
+#     RA=np.arctan2(np.cos(eps/180*np.pi)*np.sin(lamb/180*np.pi),np.cos(lamb/180*np.pi))
+#     DEC=np.arcsin(np.sin(eps/180*np.pi)*np.sin(lamb/180*np.pi))
+#     # print(f"lamb=   {lamb}")
+#     return RA, DEC
+
+
+def testEoT():
+    Y=2023
+    D=1
+    UT=12
+    val=np.zeros(365)
+    val2=np.zeros(365)
+    val3=np.zeros(365)
+    val5=np.zeros(365)
+
+    # print(getEoT2_0(0))
+    print(getEoT_original(2023,1,1,12))
+
+    print("-------------")
+
+    # print(getEoT2_0(365*86400))
+    # print(getEoT_original(2023,12,29,0))
+
+    for d in range(len(val)):
+        val[d]=getEoT2_0(d*86400)
+        val2[d]=getEoT_simple(d*86400)
+        val3[d]=getEoT_TABLE(d*86400)
+        val5[d]=getEoT_Fourier(d*86400)
+        # val[M]=getEoT_original(Y,M+1,D,UT)
+
+    plt.plot(val,"-")
+    plt.plot(val2,"-")
+    plt.plot(val3)
+    plt.plot(val5)
+    plt.legend(["eot2","eot_simple","table","Fourier"])
+    plt.show()
+
+    val4=[]
+    for M in range(12):
+        val4.append(getEoT_original(Y,M+1,D,UT)/360*24*60)
+
+    plt.plot(val4)
+    plt.show()
+
+def getEclipticEoT(t): #[sec] time passed since jan. 1. 0:00
+    delta_t=getEoT_TABLE(t)
+    # delta_t=getEoT_simple(t)
+    # delta_t=getEoT_Fourier(t)
     delta_t=np.array(delta_t)/60/24*np.pi*2
     # print(f"delta_t= {delta_t}")
 
@@ -119,7 +306,6 @@ def getEclipticEoT(t): #[sec] time passed since jan. 1. 0:00
     v=vMp.rotZ(v,-delta_t)
 
     return v
-
 
 def FindEclipAx():
     A=getEclipticEoT(ToSE)
@@ -145,8 +331,6 @@ def getHoriz_EoT(t,GeoLat): #[sec]
     eqV2=equatRot(t,eqV)
     horiz=equat2horiz(eqV2,GeoLat)
     return horiz
-
-
 
 def getEquatEoT0(t): #[sec]
     d=t/86400
@@ -195,7 +379,7 @@ def TimeEq_EoT():
 
         g=vMp.XY_plane_angleDiff(MS,EoT)/2/np.pi*24*60
 
-        D=6.24004077+0.01720197*(365.25*(YEAR-2000)+Days+FindZero())
+        D=6.24004077+0.01720197*(365.25*(YEAR-2000)+Days)
         delta_t.append(-7.658*np.sin(D)+9.863*np.sin(2*D+3.5932))
 
         G.append(g)
@@ -226,12 +410,18 @@ def analemmaCheck():
     H=12
     azmtA=[]
     elevA=[]
+    T=[]
     for D in np.arange(0,365):
-        S=getHoriz_EoT(D*86400+H*60*60,GeoLat)
+        t=D*86400+H*60*60
+        S=getHoriz_EoT(t,GeoLat)
+        # dt=getEoT_simple(t)
+        dt=getEoT_Fourier(t)
+        # dt=-getEoT_TABLE(t)
         # S=getHoriz(D*86400+H*60*60,GeoLat)
         azmt0,elev0=horiz2AzEl(S)
         azmtA.append(azmt0/np.pi*180)
         elevA.append(elev0/np.pi*180)
+        T.append(dt)
     plt.plot(azmtA,elevA,'r.',alpha=0.3)
     plt.plot([0, 366],[90-GeoLat,90-GeoLat],':',alpha=1, color="black")
     plt.plot([0, 366],[90-GeoLat+axialTilt,90-GeoLat+axialTilt],':',alpha=1, color="black")
@@ -250,25 +440,25 @@ def analemmaCheck():
         plt.text(azmt0/np.pi*180,elev0/np.pi*180,texts[Di])
     plt.plot(azmt,elev,'ko')
 
-    azmtA=[]
-    elevA=[]
+    azmtB=[]
+    elevB=[]
     # for D in [0,91,182,274]:
     for D in [171,355,78,265]:
         S=getHoriz_EoT((D)*86400+H*60*60,GeoLat)
         # S=getHoriz((D)*86400+H*60*60,GeoLat)
         azmt0,elev0=horiz2AzEl(S)
-        azmtA.append(azmt0/np.pi*180)
-        elevA.append(elev0/np.pi*180)
-    plt.plot(azmtA,elevA,'o',color=[0,1,0])
+        azmtB.append(azmt0/np.pi*180)
+        elevB.append(elev0/np.pi*180)
+    plt.plot(azmtB,elevB,'o',color=[0,1,0])
 
-    plt.grid()
+    plt.grid("minor")
     plt.title("Horizontal position of the Sun at Greenwhich every day at 12:00")
     plt.xlabel("Azimuth[˚]")
     plt.ylabel("Altitude[˚]")
     plt.xlim([176,185])
     plt.ylim([0,70])
     plt.savefig("analemma.png")
-    # plt.show()
+    plt.show()
 
 
 HourDiff=GeoLon/360*24-GMT
@@ -293,16 +483,21 @@ Hours=np.arange(0,2*np.pi,2*np.pi/24)
 
 # TimeEq_EoT()    #ellenőrzésnek, hogy megfelelő-e az időegyenlet implementálása
 
+# csv_read.getEOT_csv()
+
 analemmaCheck()
 
-print(getEquatEoT(0))
+# testEoT()
+
+# print(getEquatEoT(0))
 
 
 plt.figure(figsize=(5, 8), dpi=100)
 
+
 #for analemmas with EoT
 Hours=np.arange(12,20)
-Hours=np.array([12])
+# Hours=np.array([12])
 Dates=np.arange(0,365,1)
 for H in Hours:
     H=H+HourDiff
@@ -332,7 +527,7 @@ for H in Hours:
 
     if len(Vx)>0:
         # plt.plot(np.multiply(-1,Vy), Vx, ".", color="black", alpha=0.8)#, linestyle='o')
-        plt.plot(np.multiply(-1,Vy), Vx, '.-', color="black", alpha=0.2)
+        plt.plot(np.multiply(-1,Vy), Vx, '-', color="black", alpha=0.8)
     if len(Vx2)>0:
         plt.plot(np.multiply(-1,Vy2), Vx2, color="black", alpha=0.2, linestyle='-')
 
@@ -439,7 +634,7 @@ for h in Hours:
     I2=vMp.LPitrsect(nWall,O,S2,nWall)
     I2=vMp.rotZ(I2,azmt-np.pi/2)
     I2=vMp.rotY(I2,(np.pi/2-dep))
-    
+
     print(vMp.dist(polarIntersect,I))
     if vMp.dist(polarIntersect,I) > vMp.dist(polarIntersect,I2):
         Ia=I
@@ -454,11 +649,11 @@ for h in Hours:
 
     Vx=np.zeros(2)
     Vy=np.zeros(2)
-    
+
     if np.dot(nWall,S2)>0:
         #távolbbi
         plt.text(-1*I_N1[1], I_N1[0], Hours_Labels[h], horizontalalignment='center', verticalalignment='center', size=8, weight="bold", font="serif")
-        # plt.scatter(-1*I_N0[1], I_N0[0])        
+        # plt.scatter(-1*I_N0[1], I_N0[0])
 
         Vx[0]=Ib[0]
         Vx[1]=polarIntersect[0]
