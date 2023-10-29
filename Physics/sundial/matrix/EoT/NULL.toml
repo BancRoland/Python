@@ -1,0 +1,26 @@
+[Location]
+Name = "NULL ISLAND"
+GeoLat = 0.01    # [deg]
+GeoLon = 0   # [deg]
+GMT = 0     # [Hour]
+
+[Wall]
+WallAzmt = 90    # [deg], right side is free
+WallInc = 90   #[deg] angle realtive to vertcal. 90 is horizontal flat
+
+[Plot]
+xlim = [-2.0, 2.0]
+ylim = [-1.0, 1.0]
+Anal_Hours = [9, 10, 11, 12, 13, 14, 15]
+arrow_dates = [50, 120, 200]
+
+[SprEq]     #[sec] 2023. 03. 20. 22:24
+day = 78
+hour = 22
+min = 24
+
+[Planet]
+axial_tilt = 23.5047 # [deg] around x axis
+Day_len = 24    #[hour] Length of a solar day
+Year_len = 365.2422
+YEAR = 2023
