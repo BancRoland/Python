@@ -2,6 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
+def norm(v):
+    if np.linalg.norm(v) == 0:
+        return 0
+    else:
+        w=v/np.linalg.norm(v)
+        return w
+
 def rotX(v_in, theta):
     M = np.array([  [   1,  0,              0               ], 
                     [   0,  np.cos(theta),  -np.sin(theta)  ],
@@ -26,11 +33,14 @@ def ROT(v, ax, theta):
     return v_rot
 
 def LPitrsect(n,P,v,L): #n: normal vector of plane, P: point of plane, v: direction of line, L: point of line
-    t=np.dot(n,(P-L))/np.dot(n,v)
-    return(L+np.dot(v,t))
+    if np.dot(n,v) != 0:
+        t=np.dot(n,(P-L))/np.dot(n,v)
+        return(L+np.dot(v,t))
+    else:
+        return np.array([0,0,0])
 
 def LayPlane(n,P):   #n: normal vector of the plane,P point on the plane to be laid
-    n=n/np.linalg.norm(n)
+    n=n/norm(n)
     z=np.array([0,0,1])
     a=np.cross(n,z)
     th=np.arccos(np.dot(n,z))
@@ -39,6 +49,24 @@ def LayPlane(n,P):   #n: normal vector of the plane,P point on the plane to be l
     else:
         out=P
     return out
+
+def dist(u,v):
+    return np.sqrt(np.dot(np.array([1,1,1]),(u-v)**2))
+
+def XY_plane_angleDiff(v,w):    #A:[3d vec] B:[3d vec] ret: ang(A)-ang(B) [rad]
+    g0=np.arctan2((v)[1],v[0])
+    if g0<0:
+        g0=g0+2*np.pi
+    g1=np.arctan2((w)[1],w[0])
+    if g1<0:
+        g1=g1+2*np.pi
+    g=g0-g1
+
+    if g > np.pi:
+        g=g-2*np.pi
+    if g < -1*np.pi:
+        g=g+2*np.pi
+    return g
 
 # v=[0,1,0]
 # print(np.linalg.norm(v))

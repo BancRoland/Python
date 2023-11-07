@@ -85,6 +85,28 @@ def getEquat(t):
     eqV=eclip2eqat(ecV)
     return eqV
 
+def TimeEq0():
+    delta_t=[]
+    harm1=[]
+    harm2=[]
+    y=2023
+    Days=np.arange(0,365)
+    for d in Days:
+        D=6.24004077+0.01720197*(365.25*(y-2000)+d)
+        delta_t.append(-7.658*np.sin(D)+9.863*np.sin(2*D+3.5932))
+        harm1.append(-7.658*np.sin(D))
+        harm2.append(9.863*np.sin(2*D+3.5932))
+    plt.plot(harm1)
+    plt.plot(harm2)
+    plt.plot(np.array(harm1)+np.array(harm2))
+    plt.grid()
+    plt.xlabel("time since spring eq [days]")
+    plt.ylabel("diff in Retascence [deg]")
+    plt.title("Difference in rectascence between actual sun and fictive equatorial middlesun")
+    plt.show()
+
+
+
 # def TimeEq():
 #     Dates=np.arange(0,365,1)
 #     diff_arr=[]
@@ -118,6 +140,7 @@ def TimeEq2():
     plt.ylabel("diff in Retascence [deg]")
     plt.title("Difference in rectascence between actual sun and fictive equatorial middlesun")
     plt.show()
+
 
 axialTilt=23.5047   # [deg] around x axis
 
@@ -173,6 +196,8 @@ Hours=np.arange(0,2*np.pi,2*np.pi/24)
 # plt.figure(figsize=(8, 16))
 
 # TimeEq()
+
+TimeEq0()
 
 TimeEq2()
 

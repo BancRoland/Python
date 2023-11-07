@@ -1,0 +1,26 @@
+[Planet]
+axial_tilt = 23.5047 # [deg] around x axis
+Day_len = 24    #[hour] Length of a solar day
+Year_len = 365.2422
+YEAR = 2023
+
+[Location]
+Name = "TELAPO"
+GeoLat = 47.19961979580085    # [deg]
+GeoLon = 18.401830866143445   # [deg]
+GMT = 1     # [Hour]
+
+[Wall]
+WallAzmt = 157    # [deg], right side is free
+WallInc = 0   #[deg] angle realtive to vertcal. 90 is horizontal flat
+
+[Plot]
+xlim = [-3.0, 2.5]
+ylim = [-6.0, 3.0]
+Anal_Hours = [12, 13, 14, 15, 16, 17, 18, 19]
+arrow_dates = [50, 120, 200, 300]
+
+[SprEq]     #[sec] 2023. 03. 20. 22:24
+day = 78
+hour = 22
+min = 24
