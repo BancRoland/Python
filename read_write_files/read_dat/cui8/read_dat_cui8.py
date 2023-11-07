@@ -21,7 +21,7 @@ dstr = now.strftime("%Y-%m-%d_%H-%M-%S")
 #     samples = input.read()
 
 samples0=np.fromfile(args.file, dtype=np.uint8)
-samples=samples0[0::2]+1j*samples0[1::2]
+samples=samples0[0::2]+1j*samples0[1::2]-127*(1+1j)
 
 print(len(samples))
 # print(samples[0:10])
