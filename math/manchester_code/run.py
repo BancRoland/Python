@@ -5,7 +5,7 @@ fs=44100
 fd=1000
 
 data=[0,0,1,0,1,0,1,1,1,0,1,1,1,0,0,0]
-data=np.round(np.random.random(100))
+data=np.round(np.random.random(150))
 
 def FFT_bandbpass(v,f_min,f_max,fs):
     vspec=np.fft.fft(v)
@@ -14,54 +14,120 @@ def FFT_bandbpass(v,f_min,f_max,fs):
     vspec[int(len(v)*f_max/fs):-int(len(v)*f_max/fs)+1:]=0
     return np.fft.ifft(vspec)
 
+def ManchCorr(v,Mlen):  #v: complex vector with anchester code in it    Mlen: length of one simbol (halfbit) in a manchester code minimum is 1
+    mix=np.exp(-1j*np.arange(len(v))/len(v)*2*np.pi*len(v)/Mlen)
+    out=np.sum(v**2*mix)/len(v)
+
+    sampDelVal=int(np.round((1-np.angle(out)/2/np.pi)*Mlen))
+    # plt.plot(v**2,color="black")
+    # plt.plot(np.real(mix),color="C0")
+    # plt.plot(np.imag(mix),color="C1")
+    # plt.show()
+
+    # plt.plot(np.real(v**2*mix),color="C0")
+    # plt.plot(np.imag(v**2*mix),color="C1")
+    # plt.title(f"avg = {np.abs(np.sum(v**2*mix)/len(v))}")
+    # plt.show()
+    return out, sampDelVal
+    
+
+
 LEN=100
 bit=np.append(np.ones(LEN),-1*np.ones(LEN))
 
-out0=np.array([])
+out00=np.array([])
 
 for i in data:
-    out0=np.append(out0,(2*i-1)*bit)
+    out00=np.append(out00,(2*i-1)*bit)
 
-out0=np.concatenate([np.zeros(2000), out0, np.zeros(2000)])
+out0=np.concatenate([np.zeros(1000), out00, np.zeros(2000)])
 
 plt.plot(data)
 plt.show()
 
 
-out=out0+0.1*np.random.randn(len(out0))
+out=out0+0.5*np.random.randn(len(out0))
 plt.plot(out,color="C1")
 plt.plot(out0,color="C0")
 plt.show()
 
 if 0:
-    # plt.plot(np.log10(np.abs(np.fft.fftshift(np.fft.fft(out)))))
-    plt.plot(np.log10(np.abs(np.fft.fft(out))))
+    plt.plot(np.log10(np.abs(np.fft.fftshift(np.fft.fft(out)))))
+    # plt.plot(np.log10(np.abs(np.fft.fft(out))))
     plt.title("spectrum")
     plt.show()
 
 outF=FFT_bandbpass(out,0,1/100,1)
 
-if 0:
+if 1:
     plt.plot(outF)
     plt.title("Filtered")
     plt.show()
 
-plt.subplot(3,1,1)
-plt.plot(out,alpha=0.5,color="C2")
-plt.plot(outF,alpha=0.5,color="C1")
-plt.plot(out0,color="C0")
-plt.grid()
-plt.subplot(3,1,2)
-for i in range(100):
-    plt.plot(outF[int(100*np.random.rand())::100],"o",alpha=0.1,color="black")
-plt.plot(outF[0::100],"o-",alpha=1,color="C0")
-plt.plot(outF[50::100],"o-",alpha=1,color="C1")
-plt.grid()
-plt.subplot(3,1,3)
-for i in range(100):
-    phase=int(50*np.random.rand())
-    plt.plot(outF[phase:-50:100][:30:]+outF[50+phase:-1:100][:30:],"o",alpha=0.1,color="C0")
-    plt.plot(outF[phase:-50:100][:30:]*np.abs(outF[phase:-50:100][:30:])+outF[50+phase:-1:100][:30:]*np.abs(outF[50+phase:-1:100][:30:]),"o",alpha=0.1,color="C1")
-    
-plt.grid()
+if 0:
+    plt.plot(np.log10(np.abs(np.fft.fftshift(np.fft.fft(outF**2)))))
+    # plt.plot(np.log10(np.abs(np.fft.fft(out))))
+    plt.title("spectrum")
+    plt.show()
+
+
+plt.plot(outF[0:10000:10]**2,'.-')
+plt.plot(outF[10:10010:10]**2,'.-')
+plt.plot(outF[20:10020:10]**2,'.-')
+plt.plot(outF[50:10050:10]**2,'.-')
+plt.plot(np.cos(np.arange(10e2)/10e2*2*np.pi*100),"--")
 plt.show()
+
+off_list=[0]
+for i in range(len(off_list)):
+
+    delayedSignal = outF[off_list[i]:10000+off_list[i]:10]
+    plt.subplot(len(off_list),1,i+1)
+    plt.plot(np.real((np.fft.fft(delayedSignal**2))))
+    plt.plot(np.imag((np.fft.fft(delayedSignal**2))))
+    val=np.fft.fft(outF[off_list[i]:10000+off_list[i]:10]**2)[100]/10000
+    val2=(0.5-np.angle(val)/2/np.pi)*100
+    print(f"{off_list[i]}:   abs: {np.abs(val)}  phase: {val2}")
+    funResult = ManchCorr(delayedSignal,10)
+    print(f"abs: {np.abs(funResult)}  phase: {(0.5-np.angle(funResult)/2/np.pi)*100}")
+plt.show()
+
+
+for i in [0, 5, 12, 33, 64, 79]:
+    # getting some samples
+    outR=outF[i:10000:]
+
+    val3, sampDelVal=ManchCorr(outR,100)
+    val4=(0.5-np.angle(val3)/2/np.pi)*100
+    print(f"!!!!!!!!! abs: {np.abs(val3)}  detected shift: {150-sampDelVal} usedDelay: {sampDelVal}")
+
+    plt.subplot(2,1,1)
+    plt.plot(outR[sampDelVal:10000:100],'.-')
+    plt.subplot(2,1,2)
+    plt.plot(outF[50:10000:100],'.-')
+    plt.show()
+
+
+    samps=outR[sampDelVal:10000:100]
+    DATA=np.zeros(len(samps))
+    k=0
+    for i in range(len(samps)):
+        if samps[i] > 0.5:
+            DATA[k]=1
+            k=k+1
+        if samps[i] < -0.5:
+            DATA[k]=-1
+            k=k+1
+
+    mix=np.cos(np.arange(len(DATA))/len(DATA)*2*np.pi*len(DATA)/2)
+    plt.subplot(2,1,1)
+    plt.plot(DATA,'.-')
+    plt.subplot(2,1,2)
+    plt.plot(out00[50:10000:100],'.-')
+    plt.show()
+
+    plt.subplot(2,1,1)
+    plt.plot((DATA*mix)[::2],'.-')
+    plt.subplot(2,1,2)
+    plt.plot(data[:len((DATA*mix)[::2]):],'.-')
+    plt.show()
