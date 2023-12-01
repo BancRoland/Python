@@ -6,7 +6,12 @@ my_dpi=96
 
 size=10
 r=0.01*np.random.randn(size, size)
-r[5,5]=10
+r[6,5]=10
+# r[4,5]=10
+r[5,4]=10
+r[4,3]=10
+r[3,2]=10
+# r[5,6]=10
 # r=np.zeros([size,size])
 # r[0:int(size/3),0:int(size/3)]=1
 
