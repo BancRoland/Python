@@ -18,12 +18,22 @@ def corner(i,N):
         return i, N-1
     else:
         return N-1, (N-1)-(i-N+1)
+    
+def cShape(i,N):
+    if i < N:
+        return -N, i+1
+    elif i>=N and i<3*N:
+        return i-2*N+1, N
+    elif i>=3*N and i<4*N:
+        return N, 4*N-1-i
+    else:
+        return 0,0
 
 # Open an image file
 image_path = 'zebra.png'
 # image_path = 'galaxy.png'
 # image_path = 'glx2.png'
-# img = Image.open(image_path)
+img = Image.open(image_path)
 
 # # Display basic information about the image
 # print(f"Image format: {img.format}")
@@ -33,9 +43,9 @@ image_path = 'zebra.png'
 # Optionally, display the image
 # img.show()
 
-# img_array = np.array(img)
+img_array = np.array(img)
 # img_array = np.zeros([100,100,3])
-img_array = np.random.randn(20,20,3)
+# img_array = np.random.randn(20,20,3)
 
 # print(np.shape(img_array))      # (1366, 2048, 3)
 
@@ -68,14 +78,59 @@ inv=np.fft.ifft2(Fr)
 # plt.show()
 
 dumm=1j*np.zeros(np.shape(Fr))
-dumm2=1j*np.zeros(np.shape(Fr))
+dumm3=1j*np.zeros(np.shape(Fr))
+# dumm2=1j*np.zeros(np.shape(Fr))
 
-N=20
+N=50
 # print(np.shape(Fr))
 
-for k in range(5):
-    for i in range(2*k-1):
-        print(f"{corner(i,k)} - {pair1(corner(i,k)[0],corner(i,k)[1],np.shape(Fr)[0],np.shape(Fr)[1])}")
+# for k in range(5):
+#     for i in range(2*k-1):
+#         print(f"{corner(i,k)} - {pair1(corner(i,k)[0],corner(i,k)[1],np.shape(Fr)[0],np.shape(Fr)[1])}")
+#     print()
+
+
+dumm3[0,0]=Fr[0,0]
+dumm[0,0]=Fr[0,0]
+for k in range(N):
+    for i in range(4*k):
+        # print(f"k: {k}  -   i: {i}")
+        print(f"{cShape(i,k)} - {pair1(cShape(i,k)[0],cShape(i,k)[1],np.shape(Fr)[0],np.shape(Fr)[1])}")
+
+        x,y=cShape(i,k)
+        p1=pair1(x,y,np.shape(Fr)[0],np.shape(Fr)[1])
+        # p1=pair1(i,k,np.shape(Fr)[0],np.shape(Fr)[1])
+        dumm[x,y]=Fr[x,y]
+        dumm[p1[0],p1[1]]=Fr[p1[0],p1[1]]
+
+        dumm3=np.zeros(np.shape(Fr))
+        dumm3[x,y]=Fr[x,y]
+        dumm3[p1[0],p1[1]]=Fr[p1[0],p1[1]]
+
+        inv=np.fft.ifft2(dumm)
+        inv2=np.fft.ifft2(dumm3)
+
+        plt.figure(figsize=[12,6])
+        plt.subplot(1,2,1)
+        plt.imshow((np.real(inv2)), cmap="gray")
+        plt.title("Harmonic component")
+        plt.subplot(1,2,2)
+        plt.imshow((np.real(inv)), cmap="gray")
+        plt.title("Summ of harmonics")
+
+        plt.savefig(f"./out/out_{k}_{i}.png")
+        plt.close()
+
+        # plt.subplot(1,3,1)
+        # plt.imshow((np.abs(dumm3)), cmap="gray")
+        # plt.subplot(1,3,2)
+        # plt.imshow((np.real(inv)), cmap="gray")
+        # plt.subplot(1,3,3)
+        # plt.imshow((np.real(inv2)), cmap="gray")
+        # plt.savefig(f"./out/out_{k}_{i}.png")
+        # plt.close()
+        # print(f"{i*(i+1)/2+j}")
+        # plt.show()
     print()
 
 

@@ -30,23 +30,25 @@ plt.show()
 
 Fr=np.fft.fft2(img_arraySum)
 
-# plt.imshow(np.abs(Fr), cmap="gray")
-# plt.show()
+plt.imshow(np.abs(Fr), cmap="gray")
+plt.show()
 
-# plt.imshow(np.log10(np.fft.fftshift(np.abs(Fr))), cmap="gray")
-# plt.show()
+plt.imshow(np.log10(np.fft.fftshift(np.abs(Fr))), cmap="gray")
+plt.show()
 
-# Fr[5,1]=1e9
+Fr[0,0]=0
 
-# plt.imshow(np.log10((np.abs(Fr))), cmap="gray")
-# plt.show()
+plt.imshow(np.log10(np.fft.fftshift(np.abs(Fr))), cmap="gray")
+plt.show()
 
 
 
 inv=np.fft.ifft2(Fr)
 
-# plt.imshow((np.real(inv)), cmap="gray")
-# plt.show()
+plt.imshow((np.real(inv)), cmap="gray")
+plt.title("ifft")
+plt.colorbar()
+plt.show()
 
 # plt.imshow((np.real(inv)), cmap="gray")
 # plt.show()
@@ -77,12 +79,12 @@ print()
 
 inv=np.fft.ifft2(dumm)
 inv2=np.fft.ifft2(dumm2)
-plt.subplot(2,2,1)
+# plt.subplot(2,2,1)
 plt.imshow((np.abs(inv)), cmap="gray")
-plt.subplot(2,2,2)
-plt.imshow((np.abs(inv2)), cmap="gray")
-plt.subplot(2,2,3)
-plt.imshow(np.log10(np.abs(dumm)), cmap="gray")
-plt.subplot(2,2,4)
-plt.imshow(np.log10(np.abs(dumm2)), cmap="gray")
+# plt.subplot(2,2,2)
+# plt.imshow((np.abs(inv2)), cmap="gray")
+# plt.subplot(2,2,3)
+# plt.imshow(np.log10(np.abs(dumm)), cmap="gray")
+# plt.subplot(2,2,4)
+# plt.imshow(np.log10(np.abs(dumm2)), cmap="gray")
 plt.show()
