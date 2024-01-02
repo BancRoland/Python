@@ -1,0 +1,9 @@
+// person.fbs
+namespace MyNamespace;
+
+table Person {
+    name: string;
+    age: int;
+}
+
+root_type Person;

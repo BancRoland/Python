@@ -91,3 +91,5 @@ pipe
 *.html
 *.pyc
 *venv/
+*.pkl
+*__init__.py
