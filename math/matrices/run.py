@@ -1,6 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+A=np.random(10)
+print(A)
+
 matrix1 = np.array([[1, 2], [3, 4]])
 matrix2 = np.array([[5, 6], [7, 8]])
 
