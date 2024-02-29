@@ -13,8 +13,8 @@ def herm(v):
     return np.conjugate(np.transpose(v))
 
 N = 20    # [] number of antenna elements
-dir1 = -11  # [deg] doa
-dir2 = -20  # [deg] doa
+dir1 = -10  # [deg] doa
+dir2 = +60  # [deg] doa
 A1 = 1
 A2 = 1
 lmbda = 2    # [m] wavelength
@@ -46,11 +46,13 @@ out = 1j*np.zeros(len(testdeg))
 for i,deg in enumerate(testdeg):
     # out[i] = np.sum(v*np.conj(phases(deg,N,lmbda,D,0)))
     a = phases(deg,N,lmbda,D,0)
-    out[i] = v @ herm(a)
+    out[i] = v @ herm(a) / N
 if 1:
-    plt.plot(testdeg,np.abs(out))
-    plt.axvline(dir1)
-    plt.axvline(dir2)
+    plt.plot(testdeg,20*np.log10(np.abs(out)))
+    plt.axvline(dir1,color="C1", linestyle="--")
+    plt.axvline(dir2,color="C1", linestyle="--")
+    plt.xlabel("azimuth [deg]")
+    plt.ylabel("value [dB]")
     plt.grid()
     plt.show()
 
@@ -113,9 +115,7 @@ if 0:
 
 # CAPON
 
-a0 = phases(dir2,N,lmbda,D,0)
-w = a0@np.linalg.inv(cov)/(a0@np.linalg.inv(cov)@np.conjugate(np.transpose(a0)))
-print(np.shape(a0))
+
 # print(a0@np.linalg.inv(cov)@(np.conjugate(np.transpose(a0))))
 # print(np.shape(cov))
 # print(np.shape(a))
@@ -128,37 +128,42 @@ print(np.shape(a0))
 # v = A1*phases(dir1,N,lmbda,D,np.random.rand()*np.pi*2) + A2*phases(dir2,N,lmbda,D,np.random.rand()*np.pi*2)
 # cov = herm(v) @ v
 
-testdeg=np.arange(-90,90,0.01)
-out = 1j*np.zeros(len(testdeg))
+Bartlet_from_cov = 1
+if Bartlet_from_cov:
+    testdeg=np.arange(-90,90,0.01)
+    out = 1j*np.zeros(len(testdeg))
 
-for i,deg in enumerate(testdeg):
-    # out[i] = np.sum(w*np.conj(phases(deg,N,lmbda,D,0)))
-    a = phases(deg,N,lmbda,D,0)
-    # print(np.shape(a))
-    out[i] = a @ cov @ herm(a)
-    # out[i] = v@herm(a)
-if 1:
-    plt.plot(testdeg,np.abs(out))
-    plt.axvline(dir1)
-    plt.axvline(dir2)
-    # plt.axhline(1)
-    plt.grid()
-    plt.show()
+    for i,deg in enumerate(testdeg):
+        # out[i] = np.sum(w*np.conj(phases(deg,N,lmbda,D,0)))
+        a = phases(deg,N,lmbda,D,0)/N
+        # print(np.shape(a))
+        out[i] = a @ cov @ herm(a)
+        # out[i] = v@herm(a)
+    if 1:
+        plt.plot(testdeg,10*np.log10(np.abs(out)))
+        plt.axvline(dir1,color="C1", linestyle="--")
+        plt.axvline(dir2,color="C1", linestyle="--")
+        plt.title("Bartlet from cov")
+        plt.xlabel("azimuth [deg]")
+        plt.ylabel("value [dB]")
+        plt.grid()
+        plt.show()
 
+Capon=1
+if Capon:
+    a0 = phases(0,N,lmbda,D,0)
+    w = a0@np.linalg.inv(cov)/(a0@np.linalg.inv(cov)@np.conjugate(np.transpose(a0)))
 
-testdeg = np.arange(-90,90,0.01)
-out = 1j*np.zeros(len(testdeg))
+    testdeg = np.arange(-90,90,0.01)
+    out = 1j*np.zeros(len(testdeg))
 
-for i,deg in enumerate(testdeg):
-    out[i] = np.sum(w*np.conj(phases(deg,N,lmbda,D,0)))
-    # a = phases(deg,N,lmbda,D,0)
-    # print(np.shape(a))
-    # out[i] = w @ cov @ herm(w)
-    # out[i] = v@herm(a)
-if 1:
+    for i,deg in enumerate(testdeg):
+        out[i] = np.sum(w*np.conj(phases(deg,N,lmbda,D,0)))
     plt.plot(testdeg,np.log10(np.abs(out)))
-    plt.axvline(dir1)
-    plt.axvline(dir2)
-    # plt.axhline(1)
+    plt.axvline(dir1,color="C1", linestyle="--")
+    plt.axvline(dir2,color="C1", linestyle="--")
+    plt.title("Capon")
+    plt.xlabel("azimuth [deg]")
+    plt.ylabel("value [dB]")
     plt.grid()
     plt.show()

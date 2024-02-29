@@ -6,9 +6,13 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 MaxPhaseVal = 100
+MaxFrqVal   = 100
+MaxAmpVal   = 100
+
 DefaultPhaseValue = 0
 DefaultAmpValue = 25
 DefaultFrqValue = 10
+
 tick_interval = 1
 
 class MyWidget(QWidget):
@@ -44,7 +48,7 @@ class MyWidget(QWidget):
         # FREQUENCY
         # Create a phase slider and set its range
         self.frq_slider = QSlider(Qt.Horizontal)
-        self.frq_slider.setRange(0, MaxPhaseVal)
+        self.frq_slider.setRange(0, MaxFrqVal)
         self.frq_slider.setValue(DefaultFrqValue)
 
         self.frq_slider.setTickInterval(tick_interval)
@@ -61,7 +65,7 @@ class MyWidget(QWidget):
         # AMPLITUDE
         # Create an amplitude slider and set its range
         self.amplitude_slider = QSlider(Qt.Horizontal)
-        self.amplitude_slider.setRange(0, MaxPhaseVal)
+        self.amplitude_slider.setRange(0, MaxAmpVal)
         self.amplitude_slider.setValue(DefaultAmpValue)
 
         self.amplitude_slider.setTickInterval(tick_interval)
