@@ -4,20 +4,20 @@ import math as m
 
 
 def spirSum(c0):
-    c1=np.zeros(len(c0)+1)+np.zeros(len(c0)+1)*1j
-    c1[0]=0
-    for i in range(len(c0)):
-        c1[i+1]=c1[i]+c0[i]/n
+    # c1=1j*np.zeros(len(c0)+1)
+    # c1[0]=0
+    c1=np.sum(c0)/n
+    # for i in range(len(c0)):
+    #     c1[i+1]=c1[i]+c0[i]/n
     return c1
-
 
 
 D=0.3         #[m] távcső átmérője
 lmbda=380e-9    #[m] hullámhossz
 f=2.5           #[m] fókusztáv
-alpha=D/2/f *180/m.pi /1000     #[rad] max látómező az apertúra és a fókusztáv összefüggéséven
+alpha=D/2/f *180/m.pi /1000     #[rad] max látómező az apertúra és a fókusztáv összefüggésében
 
-n=100
+n=100   # felbontás
 d=np.arange(0,D,D/n)
 
 # print(C)

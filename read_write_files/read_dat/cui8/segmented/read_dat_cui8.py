@@ -6,38 +6,46 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import argparse
 
+def plt_plot(samples):
+    plt.figure()
+    # plt.plot(samples,'.-')
+    plt.plot(np.real(samples),  '.-',   color='C0',     alpha=1,    label="Real")
+    plt.plot(np.imag(samples),  '.-',   color='C1',     alpha=1,    label="Imag")
+    plt.plot(np.abs(samples),   '--',   color='grey',   alpha=0.5,  label="Abs")
+    plt.plot(-np.abs(samples),  '--',   color='grey',   alpha=0.5,  label="-Abs")
+    plt.legend()
+    plt.ylim([-128,128])
+    # plt.title(title)
+    plt.grid()
+    plt.show()
+
+def read_samples(file, LEN, offset=0):
+    samples0    = np.fromfile(file, dtype=np.uint8, count=2*LEN, offset=2*LEN*offset)
+    samples     = samples0[0::2]+1j*samples0[1::2]
+    samples     = samples-128*(1+1j)
+    return samples
 
 parser = argparse.ArgumentParser()
 # parser.add_argument("file", help="file to read")
 parser.add_argument("-f","--file", help="file to read from", nargs='?', type=str, required=True)
+parser.add_argument("-l","--len", help="length of segents", nargs='?', type=int, required=True)
 args = parser.parse_args()
 
+file=args.file
+LEN=args.len
 
-now = datetime.now()
-dstr = now.strftime("%Y-%m-%d_%H-%M-%S")
+samples = read_samples(file=file, LEN=LEN,offset=0)
 
-
-# with open("out.dat", mode="rb") as input:
-#     samples = input.read()
-
-for P in range(1000):
-    samples0=np.fromfile(args.file, dtype=np.uint8, count=10000, offset=P*5000)
-    samples=samples0[0::2]+1j*samples0[1::2]
-    samples=samples-128*(1+1j)
+idx=0
+while len(samples) == LEN:
 
     print(len(samples))
-    # print(samples[0:10])
 
-    plt.figure()
-    # plt.plot(samples,'.-')
-    plt.plot(np.real(samples),'.-')
-    plt.plot(np.imag(samples),'.-')
-    plt.plot(np.abs(samples),'--', color='grey', alpha=0.5)
-    plt.plot(-np.abs(samples),'--', color='grey', alpha=0.5)
-    plt.legend(["Real","Imag","Abs"])
-    # plt.title(title)
-    plt.grid()
-    plt.show()
+    plt_plot(samples)
+
+    idx=idx+1
+
+    samples = read_samples(file=file, LEN=LEN,offset=idx)
 
     # plt.figure()
     # plt.plot(np.abs(fftpack.fft(samples)))
