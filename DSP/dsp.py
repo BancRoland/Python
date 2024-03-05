@@ -81,19 +81,21 @@ def agwn(v,A):
 
 #     return f, downmix_array, hx
 
-def filter_channel(signal, rf, fs, FIR_LEN, fc, f_sig):
+def filter_channel(signal, rf, fs, FIR_LEN, fc, f_sig, fft_filt=False):
     size = len(signal)
     f = (np.arange(size)/size-0.5)*fs+rf # get the vector of measurement frequencies
     
     f_mix = rf-f_sig
     downmix_array = np.exp(f_mix/fs*1j*2*np.pi*np.arange(size))
 
-    hx = hann_window(get_FIR_taps(fc,fs,FIR_LEN))
-    hx=hx/np.sum(hx)
-    # hx = hx/np.sqrt(np.sum(hx**2)/len(hx)**2)
-
-    filtered_signal = fir_lpf((signal*downmix_array),hx)
-    # filtered_signal = fft_lpf((signal*downmix_array),hx)
+    if fft_filt:
+        filtered_signal = fft_lpf((signal*downmix_array),fc)
+    else:
+        hx = hann_window(get_FIR_taps(fc,fs,FIR_LEN))
+        hx=hx/np.sum(hx)
+        # hx = hx/np.sqrt(np.sum(hx**2)/len(hx)**2)
+        filtered_signal = fir_lpf((signal*downmix_array),hx)
+        # filtered_signal = fft_lpf((signal*downmix_array),hx)
 
     return filtered_signal
 
