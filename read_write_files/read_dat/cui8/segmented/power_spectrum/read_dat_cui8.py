@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import argparse
 
+import matplotlib
+matplotlib.use('Agg')
 
 parser = argparse.ArgumentParser()
 # parser.add_argument("file", help="file to read")

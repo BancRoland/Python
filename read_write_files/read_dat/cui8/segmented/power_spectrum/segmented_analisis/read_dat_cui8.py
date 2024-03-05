@@ -6,7 +6,14 @@ from datetime import datetime
 import argparse
 import os
 import sys
-sys.path.append('/home/roland/Desktop/Python/DSP')
+import matplotlib
+matplotlib.use('Agg')
+
+home_dir = os.path.expanduser('~')
+desktop_path = os.path.join(home_dir, 'Desktop/Python/DSP')
+sys.path.append(desktop_path)
+
+# sys.path.append('/home/bancr/Desktop/Python/DSP')
 import dsp
 
 

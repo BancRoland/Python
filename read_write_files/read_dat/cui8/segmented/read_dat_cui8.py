@@ -5,9 +5,11 @@ from scipy import fftpack
 import matplotlib.pyplot as plt
 from datetime import datetime
 import argparse
+import matplotlib
+matplotlib.use('Agg')
 
 def plt_plot(samples):
-    plt.figure()
+    # plt.figure()
     # plt.plot(samples,'.-')
     plt.plot(np.real(samples),  '.-',   color='C0',     alpha=1,    label="Real")
     plt.plot(np.imag(samples),  '.-',   color='C1',     alpha=1,    label="Imag")
@@ -17,7 +19,8 @@ def plt_plot(samples):
     plt.ylim([-128,128])
     # plt.title(title)
     plt.grid()
-    plt.show()
+    # plt.show()
+    plt.close()
 
 def read_samples(file, LEN, offset=0):
     samples0    = np.fromfile(file, dtype=np.uint8, count=2*LEN, offset=2*LEN*offset)
@@ -39,9 +42,10 @@ samples = read_samples(file=file, LEN=LEN,offset=0)
 idx=0
 while len(samples) == LEN:
 
-    print(len(samples))
+    print(idx)
 
     plt_plot(samples)
+    plt.close()
 
     idx=idx+1
 
