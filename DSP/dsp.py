@@ -28,6 +28,55 @@ def agwn(v,A):
     out=v+np.random.normal(0,A/np.sqrt(2),len(v))+1j*np.random.normal(0,A/np.sqrt(2),len(v))
     return(out)
 
+def average_correlation_spectrum(surv, ref, correlation_length, do_avg=True):
+
+    number_of_iterations = int(len(ref)/correlation_length)
+
+    corr = 1j*np.zeros([correlation_length,number_of_iterations])
+
+    for i in range(number_of_iterations):
+
+        surv_spec   = np.fft.fftshift(np.fft.fft(surv[i*correlation_length:(i+1)*correlation_length])/correlation_length)
+        ref_spec    = np.fft.fftshift(np.fft.fft(ref[i*correlation_length:(i+1)*correlation_length])/correlation_length)
+        # corr        = corr + surv_spec * np.conjugate(ref_spec)
+        corr[:,i]   = surv_spec * np.conjugate(ref_spec)
+
+    if do_avg:
+        out=np.mean(corr,axis=1)
+        return out
+    else:
+        return corr
+
+def get_delay_value(surv, ref, length_of_correlation, resolution_multiplier, get_transfer_function=False):
+
+    avg_corr_spec = average_correlation_spectrum(surv, ref, length_of_correlation)
+
+    avg_corr_spec = np.concatenate([1j*np.zeros(int(np.floor((resolution_multiplier-1)*len(avg_corr_spec)/2))),avg_corr_spec,1j*np.zeros(int(np.ceil((resolution_multiplier-1)*len(avg_corr_spec)/2)))])
+    avg_corr_spec = np.fft.fftshift(avg_corr_spec)
+
+    imp = np.fft.fftshift(np.fft.ifft(avg_corr_spec))
+    max_idx = np.argmax(np.abs(imp))
+    diff = (resolution_multiplier*length_of_correlation/2-max_idx)/resolution_multiplier
+
+    if get_transfer_function:
+        return diff, imp
+    else:
+        return diff
+
+def frac_delay(vector, delay_value, resolution_multiplier):
+    # vector is getting a fractionaal delay by the value of delay_value with the resolution or the resolution_multiplier
+    # for example: delay value is 0.314 and resolution_multiplier is 10 then the actual delay value is int(delay_value*resolution_multiplier)/resolution_multiplier
+    delay_value = delay_value * resolution_multiplier
+
+    shifted_vector_spectrum = np.fft.fftshift(np.fft.fft(vector))
+    zero_padded = np.concatenate([1j*np.zeros(int(np.floor((resolution_multiplier-1)*len(shifted_vector_spectrum)/2))),shifted_vector_spectrum,1j*np.zeros(int(np.ceil((resolution_multiplier-1)*len(shifted_vector_spectrum)/2)))])
+    interpolated_signal = np.fft.ifft(np.fft.fftshift(zero_padded))
+
+    delayed_interpolated_signal = np.roll(interpolated_signal,int(delay_value))
+    out = delayed_interpolated_signal[::resolution_multiplier]
+
+    return out
+
 
 # def get_CPI(ref_idx, path: str, channels=None) -> np.ndarray:
 
@@ -105,7 +154,7 @@ def complex_plot(samples):
     plt.plot(np.real(samples),  '-',   color='C0',     alpha=1,    label="Real")
     plt.plot(np.imag(samples),  '-',   color='C1',     alpha=1,    label="Imag")
     plt.plot(np.abs(samples),   '--',   color='grey',   alpha=0.5,  label="Abs")
-    plt.plot(-np.abs(samples),  '--',   color='grey',   alpha=0.5,  label="-Abs")
+    plt.plot(-np.abs(samples),  '-',   color='grey',   alpha=0.5,  label="-Abs")
     plt.legend()
     # plt.ylim([-128,128])
     # plt.title(title)
