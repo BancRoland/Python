@@ -1,0 +1,9 @@
+Name,Right Ascension,Declination,Apparent Magnitude,Constellation > constellations_test.csv
+Betelgeuse,05h 55m 10.29s,+07° 24′ 25.3″,0.42,Orion
+Bellatrix,05h 25m 07.87s,+06° 20′ 59.0″,1.64,Orion
+Saiph,05h 47m 45.39s,-09° 40′ 10.6″,2.07,Orion
+Rigel,05h 14m 32.27s,-08° 12′ 05.9″,0.18,Orion
+Alnitak,05h 40m 45.52s,-01° 56′ 33.3″,1.88,Orion
+Alnilam,05h 36m 12.81s,-01° 12′ 06.9″,1.69,Orion
+Mintaka,05h 32m 00.40s,-00° 17′ 56.7″,2.2,Orion
+Meissa,05h 35m 08.28s,+09° 56′ 03.0″,3.47,Orion

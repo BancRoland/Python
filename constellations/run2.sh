@@ -21,6 +21,7 @@ constellations=(
     "Cygnus"
     "Aquila"
     "Serpens"
+    "Delphinus"
 )
 
 for constellation in "${constellations[@]}"; do
