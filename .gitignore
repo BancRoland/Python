@@ -93,3 +93,4 @@ pipe
 *venv/
 *.pkl
 *__init__.py
+*.S2P
