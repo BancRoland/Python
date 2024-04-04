@@ -36,7 +36,7 @@ hmg2=2
 # plt.gca().set_aspect('equal', adjustable='box')
 # plt.show()
 
-plt.figure(figsize=(12, 8)) 
+plt.figure(figsize=(10, 8)) 
 for star in const:
     ra  = star['Right Ascension (deg)']/180*pi
     dec = star['Declination (deg)']/180*np.pi
@@ -56,10 +56,10 @@ for star in const:
     plt.scatter(w[1], w[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
 # plt.grid()
 plt.gca().set_aspect('equal', adjustable='box')
-plt.savefig("toprinit.png")
+plt.savefig("toprinit.png", dpi=500)
 plt.show()
 
-plt.figure(figsize=(12, 8)) 
+# plt.figure(figsize=(100, 100)) 
 for star in const:
     ra  = star['Right Ascension (deg)']/180*pi
     dec = star['Declination (deg)']/180*np.pi
