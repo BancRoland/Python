@@ -2,50 +2,12 @@
 
 source ../venv/bin/activate
 
-constellations=(
-"Andromeda"
-"Boötes"
-"Capricornus"
-"Cygnus"    
-# "Hydra"    
-# "Lynx"     
-"Pegasus"    
-"Scorpius" 
-"Ursa_Minor"
-"Aquarius"
-# "Camelopardalis"
-"Cassiopeia"       
-# "Delphinus"  
-# "Lacerta"    
-"Lyra"       
-"Perseus"      
-# "Sextans"     
-"Virgo"
-"Aquila"     
-"Cancer"          
-"Cepheus"          
-"Draco"      
-"Leo"        
-# "Monoceros"  
-"Pisces"       
-"Taurus"
-"Aries"      
-# "Canes_Venatici"  
-"Coma_Berenices"   
-"Gemini" 
-# "Leo_Minor"
-"Ophiuchus"
-# "Sagitta"
-# "Triangulum"
-"Auriga"  
-"Canis_Minor"
-"Corona_Borealis"
-"Hercules"
-"Libra"
-"Orion"
-"Sagittarius"
-"Ursa_Major"
-)
+source list.sh
+
+# constellations=("${circumpolar[@]}")
+constellations=("${full[@]}")
+echo $perseus
+echo $constellations
 
 rm zodiac0.csv
 rm zodiac.csv
