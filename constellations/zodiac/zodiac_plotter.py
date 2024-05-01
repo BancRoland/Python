@@ -1,77 +1,93 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import sin, cos, pi
+import utils
+import argparse
+import toml
 
-def upproject(v):
-    v=np.array(v)+np.array([0,0,1])
-    w=v/v[2]
-    return w
+# Path to the TOML file
+toml_file = "variables.toml"
 
-def cylinder_project(v):
-    x = np.arctan2(v[0],v[1])
-    # y=v[2]
-    y=np.arcsin(v[2])
-    w = np.array([x,y])
-    return w
+# Load the TOML file
+with open(toml_file, "r") as f:
+    data = toml.load(f)
 
-def xrot(v,alpha_deg):
-    alp=alpha_deg/180*pi
-    R=np.array([[1,0,0],[0,cos(alp),-sin(alp)],[0,sin(alp),cos(alp)]])
-    return v @ R
+# Accessing values
+time_values = data.get("time", {})
+coordinates_values = data.get("coordinates", {})
+z_rotation_values = data.get("z_rotation", {})
 
-def rot_N_E(v,N0,)
+# Extracting specific values
+center_ra_hour = time_values.get("Ra_hour")
+center_ra_min = time_values.get("Ra_min")
+center_ra_sec = time_values.get("Ra_sec")
+
+center_Dec_deg0 = coordinates_values.get("Dec_deg")
+center_Dec_degmin = coordinates_values.get("Dec_min")
+center_Dec_degsec = coordinates_values.get("Dec_sec")
+
+zrot_deg = z_rotation_values.get("zrot")
+
+parser = argparse.ArgumentParser(description="calculate the area of circle with radius r")
+
+# parser.add_argument("-Ra","--rightascension", help="Rectascension value of center", nargs='?', type=float, const=1, default=0)
+parser.add_argument("-dec_deg0","--declination_deg0", help="declination value of center", type=float, default=90)
+parser.add_argument("-dec_degmin","--declination_degmin", help="declination value of center", type=float, default=0)
+parser.add_argument("-dec_degsec","--declination_degsec", help="declination value of center", type=float, default=0)
+
+parser.add_argument("-RA_hour","--rectascension_hour", help="rectascension hour value of center", type=float, default=0)
+parser.add_argument("-RA_min","--rectascension_min", help="rectascension minute value of center", type=float, default=0)
+parser.add_argument("-RA_sec","--rectascension_sec", help="rectascension second value of center", type=float, default=0)
+parser.add_argument("-zrot","--zrot", help="declination second value of center", type=float, default=0)
+parser.add_argument("-a","--a", help="declination second value of center", type=float, default=1.5)
+parser.add_argument("-hmg","--hmg", help="declination second value of center", type=float, default=4)
+parser.add_argument("-hmg2","--hmg2", help="declination second value of center", type=float, default=2)
+
+
+args=parser.parse_args()
+
+# center_Dec_deg0  = args.declination_deg0
+# center_Dec_degmin  = args.declination_degmin
+# center_Dec_degsec  = args.declination_degsec
+# center_ra_hour  = args.rectascension_hour
+# center_ra_min   = args.rectascension_min
+# center_ra_sec   = args.rectascension_sec
+
+center_ra_deg=((center_ra_hour+center_ra_min/60+center_ra_sec/60/60)/24)*360
+center_Dec_deg=center_Dec_deg0+center_Dec_degmin/60+center_Dec_degsec/60/60
+
+# zrot_deg = args.zrot
+
+a       = args.a
+hmg     = args.hmg
+hmg2    = args.hmg2
 
 const=np.load("stars_test.npy", allow_pickle=True)
-# const=np.load("stars.npy", allow_pickle=True)
-a=1.5
-hmg=4
-hmg2=2
-
 
 plt.figure(figsize=(10, 8)) 
 for star in const:
     ra  = star['Right Ascension (deg)']/180*pi
     dec = star['Declination (deg)']/180*np.pi
-    v = np.array([cos(ra)*cos(dec),sin(ra)*cos(dec), sin(dec)])
-    v = xrot(v,23.5)
-    w = upproject(v)
-    if star['Apparent Magnitude'] <= hmg:
-        S=star['Apparent Magnitude']
-        alpha=1
-    else:
-        S=hmg
-        alpha=0.5
-    if star['Apparent Magnitude'] <= hmg2:
-        marker='*'
-    else:
-        marker='.'
+    v = utils.get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
+    w = utils.upproject(v)
+    S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
     plt.scatter(w[1], w[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
 # plt.grid()
 plt.gca().set_aspect('equal', adjustable='box')
 plt.savefig("toprinit.png", dpi=500)
-plt.show()
+# plt.show()
 
 
 plt.figure(figsize=(15, 9)) 
 for star in const:
     ra  = star['Right Ascension (deg)']/180*pi
     dec = star['Declination (deg)']/180*np.pi
-    v = np.array([cos(ra)*cos(dec),sin(ra)*cos(dec), sin(dec)])
-    v = xrot(v,23.5)
-    w = cylinder_project(v)
-    if star['Apparent Magnitude'] <= hmg:
-        S=star['Apparent Magnitude']
-        alpha=1
-    else:
-        S=hmg
-        alpha=0.5
-    if star['Apparent Magnitude'] <= hmg2:
-        marker='*'
-    else:
-        marker='.'
+    v = utils.get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
+    w = utils.cylinder_project(v)
+    S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
     plt.scatter(w[0], w[1], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
 plt.xlim([-np.pi,np.pi])
 plt.ylim([-np.pi/2,np.pi/2])
 plt.gca().set_aspect('equal', adjustable='box')
 plt.savefig("toprinit2.png", dpi=500)
-plt.show()
+# plt.show()
