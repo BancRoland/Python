@@ -9,7 +9,7 @@ print(B)
 # plt.gca().set_aspect('equal', adjustable='box')
 # plt.show()
 
-M = np.array([[1, 1], [2, 3]])
+M = np.array([[1, 0], [1, 1]])
 # M = np.array([[0, 0], [0, 1]])
 eigenvalues, eigenvectors = np.linalg.eig(M)
 print(eigenvalues)
