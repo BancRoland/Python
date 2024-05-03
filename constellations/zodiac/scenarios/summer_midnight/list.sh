@@ -58,3 +58,6 @@ constellations=(
 "Antlia"
 "Puppis"
 )
+# constellations=(
+# "Ursa_Major_full"
+# )

@@ -3,10 +3,13 @@
 source ../venv/bin/activate
 
 # name=full
+name=equatorial
 # name=zodiac_only
 # name=zodiac
 # name=circumpolar
-name=perseus
+# name=perseus
+# name=spring_midnight
+# name=winter_midnight
 
 source scenarios/$name/list.sh
 vars=scenarios/$name/variables.toml
@@ -32,3 +35,8 @@ python3 csv_read_zodiac.py
 python3 zodiac_plotter.py
 # python3 zodiac_plotter.py -dec_deg0 $Dec_deg -dec_degmin $Dec_min -dec_degsec $Dec_sec -RA_hour $Ra_hour -RA_min $Ra_min -RA_sec $Ra_sec -zrot $zrot
 rm ./variables.toml
+
+mv toprint.png scenarios/$name
+mv toprint2.png scenarios/$name
+mv toprint_polar.png scenarios/$name
+mv toprint_polar2.png scenarios/$name

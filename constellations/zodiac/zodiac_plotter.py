@@ -64,30 +64,70 @@ hmg2    = args.hmg2
 
 const=np.load("stars_test.npy", allow_pickle=True)
 
+if 1:
+    plt.figure(figsize=(10, 8)) 
+    for star in const:
+        ra  = star['Right Ascension (deg)']/180*pi
+        dec = star['Declination (deg)']/180*np.pi
+        v = utils.get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
+        w = utils.upproject(v)
+        S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
+        plt.scatter(w[1], w[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
+    # plt.grid()
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.savefig("toprint.png", dpi=500)
+    # plt.show()
+
+if 1:
+    plt.figure(figsize=(15, 9)) 
+    for star in const:
+        ra  = star['Right Ascension (deg)']/180*pi
+        dec = star['Declination (deg)']/180*np.pi
+        v = utils.get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
+        w = utils.cylinder_project(v)
+        S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
+        plt.scatter(w[0], w[1], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
+    plt.xlim([-np.pi,np.pi])
+    plt.ylim([-np.pi/2,np.pi/2])
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.savefig("toprint2.png", dpi=500)
+    # plt.show()
+
+
 plt.figure(figsize=(10, 8)) 
+ax = plt.subplot(111, projection='polar')
 for star in const:
     ra  = star['Right Ascension (deg)']/180*pi
     dec = star['Declination (deg)']/180*np.pi
     v = utils.get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
-    w = utils.upproject(v)
+    theta_R = utils.polar_upproject(v)
     S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
-    plt.scatter(w[1], w[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
+    # plt.scatter(w[1], w[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
+    ax.scatter(theta_R[0], theta_R[1], c="black", marker=marker, s=a*(1+hmg-S), alpha=alpha)
 # plt.grid()
+ax.set_ylim(0, 1)
+ax.set_yticklabels([])
 plt.gca().set_aspect('equal', adjustable='box')
-plt.savefig("toprinit.png", dpi=500)
+plt.grid(False)
+plt.savefig("toprint_polar.png", dpi=500)
 # plt.show()
 
 
-plt.figure(figsize=(15, 9)) 
-for star in const:
-    ra  = star['Right Ascension (deg)']/180*pi
-    dec = star['Declination (deg)']/180*np.pi
-    v = utils.get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
-    w = utils.cylinder_project(v)
-    S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
-    plt.scatter(w[0], w[1], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
-plt.xlim([-np.pi,np.pi])
-plt.ylim([-np.pi/2,np.pi/2])
-plt.gca().set_aspect('equal', adjustable='box')
-plt.savefig("toprinit2.png", dpi=500)
+# plt.figure(figsize=(10, 8)) 
+# ax = plt.subplot(111, projection='polar')
+# for star in const:
+#     ra  = star['Right Ascension (deg)']/180*pi
+#     dec = star['Declination (deg)']/180*np.pi
+#     v = utils.get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
+#     ra2,dec2 = utils.vector2ra_dec(v)
+#     S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
+#     ax.scatter(ra2, np.pi/2-dec2, c="black", marker=marker, s=a*(1+hmg-S), alpha=alpha)
+# # plt.grid()
+# ax.set_ylim(0, np.pi/2)
+# ax.set_yticklabels([])
+# plt.gca().set_aspect('equal', adjustable='box')
+# plt.grid(False)
+# ax.set_theta_direction(-1)
+# ax.set_theta_zero_location('N')
+# plt.savefig("toprint_polar2.png", dpi=500)
 # plt.show()

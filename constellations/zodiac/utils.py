@@ -60,3 +60,15 @@ def condition_magnitudes(star, hmg, hmg2):
     else:
         marker='.'
     return S,marker,alpha
+
+def polar_upproject(v):
+    w0 = upproject(v)
+    w = zrot(w0,90)
+    theta_R = np.array([-np.arctan2(w[1],w[0]),np.sqrt(w[1]**2+w[0]**2)])
+    return theta_R
+
+def vector2ra_dec(v):
+    ra2 = np.arctan2(v[1],v[0])
+    xy_shadow_len=np.sqrt(v[0]**2+v[1]**2)
+    dec2 = np.arctan2(v[2],xy_shadow_len)
+    return ra2,dec2
