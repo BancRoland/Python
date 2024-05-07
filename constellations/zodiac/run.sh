@@ -3,10 +3,11 @@
 source ../venv/bin/activate
 
 # name=full
-name=equatorial
-# name=zodiac_only
+# name=equatorial
+name=zodiac_only
 # name=zodiac
 # name=circumpolar
+# name=circumpolar_easy
 # name=perseus
 # name=spring_midnight
 # name=winter_midnight

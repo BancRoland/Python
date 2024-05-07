@@ -1,0 +1,12 @@
+[time]
+Ra_hour=0
+Ra_min=0
+Ra_sec=0
+
+[coordinates]
+Dec_deg=90
+Dec_min=0
+Dec_sec=0
+
+[z_rotation]
+zrot=0.0

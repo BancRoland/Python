@@ -94,3 +94,4 @@ pipe
 *.pkl
 *__init__.py
 *.S2P
+constellations/zodiac/stars_test.npy

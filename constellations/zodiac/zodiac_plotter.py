@@ -27,6 +27,9 @@ center_Dec_degmin = coordinates_values.get("Dec_min")
 center_Dec_degsec = coordinates_values.get("Dec_sec")
 
 zrot_deg = z_rotation_values.get("zrot")
+fov = z_rotation_values.get("fov")
+if fov == "None":
+    fov=180
 
 parser = argparse.ArgumentParser(description="calculate the area of circle with radius r")
 
@@ -105,7 +108,7 @@ for star in const:
     # plt.scatter(w[1], w[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
     ax.scatter(theta_R[0], theta_R[1], c="black", marker=marker, s=a*(1+hmg-S), alpha=alpha)
 # plt.grid()
-ax.set_ylim(0, 1)
+ax.set_ylim(0, np.tan(fov/4/180*np.pi))
 ax.set_yticklabels([])
 plt.gca().set_aspect('equal', adjustable='box')
 plt.grid(False)

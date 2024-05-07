@@ -1,5 +1,10 @@
 #!/bin/bash
 constellations=(
+Ursa_Major
+Ursa_Minor
+Cassiopeia
+Cepheus
+
 Andromeda
 Antlia
 Aquarius
@@ -13,8 +18,6 @@ Canes_Venatici
 Canis_Major
 Canis_Minor
 Capricornus
-Cassiopeia
-Cepheus
 Cetus
 Coma_Berenices
 Corona_Australis
@@ -59,7 +62,6 @@ Taurus
 Telescopium
 Triangulum
 Ursa_Major_full
-Ursa_Minor
 Virgo
 Vulpecula
 )
