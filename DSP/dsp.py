@@ -1,6 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+# HOW TO USE:
+#
+# import sys
+# sys.path.append('/home/roland/Desktop/Python/DSP')
+# import dsp
+
 def get_FIR_taps(fc,fs,LEN):
     f=fc/fs
     x=np.arange(-LEN//2,LEN//2)+0.5
@@ -148,15 +154,48 @@ def filter_channel(signal, rf, fs, FIR_LEN, fc, f_sig, fft_filt=False):
 
     return filtered_signal
 
-def complex_plot(samples):
-    plt.figure()
+def complex_plot(samples, t=None):
+    if t is None:
+        t=np.arange(len(samples))
+
+    # plt.figure()
     # plt.plot(samples,'.-')
-    plt.plot(np.real(samples),  '-',   color='C0',     alpha=1,    label="Real")
-    plt.plot(np.imag(samples),  '-',   color='C1',     alpha=1,    label="Imag")
-    plt.plot(np.abs(samples),   '--',   color='grey',   alpha=0.5,  label="Abs")
-    plt.plot(-np.abs(samples),  '-',   color='grey',   alpha=0.5,  label="-Abs")
-    plt.legend()
+    plt.plot(t,np.real(samples),  '-',   color='C0',     alpha=1,    label="Real")
+    plt.plot(t,np.imag(samples),  '-',   color='C1',     alpha=1,    label="Imag")
+    plt.plot(t,np.abs(samples),   '--',   color='grey',   alpha=0.5,  label="Abs")
+    plt.plot(t,-np.abs(samples),  '-',   color='grey',   alpha=0.5,  label="-Abs")
+    # plt.legend()
     # plt.ylim([-128,128])
     # plt.title(title)
+    plt.subplots_adjust(right=0.75)  # Adjust the right margin as needed
+    # plt.subplots_adjust(top=0.75)  # Adjust the right margin as needed
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    # plt.legend(loc='center left', bbox_to_anchor=(1, 0.5), fancybox=True, shadow=True)
     plt.grid()
+    # Adjust layout to create more space for titles and labels
+    plt.subplots_adjust(top=0.9, bottom=0.1, left=0.1, right=0.8, hspace=0.6)
     # plt.show()
+
+    if t is not None:
+        plt.xlabel("time [s]")
+
+def sines(f,fs,n_samp):
+    t=np.arange(n_samp)/fs
+    out=np.exp(1j*2*np.pi*f*t)
+    # out=np.exp(1j*2*np.real(np.pi*agwn(f*t,0.05)))
+    return(out)
+
+def incriminate(vector,inc_val):
+    inc_val=int(np.floor(inc_val))
+    out=np.ones(int(len(vector)*inc_val),dtype=complex)
+    for idx,val in enumerate(vector):
+        out[idx*inc_val:idx*inc_val+inc_val]=val
+    return(out)
+
+
+def modulate_harmronic(fc,fs,f_simb,vector):
+    inc_val=fs/f_simb
+    out0=incriminate(vector,inc_val)
+    out=out0*sines(fc,fs,len(out0))
+    return out
+
