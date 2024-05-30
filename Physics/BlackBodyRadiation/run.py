@@ -5,7 +5,7 @@ system("cat header.txt")
 
 T=5778
 k_B=1.380649E-23 #[J/K] Boltzmann állandó
-R_S=696_340_000 #[m] földtávolság
+R_S=696_340_000 #[m] Nap sugár
 R_T=150E9 #[m] földtávolság
 
 f_min=100e6
@@ -32,12 +32,12 @@ T=5778  #[K]
 lmbda=c/f
 
 
-B=2*h*(f**3)/(c**2*(np.exp(h*f/k_B/T)-1))
+B=2*h*(f**3)/(c**2*(np.exp(h*f/k_B/T)-1))   # [W/Hz/m^2/srad]
 plt.plot(f,B,'.-')
 plt.grid()
 plt.title(f'Nap felsznére számított sugárintenzitás')
 plt.xlabel("frekvencia [Hz]")
-plt.ylabel("Intenzitás [W/m^2/srad]")
+plt.ylabel("Intenzitás [W/Hz/m^2/srad]")
 plt.show()
 
 A_S=4*R_S**2*np.pi

@@ -6,14 +6,17 @@ import dsp
 
 
 fc = 1         # [Hz]
-fs = 10000    # [Hz]
-NPD = 0.001     # [W/Hz] Noise Power Density 
+fs = 1000    # [Hz]
+NPD_dBW = -20    # [dBW] [W/Hz] Noise Power Density 
+NPD = 10**(NPD_dBW/10)     # [W/Hz] Noise Power Density 
 Signalpower = 20   # [dB]
-T = 1          # [sec]
+T = 100          # [sec]
 n_samp0 = fs*T  # [samps]
+f_simb = 1
 # baseband_signal=[1,-1,1,-1,0,1]
 # baseband_signal = 2*np.random.randint(2, size=N)-np.ones(N)
-# baseband_signal = np.random.randint(2, size=N)
+# baseband_signal = np.random.randint(2, size=int(np.ceil(T*f_simb)))
+baseband_signal = 2*np.random.randint(2, size=int(np.ceil(T*f_simb)))-np.ones(int(np.ceil(T*f_simb)))
 
 # print(baseband_signal)
 
@@ -83,8 +86,8 @@ AVG_NUM = 100
 
 pow_spec=np.zeros(len(spectrum))
 for i in range(AVG_NUM):
-    sig = np.sqrt(10**(Signalpower/10))*dsp.sines(fc,fs,n_samp0)
-    # sig=dsp.modulate_harmronic(fc,fs,f_simb,baseband_signal)
+    # sig = np.sqrt(10**(Signalpower/10))*dsp.sines(fc,fs,n_samp0)
+    sig=dsp.modulate_harmronic(fc,fs,f_simb,baseband_signal)[0:T*fs]
 
     n_samp = len(sig)
     t=np.arange(n_samp)/fs
@@ -103,3 +106,4 @@ plt.xlabel("frequency [Hz]")
 plt.ylabel("power [dB]")
 plt.grid()
 plt.savefig(f"expected_power_density_spectrum.png")
+# plt.show()
