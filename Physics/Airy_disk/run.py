@@ -30,8 +30,8 @@ d=np.arange(0,D,D/n)
 N=80
 for i in range(-N,N):
     C=np.exp(1j*2*m.pi/lmbda*d*np.sin(0.5*i*1e-7))
-    C2=spirSum(C)
-    plt.plot(np.real(C2[-1]), np.imag(C2[-1]),'.', color=(0., 0., 0.))
+    C2=np.array(spirSum(C))
+    plt.plot(np.real(C2), np.imag(C2),'.', color=(0., 0., 0.))
 # C2=np.zeros(len(C)+1)+np.zeros(len(C)+1)*1j
 # C2[0]=0
 # for i in range(len(C)):
