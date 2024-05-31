@@ -13,6 +13,7 @@ from matplotlib.figure import Figure
 
 c=3e8           # [m/sec]
 frequency = 500_000   # [Hz]
+lmbda=c/frequency
 diameter = 1    # [m]
 n_points = 1000
 ang_dist = 45   # [deg]
@@ -38,10 +39,14 @@ class MatplotlibWidget(QWidget):
         ax.set_xlabel("angle [deg]")
         ax.set_ylabel("power [W]")
         ax.grid(True)
+        ax.axvline(ang_dist, linestyle="--", alpha=0.5, color="gray")
+        ax.axvline(0, linestyle="--", alpha=0.5, color="gray")
+        ax.axvline(1.22*lmbda/diameter*180/np.pi, linestyle="--", alpha=0.5, color="red")
         
         self.canvas.draw()
 
 class PlotWindow(QWidget):
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Matplotlib Plot Example")
@@ -52,11 +57,12 @@ class PlotWindow(QWidget):
         layout.addWidget(self.plot_widget)
         
         self.setLayout(layout)
-        self.plot_data(diameter,frequency,ang_dist)
+        self.plot_data()
         
-    def plot_data(self,diameter,frequency,ang_dist):
+    def plot_data(self):
+        global frequency, diameter, ang_dist, lmbda
+
         x = 180*(np.arange(n_points)/n_points-0.5)
-        lmbda=c/frequency
         k=lmbda/diameter
         # data = np.sin(x/180*np.pi*np.pi/k)/(x/180*np.pi*np.pi/k)
         data = np.sinc(x/180*np.pi/k)   # sinc() function works as sin(pi*x)/(pi*x)
@@ -117,31 +123,36 @@ class Form(QDialog):
 
         # connect sliders to update methods
         self.mSldr_A.valueChanged.connect(self.mUpdate_frequency)
-        self.mSldr_B.valueChanged.connect(self.mUpdate_amplitude)
+        self.mSldr_B.valueChanged.connect(self.mUpdate_diameter)
         self.mSldr_C.valueChanged.connect(self.mUpdate_ang_dist)
 
 
     def mUpdate_frequency(self):
+        global frequency, diameter, ang_dist, lmbda
         frequency = self.mSldr_A.value()*10_000_000
-        diameter = self.mSldr_B.value()/10
-        ang_dist = self.mSldr_C.value()
-        self.plot_window.plot_data(diameter,frequency,ang_dist)
+        lmbda=c/frequency
+        # diameter = self.mSldr_B.value()/10
+        # ang_dist = self.mSldr_C.value()
+        self.plot_window.plot_data()
         sx = f"frequency = {frequency/1e6} MHz"
         self.mTxt_A.setText(sx)
 
-    def mUpdate_amplitude(self):
-        frequency = self.mSldr_A.value()*10_000_000
+    def mUpdate_diameter(self):
+        global frequency, diameter, ang_dist
+        # frequency = self.mSldr_A.value()*10_000_000
         diameter = self.mSldr_B.value()/10
-        ang_dist = self.mSldr_C.value()
-        self.plot_window.plot_data(diameter,frequency,ang_dist)
+        # ang_dist = self.mSldr_C.value()
+        self.plot_window.plot_data()
         sx = f"diameter = {diameter} m"
         self.mTxt_B.setText(sx)
 
     def mUpdate_ang_dist(self):
-        frequency = self.mSldr_A.value()*10_000_000
-        diameter = self.mSldr_B.value()/10
+        global frequency, diameter, ang_dist, lmbda
+        # frequency = self.mSldr_A.value()*10_000_000
+        # lmbda=c/frequency
+        # diameter = self.mSldr_B.value()/10
         ang_dist = self.mSldr_C.value()
-        self.plot_window.plot_data(diameter,frequency,ang_dist)
+        self.plot_window.plot_data()
         sx = f"angular distance = {ang_dist} deg"
         self.mTxt_C.setText(sx)
 
