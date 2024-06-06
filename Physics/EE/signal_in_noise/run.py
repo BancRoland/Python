@@ -4,23 +4,31 @@ import sys
 from PySide6.QtCore import QPoint, Qt
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import (QPushButton, QApplication, QHBoxLayout, QGridLayout,
-                               QDialog, QSlider, QLabel, QTabWidget, QWidget, QVBoxLayout)
+                               QDialog, QSlider, QCheckBox, QLabel, QTabWidget, QWidget, QVBoxLayout)
 
 import matplotlib
 matplotlib.use('QtAgg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
-sys.path.append('/home/roland/Desktop/Python/DSP')
+
+# Get the current file's directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+relative_path = os.path.join(current_dir, '../../../DSP')
+
+sys.path.append(relative_path)
+# sys.path.append('/home/bancr/Desktop/Python/DSP')
 import dsp
 
-f_simb = 10
-fc = 100         # [Hz]
-fs = 1000    # [Hz]
 NPD_dBW = -40    # [dBW] [W/Hz] Noise Power Density 
-Signalpower = 20   # [dB]
-T = 5          # [sec]
-n_avg = 1
+f_simb = 50
+n_avg = 16
+fc = 100         # [Hz]
+fs = 500    # [Hz]
+# Signalpower = 20   # [dB]
+T = 1          # [sec]
+
+log_val = False
 
 def fun(NPD_dBW, f_simb):
     if f_simb==0:
@@ -42,7 +50,7 @@ def fun(NPD_dBW, f_simb):
     NPD = 10**(NPD_dBW/10)     # [W/Hz] Noise Power Density 
     noise = np.sqrt(fs*NPD)*dsp.agwn(np.zeros(n_samp),1)
     noisy_signal=(sig+noise)
-    spectrum = (np.fft.fft(noisy_signal)/np.sqrt(len(noisy_signal)))
+    spectrum = np.fft.fft(noisy_signal)/np.sqrt(len(noisy_signal))
     
     return spectrum
 
@@ -84,16 +92,26 @@ class MatplotlibWidget(QWidget):
         self.setLayout(layout)
         
     def plot(self, t, data):
+        x=(t-fc)/f_simb*np.pi
+        calculated=(np.sin(x)/x)**2/f_simb+10**(NPD_dBW/10)
+
         self.figure.clear()
         ax = self.figure.add_subplot(111)
         
         # Use matplotlib.pyplot to create the plot
-        ax.plot(t,data)
+
+        if log_val:
+            ax.plot(t,10*np.log10(data))
+            ax.plot(t,10*np.log10(calculated))
+            ax.axhline(NPD_dBW, linestyle="--", alpha=0.5, color="gray")
+        else:
+            ax.plot(t,data)
+            ax.plot(t,calculated)
+            ax.set_ylim(ymin=0)
+
         ax.set_xlabel("frequency [Hz]")
         ax.set_ylabel("spectral power density [W/Hz]")
         ax.grid(True)
-        # ax.set_ylim(ymin=0)
-        ax.axhline(NPD_dBW, linestyle="--", alpha=0.5, color="gray")
         ax.axvline(fc, linestyle="--", alpha=0.5, color="C0")
         # ax.axvline(ang_dist, linestyle="--", alpha=0.5, color="gray")
         # ax.axvline(0, linestyle="--", alpha=0.5, color="gray")
@@ -120,8 +138,8 @@ class PlotWindow(QWidget):
 
         spectrum = fun2(NPD_dBW, f_simb, n_avg)
         x=np.arange(len(spectrum))/len(spectrum)*fs
-
-        self.plot_widget.plot(x,10*np.log10(np.abs(spectrum)))
+        
+        self.plot_widget.plot(x,np.abs(spectrum))
 
 
 class Form(QDialog):
@@ -140,35 +158,40 @@ class Form(QDialog):
         self.mSldr_A = QSlider(Qt.Orientation.Horizontal)
         self.mSldr_A.setPageStep(1)
         self.mSldr_A.setRange(-5,0)
-        self.mSldr_A.setValue(0)
+        self.mSldr_A.setValue(-4)
+        self.mTxt_A.setText(f"NPD_dBW = {NPD_dBW} dB")
         
         # f_simbol
         self.mTxt_B = QLabel("f_simb:", self)
         self.mSldr_B = QSlider(Qt.Orientation.Horizontal)
         self.mSldr_B.setPageStep(1)
         self.mSldr_B.setRange(0, 10)
-        self.mSldr_B.setValue(0)
+        self.mSldr_B.setValue(5)
+        self.mTxt_B.setText(f"f_simb = {f_simb} Hz")
 
         # average number
         self.mTxt_C = QLabel("n_avg:", self)
         self.mSldr_C = QSlider(Qt.Orientation.Horizontal)
         self.mSldr_C.setPageStep(1)
         self.mSldr_C.setRange(0, 5)
-        self.mSldr_C.setValue(1)
+        self.mSldr_C.setValue(2)
+        self.mTxt_C.setText(f"n_avg = {n_avg}")
 
         # f_center
         self.mTxt_D = QLabel("f_center:", self)
         self.mSldr_D = QSlider(Qt.Orientation.Horizontal)
         self.mSldr_D.setPageStep(1)
         self.mSldr_D.setRange(0, 10)
-        self.mSldr_D.setValue(1)
+        self.mSldr_D.setValue(2)
+        self.mTxt_D.setText(f"fc = {fc} Hz")
 
         # f_samp
         self.mTxt_E = QLabel("f_samp:", self)
         self.mSldr_E = QSlider(Qt.Orientation.Horizontal)
         self.mSldr_E.setPageStep(1)
         self.mSldr_E.setRange(1, 10)
-        self.mSldr_E.setValue(1)
+        self.mSldr_E.setValue(5)
+        self.mTxt_E.setText(f"fs = {fs} Hz")
 
         # Time
         self.mTxt_F = QLabel("T:", self)
@@ -176,7 +199,12 @@ class Form(QDialog):
         self.mSldr_F.setPageStep(1)
         self.mSldr_F.setRange(1, 10)
         self.mSldr_F.setValue(1)
+        self.mTxt_F.setText(f"T = {T} sec")
 
+        # Initialize the QCheckBox
+        self.mTxt_Ac = QLabel("Log", self)
+        self.mChk_Ac = QCheckBox("Enable Feature", self)
+        self.mChk_Ac.setChecked(False)
 
 
         mRightPanelLyt = QGridLayout()
@@ -192,6 +220,8 @@ class Form(QDialog):
         mRightPanelLyt.addWidget(self.mSldr_E, 9, 0)
         mRightPanelLyt.addWidget(self.mTxt_F, 10, 0)
         mRightPanelLyt.addWidget(self.mSldr_F, 11, 0)
+        mRightPanelLyt.addWidget(self.mTxt_Ac, 12, 0)
+        mRightPanelLyt.addWidget(self.mChk_Ac, 12, 1)
 
         mRightPanel = QWidget()
         mRightPanel.setLayout(mRightPanelLyt)
@@ -211,6 +241,7 @@ class Form(QDialog):
         self.mSldr_D.valueChanged.connect(self.mUpdate__fc)
         self.mSldr_E.valueChanged.connect(self.mUpdate__fs)
         self.mSldr_F.valueChanged.connect(self.mUpdate__T)
+        self.mChk_Ac.stateChanged.connect(self.mUpdate__logscale)
 
 
     def mUpdate__NPD_dBW(self):
@@ -244,7 +275,7 @@ class Form(QDialog):
         global fc
         fc = fs/10*self.mSldr_D.value()
         self.plot_window.plot_data()
-        sx = f"fc = {fc}"
+        sx = f"fc = {fc} Hz"
         self.mTxt_D.setText(sx)
 
     def mUpdate__fs(self):
@@ -252,17 +283,22 @@ class Form(QDialog):
         fs = 100*self.mSldr_E.value()
         fc = fs/10*self.mSldr_D.value()
         self.plot_window.plot_data()
-        sx = f"fs = {fs}"
+        sx = f"fs = {fs} Hz"
         self.mTxt_E.setText(sx)
-        sx = f"fc = {fc}"
+        sx = f"fc = {fc} Hz"
         self.mTxt_D.setText(sx)
 
     def mUpdate__T(self):
         global T
         T = self.mSldr_F.value()
         self.plot_window.plot_data()
-        sx = f"T = {T}"
+        sx = f"T = {T} sec"
         self.mTxt_F.setText(sx)
+
+    def mUpdate__logscale(self, state):
+        global log_val
+        log_val = state
+        self.plot_window.plot_data()
 
 
 if __name__ == '__main__':
