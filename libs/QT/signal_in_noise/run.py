@@ -19,10 +19,9 @@ n_samp0 = fs*T  # [samps]
 # baseband_signal = np.random.randint(2, size=int(np.ceil(T*f_simb)))
 
 
-
-
 def fun(NPD_dBW, f_simb):
-    baseband_signal = 2*np.random.randint(2, size=int(np.ceil(T*f_simb)))-np.ones(int(np.ceil(T*f_simb)))
+    size=int(np.ceil(T*f_simb))
+    baseband_signal = 2*np.random.randint(2, size=size)-np.ones(int(np.ceil(T*f_simb)))
 
     # print(baseband_signal)
 
@@ -36,7 +35,18 @@ def fun(NPD_dBW, f_simb):
     noise = np.sqrt(fs*NPD)*dsp.agwn(np.zeros(n_samp),1)
     noisy_signal=(sig+noise)
     spectrum = np.fft.fft(noisy_signal)/np.sqrt(fs*T)
+    
     return spectrum
+
+
+def fun2(NPD_dBW, f_simb, N=10):
+    for i in range(N):
+        if i == 0:
+            spectrum=np.abs(fun(NPD_dBW, f_simb))**2
+        else:
+            spectrum=spectrum+np.abs(fun(NPD_dBW, f_simb))**2
+    
+    return spectrum/N
 
 
 
@@ -153,7 +163,7 @@ class MyWidget(QWidget):
         self.f_simb__slider.setTickPosition(QSlider.TicksBelow)
 
         # Create a label widget for displaying amplitude value
-        self.f_simb_label = QLabel('1', self)
+        self.f_simb_label = QLabel('2', self)
         layout.addWidget(self.f_simb_label)
 
         # Add the amplitude slider to the layout
@@ -189,7 +199,7 @@ class MyWidget(QWidget):
         # self.A_label.setText(f"A: {A:.3f}")
         # self.B_label.setText(f"B: {B:.3f}")
         self.C_label.setText(f"SNR: {NPD_dBW:.0f} dB")
-        self.f_simb_label.setText(f"SNR: {NPD_dBW:.0f} dB")
+        self.f_simb_label.setText(f"f_simb: {NPD_dBW:.0f} dB")
 
         # Clear the previous plot
         self.ax.clear()
@@ -197,7 +207,7 @@ class MyWidget(QWidget):
 
         # Plot the data
         # self.ax.plot(f, B, linestyle="-",color="black")
-        spectrum = fun(NPD_dBW,f_simb)
+        spectrum = fun2(NPD_dBW,f_simb)
         self.ax.plot(np.abs(spectrum), linestyle="-",color="black")
 
 

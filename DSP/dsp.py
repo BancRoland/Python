@@ -194,8 +194,11 @@ def incriminate(vector,inc_val):
 
 
 def modulate_harmronic(fc,fs,f_simb,vector):
-    inc_val=fs/f_simb
-    out0=incriminate(vector,inc_val)
-    out=out0*sines(fc,fs,len(out0))
+    if f_simb == 0:
+        out=sines(fc,fs,len(vector))
+    else:
+        inc_val=fs/f_simb
+        out0=incriminate(vector,inc_val)
+        out=out0*sines(fc,fs,len(out0))
     return out
 
