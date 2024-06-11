@@ -1,10 +1,9 @@
 import numpy as np
 import os
 import sys
-from PySide6.QtCore import QPoint, Qt
-from PySide6.QtGui import QColor
-from PySide6.QtWidgets import (QPushButton, QApplication, QHBoxLayout, QGridLayout, QColorDialog,
-                               QDialog, QSlider, QCheckBox, QLabel, QTabWidget, QWidget, QVBoxLayout, QFileDialog)
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtWidgets import (QPushButton, QApplication, QHBoxLayout, QVBoxLayout,
+                               QDialog, QSlider, QCheckBox, QLabel, QTabWidget, QWidget, QColorDialog, QFileDialog, QGridLayout)
 
 import matplotlib
 matplotlib.use('QtAgg')
@@ -14,10 +13,7 @@ from matplotlib.figure import Figure
 filePath =""
 folderPath =""
 Amplitude = 1    # [] amplitude
-frq = 5        # [Hz]
-n_avg = 16
-fc = 100         # [Hz]
-fs = 500    # [Hz]
+frq = 50        # [Hz]
 mycolor="#000000"
 
 abs_val = False
@@ -50,23 +46,33 @@ class MatplotlibWidget(QWidget):
         if abs_val:
             ax.plot(t,np.abs(data),color=mycolor)
             ax.set_ylim(ymin=-1.2, ymax=1.2)
-            # ax.plot(t,10*np.log10(calculated),"--",color=mycolor)
-            # ax.axhline(Amplitude, linestyle="--", alpha=0.5, color="gray")
-            ax.set_ylabel("Amplitude []")
 
         else:
-            ax.plot(t,data)
-            # ax.plot(t,calculated,"--")
+            ax.plot(t,data,color=mycolor)
             ax.set_ylim(ymin=-1.2, ymax=1.2)
-            ax.set_ylabel("Amplitude []")
 
-        ax.set_title("Spectral Power Density of signal")
+        ax.set_title("Harmonic signal")
+        ax.set_ylabel("Amplitude []")
         ax.set_xlabel("time [sec]")
         ax.grid(True)
-        ax.axhline(Amplitude, linestyle="--", alpha=0.5, color="C0")
-        # ax.axvline(ang_dist, linestyle="--", alpha=0.5, color="gray")
-        # ax.axvline(0, linestyle="--", alpha=0.5, color="gray")
-        # ax.axvline(1.22*lmbda/diameter*180/np.pi, linestyle="--", alpha=0.5, color="red")
+        ax.axhline(Amplitude, linestyle="--", alpha=0.5, color=mycolor)
+        
+        self.canvas.draw()
+
+
+    def plot2(self, data):
+
+        self.figure.clear()
+        ax = self.figure.add_subplot(111)
+
+        f=np.arange(len(data))
+        ax.plot(f,data, color=mycolor)
+        ax.set_ylabel("Amplitude []")
+        ax.set_xlabel("frequency [Hz]")
+
+        ax.set_title("Harmonic signal")
+        ax.grid(True)
+        ax.axhline(Amplitude, linestyle="--", alpha=0.5, color=mycolor)
         
         self.canvas.draw()
 
@@ -85,7 +91,7 @@ class PlotWindow(QWidget):
         self.plot_data()
         
     def plot_data(self):
-        global Amplitude, frq, n_avg
+        global Amplitude, frq
 
         function = fun(Amplitude, frq)
         t=np.arange(len(function))/len(function)
@@ -107,12 +113,12 @@ class PlotWindow1(QWidget):
         self.plot_data()
         
     def plot_data(self):
-        global Amplitude, frq, n_avg
+        global Amplitude, frq
 
         function = fun(Amplitude, frq)
         t=np.arange(len(function))/len(function)
         
-        self.plot_widget.plot(t,np.abs(function))
+        self.plot_widget.plot2(np.abs(np.fft.fft(function)))
 
 
 class Form(QDialog):
@@ -123,111 +129,132 @@ class Form(QDialog):
 
         self.plot_window = PlotWindow()
         self.plot_window1 = PlotWindow1()
-        mLeftPanel = QTabWidget()
-        mLeftPanel.addTab(self.plot_window, 'Plot Panel')
-        mLeftPanel.addTab(self.plot_window1, 'Plot Panel1')
+        self.mLeftPanel = QTabWidget()
+        self.mLeftPanel.addTab(self.plot_window, 'Plot Panel 1')
+        self.mLeftPanel.addTab(self.plot_window1, 'Plot Panel 2')
+        
+
+
+        # Create multiple variable panels
+        self.mRightPanel1 = self.create_variable_panel_1()
+        self.mRightPanel2 = self.create_variable_panel_2()
+
+        self.mRightTabs = QTabWidget()
+        self.mRightTabs.addTab(self.mRightPanel1, 'Variables 1')
+        self.mRightTabs.addTab(self.mRightPanel2, 'Variables 2')
+
+        self.mMainLayout = QHBoxLayout()
+        self.mMainLayout.addWidget(self.mLeftPanel)
+        self.mMainLayout.addWidget(self.mRightTabs)
+        self.mMainLayout.setStretchFactor(self.mLeftPanel, 2)
+        self.mMainLayout.setStretchFactor(self.mRightTabs, 1)
+
+        self.setLayout(self.mMainLayout)
+
+        # Timer for debouncing slider changes
+        self.update_timer = QTimer(self)
+        self.update_timer.setSingleShot(True)
+        self.update_timer.timeout.connect(self.plot_window.plot_data)
+
+
+
+        # Timer for debouncing slider changes
+        self.update_timer = QTimer(self)
+        self.update_timer.setSingleShot(True)
+        self.update_timer.timeout.connect(self.update_plot)
+
+        # Connect sliders to update methods
+        self.mSldr_A.valueChanged.connect(self.on_slider_value_changed)
+        self.mSldr_B.valueChanged.connect(self.on_slider_value_changed)
+
+        self.mChk_Ac.stateChanged.connect(self.mUpdate__logscale)
+        self.mButton_Ab.clicked.connect(self.mUpdate__button)
+
+
+    def create_variable_panel_1(self):
+        panel = QWidget()
+        layout = QGridLayout()
+
 
         # Amp
         self.mTxt_A = QLabel("Amp:", self)
         self.mSldr_A = QSlider(Qt.Orientation.Horizontal)
         self.mSldr_A.setPageStep(1)
-        self.mSldr_A.setRange(0,10)
-        self.mSldr_A.setValue(1)
+        self.mSldr_A.setRange(0,100)
+        self.mSldr_A.setValue(100)
         self.mTxt_A.setText(f"Amplitude = {Amplitude} dB")
+        layout.addWidget(self.mTxt_A, 0, 0)
+        layout.addWidget(self.mSldr_A, 1, 0)
         
         # frequency
         self.mTxt_B = QLabel("frequency:", self)
         self.mSldr_B = QSlider(Qt.Orientation.Horizontal)
         self.mSldr_B.setPageStep(1)
-        self.mSldr_B.setRange(0, 10)
-        self.mSldr_B.setValue(5)
+        self.mSldr_B.setRange(0, 100)
+        self.mSldr_B.setValue(50)
         self.mTxt_B.setText(f"frequency = {frq} Hz")
-
-        # Initialize the QCheckBox
-        self.mTxt_Ac = QLabel("Logaritmic scale", self)
-        self.mChk_Ac = QCheckBox("Enable", self)
-        self.mChk_Ac.setChecked(False)
-
-        # Color selection
-        self.mTxt_Acol = QLabel("Color Selection", self)
-        self.mColor_Acol = QPushButton("Select Color", self)
-        self.mColor_Acol.clicked.connect(self.openColorDialog)
+        layout.addWidget(self.mTxt_B, 2, 0)
+        layout.addWidget(self.mSldr_B, 3, 0)
 
         # Export button
         self.mTxt_Ab = QLabel("Button", self)
         self.mButton_Ab = QPushButton("Button_1", self)
         # self.mExport_Btn.clicked.connect(self.exportParameters)
+        layout.addWidget(self.mTxt_Ab, 4, 0)
+        layout.addWidget(self.mButton_Ab, 4, 1)
+
+        # Color selection
+        self.mTxt_Acol = QLabel("Color Selection", self)
+        self.mColor_Acol = QPushButton("Select Color", self)
+        self.mColor_Acol.clicked.connect(self.openColorDialog)
+        layout.addWidget(self.mTxt_Acol, 5, 0)
+        layout.addWidget(self.mColor_Acol, 5, 1)
+        
+        panel.setLayout(layout)
+        return panel
+
+    def create_variable_panel_2(self):
+        panel = QWidget()
+        layout = QGridLayout()
+        
+        # Logarithmic scale
+        self.mTxt_Ac = QLabel("absolute value", panel)
+        self.mChk_Ac = QCheckBox("Enable", panel)
+        self.mChk_Ac.setChecked(False)
+        layout.addWidget(self.mTxt_Ac, 1, 0)
+        layout.addWidget(self.mChk_Ac, 1, 1)
 
         # File browsing button
-        self.mTxt_File = QLabel("Select a file:\n", self)
-        self.mBtn_File = QPushButton("Browse File", self)
+        self.mTxt_File = QLabel("Select a file:", panel)
+        self.mBtn_File = QPushButton("Browse File", panel)
         self.mBtn_File.clicked.connect(self.browse_file)
+        layout.addWidget(self.mTxt_File, 2, 0)
+        layout.addWidget(self.mBtn_File, 2, 1)
 
         # Folder browsing button
-        self.mTxt_Folder = QLabel("Select a folder:\n", self)
-        self.mBtn_Folder = QPushButton("Browse Folder", self)
+        self.mTxt_Folder = QLabel("Select a folder:", panel)
+        self.mBtn_Folder = QPushButton("Browse Folder", panel)
         self.mBtn_Folder.clicked.connect(self.browse_folder)
-
-
-        mRightPanelLyt = QGridLayout()
-        mRightPanelLyt.addWidget(self.mTxt_A, 0, 0)
-        mRightPanelLyt.addWidget(self.mSldr_A, 1, 0)
-        mRightPanelLyt.addWidget(self.mTxt_B, 2, 0)
-        mRightPanelLyt.addWidget(self.mSldr_B, 3, 0)
-        mRightPanelLyt.addWidget(self.mTxt_Ac, 4, 0)
-        mRightPanelLyt.addWidget(self.mChk_Ac, 4, 1)
-        mRightPanelLyt.addWidget(self.mTxt_Acol, 5, 0)
-        mRightPanelLyt.addWidget(self.mColor_Acol, 5, 1)
-        mRightPanelLyt.addWidget(self.mTxt_Ab, 6, 0)
-        mRightPanelLyt.addWidget(self.mButton_Ab, 6, 1)
-        mRightPanelLyt.addWidget(self.mTxt_File, 7, 0)
-        mRightPanelLyt.addWidget(self.mBtn_File, 7, 1)
-        mRightPanelLyt.addWidget(self.mTxt_Folder, 8, 0)
-        mRightPanelLyt.addWidget(self.mBtn_Folder, 8, 1)
-
-        mRightPanel = QWidget()
-        mRightPanel.setLayout(mRightPanelLyt)
-
-        mMainLayout = QHBoxLayout()
-        mMainLayout.addWidget(mLeftPanel)
-        mMainLayout.addWidget(mRightPanel)
-        mMainLayout.setStretchFactor(mLeftPanel, 2)
-        mMainLayout.setStretchFactor(mRightPanel, 1)
-
-        self.setLayout(mMainLayout)
-
-        # connect sliders to update methods
-        self.mSldr_A.valueChanged.connect(self.mUpdate__NPD_dBW)
-        self.mSldr_B.valueChanged.connect(self.mUpdate__f_simb)
-        self.mChk_Ac.stateChanged.connect(self.mUpdate__logscale)
-        self.mButton_Ab.clicked.connect(self.mUpdate__button)
-
-
-    def mUpdate__NPD_dBW(self):
-        global Amplitude, frq
-
-        Amplitude = self.mSldr_A.value()/10
-        self.plot_window.plot_data()
-        sx = f"NPD_dBW = {Amplitude} dB"
-        self.mTxt_A.setText(sx)
+        layout.addWidget(self.mTxt_Folder, 3, 0)
+        layout.addWidget(self.mBtn_Folder, 3, 1)
         
+        panel.setLayout(layout)
+        return panel
 
-    def mUpdate__f_simb(self):
-        global Amplitude, frq
-        frq = self.mSldr_B.value()
-        self.plot_window.plot_data()
-        sx = f"f_simb = {frq} Hz"
-        self.mTxt_B.setText(sx)
 
     def mUpdate__logscale(self, state):
         global abs_val
         abs_val = state
         self.plot_window.plot_data()
+        self.plot_window1.plot_data()
+
 
     def mUpdate__color(self, state):
         global abs_val
         abs_val = state
         self.plot_window.plot_data()
+        self.plot_window1.plot_data()
+
 
     def openColorDialog(self):
         global mycolor
@@ -236,6 +263,8 @@ class Form(QDialog):
             print(f"Selected color: {color.name()}")
             mycolor=color.name()
             self.plot_window.plot_data()
+            self.plot_window1.plot_data()
+
 
     def mUpdate__button(self,state):
         print(filePath)
@@ -253,8 +282,27 @@ class Form(QDialog):
         folderPath = QFileDialog.getExistingDirectory(self, "Select Folder", "", options=options)
         if folderPath:
             self.mTxt_Folder.setText(f"Selected folder:\n {folderPath}")
-            
 
+
+    def on_slider_value_changed(self):
+        self.update_timer.start(20)
+
+    def update_plot(self):
+        global Amplitude
+
+        Amplitude = self.mSldr_A.value() / 100
+        self.mTxt_A.setText(f"Amp: {Amplitude}")
+
+
+        global frq
+
+        self.mTxt_B.setText(f"frequency: {frq} Hz")
+        frq = self.mSldr_B.value()
+
+        self.plot_window.plot_data()
+        self.plot_window1.plot_data()
+
+            
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
