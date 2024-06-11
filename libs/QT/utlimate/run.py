@@ -154,13 +154,6 @@ class Form(QDialog):
         # Timer for debouncing slider changes
         self.update_timer = QTimer(self)
         self.update_timer.setSingleShot(True)
-        self.update_timer.timeout.connect(self.plot_window.plot_data)
-
-
-
-        # Timer for debouncing slider changes
-        self.update_timer = QTimer(self)
-        self.update_timer.setSingleShot(True)
         self.update_timer.timeout.connect(self.update_plot)
 
         # Connect sliders to update methods
