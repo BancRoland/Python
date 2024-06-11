@@ -3,8 +3,9 @@ import os
 import sys
 from PySide6.QtCore import QPoint, Qt
 from PySide6.QtGui import QColor
-from PySide6.QtWidgets import (QPushButton, QApplication, QHBoxLayout, QGridLayout,
+from PySide6.QtWidgets import (QPushButton, QApplication, QHBoxLayout, QGridLayout, QColorDialog,
                                QDialog, QSlider, QCheckBox, QLabel, QTabWidget, QWidget, QVBoxLayout)
+
 
 import matplotlib
 matplotlib.use('QtAgg')
@@ -27,6 +28,7 @@ fc = 100         # [Hz]
 fs = 500    # [Hz]
 # Signalpower = 20   # [dB]
 T = 1          # [sec]
+mycolor="#000000"
 
 log_val = False
 
@@ -114,7 +116,7 @@ class MatplotlibWidget(QWidget):
 
         if log_val:
             ax.plot(t,10*np.log10(data))
-            ax.plot(t,10*np.log10(calculated),"--")
+            ax.plot(t,10*np.log10(calculated),"--",color=mycolor)
             ax.axhline(NPD_dBW, linestyle="--", alpha=0.5, color="gray")
             ax.set_ylabel("spectral power density [dBW/Hz]")
 
@@ -184,59 +186,30 @@ class Form(QDialog):
         self.mSldr_B.setValue(5)
         self.mTxt_B.setText(f"f_simb = {f_simb} Hz")
 
-        # average number
-        self.mTxt_C = QLabel("n_avg:", self)
-        self.mSldr_C = QSlider(Qt.Orientation.Horizontal)
-        self.mSldr_C.setPageStep(1)
-        self.mSldr_C.setRange(0, 5)
-        self.mSldr_C.setValue(2)
-        self.mTxt_C.setText(f"n_avg = {n_avg}")
-
-        # f_center
-        self.mTxt_D = QLabel("f_center:", self)
-        self.mSldr_D = QSlider(Qt.Orientation.Horizontal)
-        self.mSldr_D.setPageStep(1)
-        self.mSldr_D.setRange(0, 10)
-        self.mSldr_D.setValue(2)
-        self.mTxt_D.setText(f"fc = {fc} Hz")
-
-        # f_samp
-        self.mTxt_E = QLabel("f_samp:", self)
-        self.mSldr_E = QSlider(Qt.Orientation.Horizontal)
-        self.mSldr_E.setPageStep(1)
-        self.mSldr_E.setRange(1, 10)
-        self.mSldr_E.setValue(5)
-        self.mTxt_E.setText(f"fs = {fs} Hz")
-
-        # Time
-        self.mTxt_F = QLabel("T:", self)
-        self.mSldr_F = QSlider(Qt.Orientation.Horizontal)
-        self.mSldr_F.setPageStep(1)
-        self.mSldr_F.setRange(1, 10)
-        self.mSldr_F.setValue(1)
-        self.mTxt_F.setText(f"T = {T} sec")
-
         # Initialize the QCheckBox
         self.mTxt_Ac = QLabel("Logaritmic scale", self)
         self.mChk_Ac = QCheckBox("Enable", self)
         self.mChk_Ac.setChecked(False)
 
+        # Color selection
+        self.mTxt_As = QLabel("Color Selection", self)
+        self.mColor_Ac = QPushButton("Select Color", self)
+        self.mColor_Ac.clicked.connect(self.openColorDialog)
+
+        # Color selection
+        self.mTxt_As = QLabel("Color Selection", self)
+        self.mColor_Ac = QPushButton("Select Color", self)
+        self.mColor_Ac.clicked.connect(self.openColorDialog)
 
         mRightPanelLyt = QGridLayout()
         mRightPanelLyt.addWidget(self.mTxt_A, 0, 0)
         mRightPanelLyt.addWidget(self.mSldr_A, 1, 0)
         mRightPanelLyt.addWidget(self.mTxt_B, 2, 0)
         mRightPanelLyt.addWidget(self.mSldr_B, 3, 0)
-        mRightPanelLyt.addWidget(self.mTxt_C, 4, 0)
-        mRightPanelLyt.addWidget(self.mSldr_C, 5, 0)
-        mRightPanelLyt.addWidget(self.mTxt_D, 6, 0)
-        mRightPanelLyt.addWidget(self.mSldr_D, 7, 0)
-        mRightPanelLyt.addWidget(self.mTxt_E, 8, 0)
-        mRightPanelLyt.addWidget(self.mSldr_E, 9, 0)
-        mRightPanelLyt.addWidget(self.mTxt_F, 10, 0)
-        mRightPanelLyt.addWidget(self.mSldr_F, 11, 0)
-        mRightPanelLyt.addWidget(self.mTxt_Ac, 12, 0)
-        mRightPanelLyt.addWidget(self.mChk_Ac, 12, 1)
+        mRightPanelLyt.addWidget(self.mTxt_Ac, 4, 0)
+        mRightPanelLyt.addWidget(self.mChk_Ac, 4, 1)
+        mRightPanelLyt.addWidget(self.mTxt_As, 5, 0)
+        mRightPanelLyt.addWidget(self.mColor_Ac, 5, 1)
 
         mRightPanel = QWidget()
         mRightPanel.setLayout(mRightPanelLyt)
@@ -252,10 +225,6 @@ class Form(QDialog):
         # connect sliders to update methods
         self.mSldr_A.valueChanged.connect(self.mUpdate__NPD_dBW)
         self.mSldr_B.valueChanged.connect(self.mUpdate__f_simb)
-        self.mSldr_C.valueChanged.connect(self.mUpdate__n_avg)
-        self.mSldr_D.valueChanged.connect(self.mUpdate__fc)
-        self.mSldr_E.valueChanged.connect(self.mUpdate__fs)
-        self.mSldr_F.valueChanged.connect(self.mUpdate__T)
         self.mChk_Ac.stateChanged.connect(self.mUpdate__logscale)
 
 
@@ -279,41 +248,25 @@ class Form(QDialog):
         sx = f"f_simb = {f_simb} Hz"
         self.mTxt_B.setText(sx)
 
-    def mUpdate__n_avg(self):
-        global NPD_dBW, f_simb, n_avg
-        n_avg = 4**self.mSldr_C.value()
-        self.plot_window.plot_data()
-        sx = f"n_avg = {n_avg}"
-        self.mTxt_C.setText(sx)
-
-    def mUpdate__fc(self):
-        global fc
-        fc = fs/10*self.mSldr_D.value()
-        self.plot_window.plot_data()
-        sx = f"fc = {fc} Hz"
-        self.mTxt_D.setText(sx)
-
-    def mUpdate__fs(self):
-        global fs, fc
-        fs = 100*self.mSldr_E.value()
-        fc = fs/10*self.mSldr_D.value()
-        self.plot_window.plot_data()
-        sx = f"fs = {fs} Hz"
-        self.mTxt_E.setText(sx)
-        sx = f"fc = {fc} Hz"
-        self.mTxt_D.setText(sx)
-
-    def mUpdate__T(self):
-        global T
-        T = self.mSldr_F.value()
-        self.plot_window.plot_data()
-        sx = f"T = {T} sec"
-        self.mTxt_F.setText(sx)
-
     def mUpdate__logscale(self, state):
         global log_val
         log_val = state
         self.plot_window.plot_data()
+
+    def mUpdate__color(self, state):
+        global log_val
+        log_val = state
+        self.plot_window.plot_data()
+
+    def openColorDialog(self):
+        global mycolor
+        color = QColorDialog.getColor()
+        if color.isValid():
+            print(f"Selected color: {color.name()}")
+            # Here you can use the selected color to update plot or other elements
+            # For example, updating the label background color:
+            mycolor=color.name()
+            self.plot_window.plot_data()
 
 
 if __name__ == '__main__':

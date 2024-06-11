@@ -202,3 +202,44 @@ def modulate_harmronic(fc,fs,f_simb,vector):
         out=out0*sines(fc,fs,len(out0))
     return out
 
+def modulate_fm(fc,fs,f_simb,vector):
+    if f_simb == 0:
+        out=sines(fc,fs,len(vector))
+    else:
+        inc_val=fs/f_simb
+        out0=incriminate(vector,inc_val)
+        out1
+        out=out0*sines(fc,fs,len(out0))
+    return out
+
+def get_random_bpsk(size):
+    out = 2*np.random.randint(2, size=size)-np.ones(size)
+    return out
+
+def get_random_ook(size):
+    out = np.random.randint(2, size=size)
+    return out
+
+def get_random_qpsk(size):
+    phases = np.random.randint(4, size=size)
+    out = np.exp(1j*phases*2*np.pi/4)
+    return out
+
+def get_random_npsk(size,n):
+    phases = np.random.randint(n, size=size)
+    out = np.exp(1j*phases*2*np.pi/n)
+    return out
+
+def get_random_manchester(size):
+    size=int(np.ceil(size/2))
+    bits = np.random.randint(2, size=size)
+    out = np.zeros(size*2,dtype=complex)
+    for idx,d in enumerate(bits):
+        if d==0:
+            out[idx*2]=-1
+            out[idx*2+1]=1
+        else:
+            out[idx*2]=1
+            out[idx*2+1]=-1
+    return out
+
