@@ -1,9 +1,17 @@
 import numpy as np
 import os
+import io
 import sys
+import folium
 from PySide6.QtCore import Qt, QTimer
-from PySide6.QtWidgets import (QPushButton, QApplication, QHBoxLayout, QVBoxLayout,
-                               QDialog, QSlider, QCheckBox, QLabel, QTabWidget, QWidget, QColorDialog, QFileDialog, QGridLayout)
+from PySide6.QtWidgets import (QPushButton, QApplication, 
+                               QHBoxLayout, QVBoxLayout,
+                               QDialog, QSlider, 
+                               QCheckBox, QLabel, 
+                               QTabWidget, QWidget, 
+                               QColorDialog, QFileDialog, 
+                               QGridLayout, QLineEdit)
+from PySide6.QtWebEngineWidgets import QWebEngineView
 
 import matplotlib
 matplotlib.use('QtAgg')
@@ -15,6 +23,7 @@ folderPath =""
 Amplitude = 1    # [] amplitude
 frq = 50        # [Hz]
 mycolor="#000000"
+line_edit_val = 10
 
 abs_val = False
 
@@ -23,6 +32,24 @@ def fun(Amplitude, frq):
     t=np.arange(N)/N
     return(Amplitude*np.sin(2*np.pi*frq*t))
 
+class FloatInputWidget(QWidget):
+    def __init__(self, label_text="", default_value=0.0, parent=None):
+        super().__init__(parent)
+        
+        self.label = QLabel(label_text)
+        self.line_edit = QLineEdit(str(default_value))
+        
+        layout = QHBoxLayout()
+        layout.addWidget(self.label)
+        layout.addWidget(self.line_edit)
+        
+        self.setLayout(layout)
+        
+    def value(self):
+        try:
+            return float(self.line_edit.text())
+        except ValueError:
+            return None
 
 class MatplotlibWidget(QWidget):
     def __init__(self, parent=None):
@@ -120,19 +147,48 @@ class PlotWindow1(QWidget):
         
         self.plot_widget.plot2(np.abs(np.fft.fft(function)))
 
+class MapWidget(QWidget):
+    def __init__(self):
+        super().__init__()
+        layout = QVBoxLayout()
+        
+        self.map_view = QWebEngineView()
+        layout.addWidget(self.map_view)
+        
+        self.setLayout(layout)
+        self.create_map()
+        self.display_map()
+        
+    def create_map(self):
+        self.map = folium.Map(location=[45.5236, -122.6750], zoom_start=13)
+    
+    def display_map(self):
+        data = io.BytesIO()
+        self.map.save(data, close_file=False)
+        
+        self.map_view.setHtml(data.getvalue().decode())
+
+    def add_point(self, lat, lon, popup_text):
+        folium.Marker(location=[lat, lon], popup=popup_text).add_to(self.map)
+        self.display_map()
+
 
 class Form(QDialog):
     def __init__(self, parent=None):
         super(Form, self).__init__(parent)
-        self.setMinimumWidth(640)
-        self.setMinimumHeight(480)
+        self.setMinimumWidth(1280)
+        self.setMinimumHeight(960)
 
         self.plot_window = PlotWindow()
         self.plot_window1 = PlotWindow1()
+        self.map_widget = MapWidget()
+
+
         self.mLeftPanel = QTabWidget()
         self.mLeftPanel.addTab(self.plot_window, 'Plot Panel 1')
         self.mLeftPanel.addTab(self.plot_window1, 'Plot Panel 2')
-        
+        self.mLeftPanel.addTab(self.map_widget, 'Map Panel')
+
 
 
         # Create multiple variable panels
@@ -162,6 +218,11 @@ class Form(QDialog):
 
         self.mChk_Ac.stateChanged.connect(self.mUpdate__logscale)
         self.mButton_Ab.clicked.connect(self.mUpdate__button)
+        self.mLineEdit_Al.editingFinished.connect(self.mUpdate__LineEdit)
+
+        # Add points to the map as an example
+        self.map_widget.add_point(45.5236, -122.6750, "Point 1")
+        self.map_widget.add_point(45.5289, -122.6801, "Point 2")
 
 
     def create_variable_panel_1(self):
@@ -202,6 +263,13 @@ class Form(QDialog):
         self.mColor_Acol.clicked.connect(self.openColorDialog)
         layout.addWidget(self.mTxt_Acol, 5, 0)
         layout.addWidget(self.mColor_Acol, 5, 1)
+
+        # Line edit
+        self.mTxt_Al = QLabel("LineEdit:", self)
+        self.mLineEdit_Al = QLineEdit("", self)
+        self.mTxt_Al.setText(f"Line Edit:")
+        layout.addWidget(self.mTxt_Al, 6, 0)
+        layout.addWidget(self.mLineEdit_Al, 6, 1)
         
         panel.setLayout(layout)
         return panel
@@ -210,7 +278,7 @@ class Form(QDialog):
         panel = QWidget()
         layout = QGridLayout()
         
-        # Logarithmic scale
+        # Checkbox
         self.mTxt_Ac = QLabel("absolute value", panel)
         self.mChk_Ac = QCheckBox("Enable", panel)
         self.mChk_Ac.setChecked(False)
@@ -261,6 +329,11 @@ class Form(QDialog):
 
     def mUpdate__button(self,state):
         print(filePath)
+
+    def mUpdate__LineEdit(self):
+        global line_edit_val
+        line_edit_val = self.mLineEdit_Al.text()
+        print(line_edit_val)
 
     def browse_file(self):
         global filePath
