@@ -10,7 +10,8 @@ from PySide6.QtWidgets import (QPushButton, QApplication,
                                QCheckBox, QLabel, 
                                QTabWidget, QWidget, 
                                QColorDialog, QFileDialog, 
-                               QGridLayout, QLineEdit)
+                               QGridLayout, QLineEdit,
+                               QComboBox)
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
 import matplotlib
@@ -103,6 +104,33 @@ class MatplotlibWidget(QWidget):
         
         self.canvas.draw()
 
+class MapWidget(QWidget):
+    def __init__(self):
+        super().__init__()
+        layout = QVBoxLayout()
+        
+        self.map_view = QWebEngineView()
+        layout.addWidget(self.map_view)
+        
+        self.setLayout(layout)
+        self.create_map()
+        self.display_map()
+        
+    def create_map(self):
+        self.map = folium.Map(location=[45.5236, -122.6750], zoom_start=13)
+    
+    def display_map(self):
+        data = io.BytesIO()
+        self.map.save(data, close_file=False)
+        
+        self.map_view.setHtml(data.getvalue().decode())
+
+    def add_point(self, lat, lon, popup_text):
+        folium.Marker(location=[lat, lon], popup=popup_text).add_to(self.map)
+        self.display_map()
+
+
+
 class PlotWindow(QWidget):
 
     def __init__(self):
@@ -146,31 +174,6 @@ class PlotWindow1(QWidget):
         t=np.arange(len(function))/len(function)
         
         self.plot_widget.plot2(np.abs(np.fft.fft(function)))
-
-class MapWidget(QWidget):
-    def __init__(self):
-        super().__init__()
-        layout = QVBoxLayout()
-        
-        self.map_view = QWebEngineView()
-        layout.addWidget(self.map_view)
-        
-        self.setLayout(layout)
-        self.create_map()
-        self.display_map()
-        
-    def create_map(self):
-        self.map = folium.Map(location=[45.5236, -122.6750], zoom_start=13)
-    
-    def display_map(self):
-        data = io.BytesIO()
-        self.map.save(data, close_file=False)
-        
-        self.map_view.setHtml(data.getvalue().decode())
-
-    def add_point(self, lat, lon, popup_text):
-        folium.Marker(location=[lat, lon], popup=popup_text).add_to(self.map)
-        self.display_map()
 
 
 class Form(QDialog):
@@ -270,6 +273,15 @@ class Form(QDialog):
         self.mTxt_Al.setText(f"Line Edit:")
         layout.addWidget(self.mTxt_Al, 6, 0)
         layout.addWidget(self.mLineEdit_Al, 6, 1)
+
+        # combo_box
+        self.mTxt_Addm = QLabel("menu", self)
+        self.mMenu_Addm = QComboBox(self)
+        # self.mExport_Btn.clicked.connect(self.exportParameters)
+        self.mMenu_Addm.addItems(["Option 1", "Option 2", "Option 3"])
+        self.mMenu_Addm.currentIndexChanged.connect(self.option_selected)
+        layout.addWidget(self.mTxt_Addm, 7, 0)
+        layout.addWidget(self.mMenu_Addm, 7, 1)
         
         panel.setLayout(layout)
         return panel
@@ -367,6 +379,12 @@ class Form(QDialog):
 
         self.plot_window.plot_data()
         self.plot_window1.plot_data()
+
+    def option_selected(self):
+        # Get the currently selected option
+        selected_option = self.mMenu_Addm.currentText()
+        # Update the label with the selected option
+        self.mTxt_Addm.setText(f"{selected_option} selected")
 
             
 
