@@ -179,8 +179,8 @@ class PlotWindow1(QWidget):
 class Form(QDialog):
     def __init__(self, parent=None):
         super(Form, self).__init__(parent)
-        self.setMinimumWidth(1280)
-        self.setMinimumHeight(960)
+        self.setMinimumWidth(640)
+        self.setMinimumHeight(480)
 
         self.plot_window = PlotWindow()
         self.plot_window1 = PlotWindow1()
