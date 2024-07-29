@@ -7,15 +7,19 @@ date_format = '%Y%m%d'
 
 line=[]
 lineU=[]
-for i in range(12):
-    line=datetime.strptime(str(20230101+100*i),date_format)
+lineU2=[]
+
+for i_year in range(2000,2030):
+    for i_month in range(1,13):
+        line=datetime.strptime(str(i_year)+str(f"{i_month:02d}")+"01",date_format)
+        lineU.append(line.timestamp())
+        if i_month == 1:
+            lineU2.append(line.timestamp())
+        print(lineU[-1])
+        # line.append(datetime.strptime(str(20230101+100*i),date_format).timestamp)
+    # line="20230201"
+    # lineU=datetime.strptime(line,date_format)
     print(line)
-    lineU.append(line.timestamp())
-    print(lineU[-1])
-    # line.append(datetime.strptime(str(20230101+100*i),date_format).timestamp)
-# line="20230201"
-# lineU=datetime.strptime(line,date_format)
-print(line)
 
 szamla=[]
 T=[]
@@ -65,18 +69,34 @@ DateS=Date[idx]
 
 plt.plot(ValueS,'o')
 plt.grid()
+plt.title("Transactions")
+plt.xlabel("transaction index []")
+plt.ylabel("value [Ft]")
 plt.show()
+plt.savefig
+
+
+
 
 integ=[2128151]
-for i in ValueS:
-    integ.append(integ[-1]+i)
+for i_month in ValueS:
+    integ.append(integ[-1]+i_month)
 
 plt.step(DateS,integ[1::],'o-',where='post')
-for i in lineU:
-    plt.axvline(i, color="gray", linestyle="--")
-plt.xlim(lineU[0],lineU[-1])
-plt.grid()
+for i_month in lineU:
+    plt.axvline(i_month, color="black", linestyle="--", alpha=0.5, linewidth = 1)
+for i_month in lineU2:
+    plt.axvline(i_month, color="black", linestyle="--", alpha=1, linewidth = 2)
+plt.xlim(DateS[0],DateS[-1])
+plt.grid(axis='y')
+plt.title("Balance")
+plt.xlabel("Date [UNIX time]")
+plt.ylabel("value [Ft]")
 plt.show()
+
+
+
+
 
 
 outV=[]
@@ -85,16 +105,20 @@ outD=[]
 inV=[]
 inD=[]
 
-for i in range(len(ValueS)):
+for i_month in range(len(ValueS)):
     # print(ValueS[i])
-    if ValueS[i]<0:
-        outV.append(-ValueS[i])
-        outD.append(DateS[i])
+    if ValueS[i_month]<0:
+        outV.append(-ValueS[i_month])
+        outD.append(DateS[i_month])
     else:
-        inV.append(ValueS[i])
-        inD.append(DateS[i])
+        inV.append(ValueS[i_month])
+        inD.append(DateS[i_month])
 
 # plt.plot(outV,outV,'.')
+plt.title("Expense distribution")
+plt.xlabel("vale [10^x]Ft")
+plt.ylabel("samples")
+plt.grid()
 plt.hist(np.log10(outV), bins=100, edgecolor='black')
 plt.show()
 
