@@ -1,27 +1,30 @@
 #!/bin/bash
-var0=$(pwd)
+otp_dir=$(pwd)
+log_dir=$otp_dir/log
+# log_dir=$otp_dir/log_EUR
 
 rm SUM_FULL.csv
 touch SUM_FULL.csv
+rm SUM.csv
 
-echo $var0/file
-for year in {2020..2024}
-# for year in 2024
+for year in $(ls $log_dir)
 do
-    cd $var0/log/$year
+    cd $log_dir/$year
     rm SUM.csv
     touch SUM.csv
     for f in *.csv; do
         cat "$f" >> SUM.csv
     done
 
-    cp SUM.csv $var0
-    cat SUM.csv >> $var0/SUM_FULL.csv       # hozzáillesztem az összegzéshez
+    cp SUM.csv $otp_dir
+    cat SUM.csv >> $otp_dir/SUM_FULL.csv       # hozzáillesztem az összegzéshez
 
-    # python3 $var0/csv_read.py
+    python3 $otp_dir/csv_read.py
+    mv balance.png $otp_dir/balance_$year.png
+    mv distribution.png $otp_dir/distribution_$year.png
 
-    cd $var0
+    cd $otp_dir
 done
 
-mv $var0/SUM_FULL.csv $var0/SUM.csv
-python3 $var0/csv_read.py
+mv $otp_dir/SUM_FULL.csv $otp_dir/SUM.csv
+python3 $otp_dir/csv_read.py
