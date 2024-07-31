@@ -74,7 +74,9 @@ if 0:
 
 
 
-balance=[774587]
+# balance=[1545093]
+balance=[0]
+
 for i_income in incomes_sorted:
     balance.append(balance[-1]+i_income)
 
@@ -94,8 +96,8 @@ plt.title("Balance")
 plt.xlabel("Date [UNIX time]")
 plt.ylabel("value [Ft]")
 plt.savefig("balance.png")
-plt.close()
-# plt.show()
+plt.show()
+# plt.close()
 
 
 
