@@ -28,46 +28,53 @@ print("START2")
 
 shape = np.shape(rgb)
 size = shape[0] * shape[1]
-# print(shape)
-# POWER = 0
-# for i in range(shape[0]):
-#     for j in range(shape[1]):
-#         # print(f"{rgb[i,j,0]}    {rgb[i,j,1]}    {rgb[i,j,2]}")
-#         POWER = POWER + (rgb[i,j,0]**2 + rgb[i,j,1]**2 + rgb[i,j,2]**2)
-#         # print(f"{rgb[i,j,0]**2 + rgb[i,j,1]**2 + rgb[i,j,2]**2} {POWER}")
-#     if i % 100 == 0:
-#         print(f"{i}/{shape[0]}  {POWER}")
-
-# print(POWER)
-
-POWER=np.sum(rgb[:,:,:]**2)
-
-print("START3")
 
 
-# print(np.sum(rgb[:,:,0]**2))
-# print(np.sum(rgb[:,:,1]**2))
-# print(np.sum(rgb[:,:,2]**2))
+powercalculation = 0
+if powercalculation:
+    # print(shape)
+    # POWER = 0
+    # for i in range(shape[0]):
+    #     for j in range(shape[1]):
+    #         # print(f"{rgb[i,j,0]}    {rgb[i,j,1]}    {rgb[i,j,2]}")
+    #         POWER = POWER + (rgb[i,j,0]**2 + rgb[i,j,1]**2 + rgb[i,j,2]**2)
+    #         # print(f"{rgb[i,j,0]**2 + rgb[i,j,1]**2 + rgb[i,j,2]**2} {POWER}")
+    #     if i % 100 == 0:
+    #         print(f"{i}/{shape[0]}  {POWER}")
 
-print(np.sqrt(np.sum(rgb[:,:,0]**2)/size/3))
-print(np.sqrt(np.sum(rgb[:,:,1]**2)/size/3))
-print(np.sqrt(np.sum(rgb[:,:,2]**2)/size/3))
+    # print(POWER)
 
-max_count = np.count_nonzero(rgb == 255)
-min_count = np.count_nonzero(rgb == 0)
-max = np.max(rgb)
-min = np.min(rgb)
+    POWER=np.sum(rgb[:,:,:]**2)
 
-print(f"AVG POWER = {np.sqrt(POWER/size/3):.2f}")
-print(f"max_count={max_count}\tyield = {max_count/size*100:.2f} %")
-print(f"min_count={min_count}\tyield = {min_count/size*100:.2f} %")
-print(f"max = {max}")
-print(f"min = {min}")
+    print("START3")
 
-# # Convert the processed image to a Pillow Image object
-# image = Image.fromarray(rgb)
 
-# # Save the image as a PNG file
-# image.save(output_file)
+    # print(np.sum(rgb[:,:,0]**2))
+    # print(np.sum(rgb[:,:,1]**2))
+    # print(np.sum(rgb[:,:,2]**2))
 
-# print("Conversion successful: DSC_0001.NEF to DSC_0001.png")
+    print(np.sqrt(np.sum(rgb[:,:,0]**2)/size/3))
+    print(np.sqrt(np.sum(rgb[:,:,1]**2)/size/3))
+    print(np.sqrt(np.sum(rgb[:,:,2]**2)/size/3))
+
+    max_count = np.count_nonzero(rgb == 255)
+    min_count = np.count_nonzero(rgb == 0)
+    max = np.max(rgb)
+    min = np.min(rgb)
+
+    print(f"AVG POWER = {np.sqrt(POWER/size/3):.2f}")
+    print(f"max_count={max_count}\tyield = {max_count/size*100:.2f} %")
+    print(f"min_count={min_count}\tyield = {min_count/size*100:.2f} %")
+    print(f"max = {max}")
+    print(f"min = {min}")
+
+
+saveimage = 0
+if saveimage:
+    # Convert the processed image to a Pillow Image object
+    image = Image.fromarray(rgb)
+
+    # Save the image as a PNG file
+    image.save(output_file)
+
+    print("Conversion successful: DSC_0001.NEF to DSC_0001.png")

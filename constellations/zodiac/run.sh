@@ -11,7 +11,8 @@ source ../venv/bin/activate
 # name=perseus
 # name=spring_midnight
 # name=winter_midnight
-name=summer_midnight
+#name=summer_midnight
+name=fall_midnight
 
 source scenarios/$name/list.sh
 vars=scenarios/$name/variables.toml

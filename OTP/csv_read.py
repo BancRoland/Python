@@ -59,8 +59,12 @@ with open('SUM.csv', newline='') as f:
 idx = np.argsort(Date)
 income = np.array(income)
 Date = np.array(Date)
+valuta = np.array(valuta)
 incomes_sorted = income[idx]
 date_sorted = Date[idx]
+valuta_sorted = valuta[idx]
+
+np.savez("fin_dat.npz", otp_date=date_sorted, otp_incomes=incomes_sorted, otp_valuta=valuta_sorted)
 
 if 0:
     plt.plot(incomes_sorted,'o')
@@ -74,8 +78,8 @@ if 0:
 
 
 
-# balance=[1545093]
-balance=[0]
+balance=[1545093]
+# balance=[0]
 
 for i_income in incomes_sorted:
     balance.append(balance[-1]+i_income)

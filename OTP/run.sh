@@ -1,7 +1,7 @@
 #!/bin/bash
 otp_dir=$(pwd)
-# log_dir=$otp_dir/log
-log_dir=$otp_dir/log_EUR
+log_dir=$otp_dir/log
+# log_dir=$otp_dir/log_EUR
 
 rm SUM_FULL.csv
 touch SUM_FULL.csv
