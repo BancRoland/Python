@@ -68,7 +68,7 @@ incomes_sorted = income[idx]
 date_sorted = Date[idx]
 valuta_sorted = valuta[idx]
 
-np.savez("fin_dat.npz", erste_date=date_sorted, erste_incomes=incomes_sorted, erste_valuta=valuta_sorted)
+# np.savez("fin_dat.npz", date=date_sorted, incomes=incomes_sorted, valuta=valuta_sorted)
 
 # if 0:
 #     plt.plot(incomes_sorted,'o')
@@ -82,11 +82,11 @@ np.savez("fin_dat.npz", erste_date=date_sorted, erste_incomes=incomes_sorted, er
 
 
 
+balance=[0]
 # balance=[0]
-# # balance=[0]
 
-# for i_income in incomes_sorted:
-#     balance.append(balance[-1]+i_income)
+for i_income in incomes_sorted:
+    balance.append(balance[-1]+i_income)
 
 # plt.step(date_sorted,balance[1::],'o-',where='post')
 # for i_new_month in new_month:
@@ -144,3 +144,4 @@ np.savez("fin_dat.npz", erste_date=date_sorted, erste_incomes=incomes_sorted, er
 # # plt.grid()
 # # plt.show()
 
+np.savez("fin_dat.npz", balance=balance[1::], date=date_sorted, incomes=incomes_sorted, valuta=valuta_sorted)

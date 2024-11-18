@@ -78,8 +78,7 @@ if 0:
 
 
 
-balance=[1545093]
-# balance=[0]
+balance=[0]
 
 for i_income in incomes_sorted:
     balance.append(balance[-1]+i_income)
@@ -100,7 +99,7 @@ plt.title("Balance")
 plt.xlabel("Date [UNIX time]")
 plt.ylabel("value [Ft]")
 plt.savefig("balance.png")
-plt.show()
+# plt.show()
 # plt.close()
 
 
@@ -139,3 +138,7 @@ if 1:
 # # plt.yscale("log")
 # plt.grid()
 # plt.show()
+
+date_sorted=np.array(date_sorted)
+valuta_sorted=np.array(valuta_sorted)
+np.savez("fin_dat.npz", balance=balance[1::], date=date_sorted, incomes=incomes_sorted, valuta=valuta_sorted)
