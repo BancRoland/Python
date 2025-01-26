@@ -20,4 +20,9 @@ bash run.sh
 cp fin_dat.npz ../fin_dat_puff_eur.npz
 
 cd ..
+cd savings
+bash run.sh
+cp fin_dat.npz ../fin_dat_savings.npz
+
+cd ..
 python3 process.py

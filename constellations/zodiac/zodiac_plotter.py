@@ -93,6 +93,11 @@ if 1:
     plt.xlim([-np.pi,np.pi])
     plt.ylim([-np.pi/2,np.pi/2])
     plt.gca().set_aspect('equal', adjustable='box')
+    for i in range(-6,6):
+        plt.axvline(i/6*np.pi,linestyle="--",color="gray",linewidth=0.5)
+    for i in range(-3,3):
+        plt.axhline(i/6*np.pi,linestyle="--",color="gray",linewidth=0.5)
+
     plt.savefig("toprint2.png", dpi=500)
     # plt.show()
 
@@ -107,11 +112,26 @@ for star in const:
     S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
     # plt.scatter(w[1], w[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
     ax.scatter(theta_R[0], theta_R[1], c="black", marker=marker, s=a*(1+hmg-S), alpha=alpha)
-# plt.grid()
+plt.grid()
 ax.set_ylim(0, np.tan(fov/4/180*np.pi))
 ax.set_yticklabels([])
 plt.gca().set_aspect('equal', adjustable='box')
 plt.grid(False)
+# plt.grid(True)
+
+for i in range(-6,6):
+    plt.axvline(i/6*np.pi,linestyle="--",color="gray",linewidth=0.5)
+plt.axhline(y=0.5, linestyle='--', color='gray',linewidth=0.5)
+
+circle_radius = np.tan(15/180*np.pi)*2
+ax.plot(np.linspace(0, 2 * np.pi, 100), [circle_radius] * 100, linestyle='--', color='gray', label=f'r = {circle_radius}')
+
+circle_radius = np.tan(15/180*np.pi)
+ax.plot(np.linspace(0, 2 * np.pi, 100), [circle_radius] * 100, linestyle='--', color='gray', label=f'r = {circle_radius}')
+
+
+# for i in range(-3,3):
+#     plt.axhline(i/6*np.pi,linestyle="--",color="gray",linewidth=0.5)
 plt.savefig("toprint_polar.png", dpi=500)
 # plt.show()
 
