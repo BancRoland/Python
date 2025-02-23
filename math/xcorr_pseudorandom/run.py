@@ -2,44 +2,115 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
+def get_checked_outs(out, check_comb):
+    checked_outs=np.zeros(len(check_comb)+1)
+    checked_outs[0]=out[-1]
+    for i in range(len(check_comb)):
+        checked_outs[i+1]=out[int(check_comb[i])]
+    return checked_outs
+    
+
+# get the possible combinatons of checking indexes in D flip flop chain
+def getChecks(L,num_of_checks):
+    out=np.zeros([(L-1)**num_of_checks,num_of_checks])
+    for i in range((L-1)**num_of_checks):
+        for j in range(num_of_checks):
+            val=np.floor(i/((L-1)**j))%(L-1)
+            out[i,j]=(val)
+    return out
+            
+def is_sorted(v):
+    if np.array_equal(v, np.sort(v)):
+        return True
+    else:
+        return False
+
+def nxor(v):
+    out=0
+    for i in v:
+        if i:
+            out=out^1
+    # print(f'nxor{v} = {out^1}')
+    return out^1
+
+def anyMatch(v):
+    for i in range(len(v)):
+        for j in range(len(v)):
+            if i!=j and v[i]==v[j]:
+                return 1
+    return 0
+
 def allzero(v):
     for i in range(len(v)):
         if v[i]==1:
             return 0
     return 1
 
-print("""
-                                    ---------------------+                
-                                    |                    |    +------+    
-    +---+    +---+           +---+  |           +---+    |----|      |    
-    |   |    |   |           |   |  |           |   |         | NXOR ----|
-|-- | D |--- | D |-- ... --- | D |--+-- ... --- | D |---------|      |   |
-|   |   |    |   |           |   |              |   |         +------+   |
-|   +---+    +---+           +---+              +---+                    |
-|     0        1               N                 L-1                     |
-|                                                                        |
-|                                                                        |
--------------------------------------------------------------------------|
-""")
+# print("""
+#                                     ---------------------+                
+#                                     |                    |    +------+    
+#     +---+    +---+           +---+  |           +---+    |----|      |    
+#     |   |    |   |           |   |  |           |   |         | NXOR ----|
+# |-- | D |--- | D |-- ... --- | D |--+-- ... --- | D |---------|      |   |
+# |   |   |    |   |           |   |              |   |         +------+   |
+# |   +---+    +---+           +---+              +---+                    |
+# |     0        1               N                 L-1                     |
+# |                                                                        |
+# |                                                                        |
+# -------------------------------------------------------------------------|
+# """)
+
+print("""                                                                                                         
+                                                                                   +------+              
+                                    +----------------------------------------------|      |              
+                                    |                                              |      |              
+                                    |              +-------------------------------|      |              
+                                    |              |                            .  |      |              
+                                    |              |                            .  |      |              
+                                    |              |                            .  | NXOR |------+       
+                                    |              |              +----------------|      |      |       
+                                    |              |              |                |      |      |       
+        +---+   +---+         +---+ |        +---+ |        +---+ |        +---+   |      |      |       
++-------| D |---| D |-- ... --| D |-+- ... --| D |-+- ... --| D |-+- ... --| D |---|      |      |       
+|       +---+   +---+         +---+          +---+          +---+          +---+   +------+      |       
+|         0       1            C[0]           C[1]          C[G-1]          L-1                  |       
+|                                                                                                |       
+|                                                                                                |       
+|                                                                                                |       
++------------------------------------------------------------------------------------------------+       
+""")                                                                                                         
+
+MIN_LEN = 8
+MAX_LEN = 8
+MAX_GATES = 3
 
 if 1:
-    for L in range(2,10):
-        print(f"length= {L}")
-        for C in range(L-1):
-            CHECK=C
-            # out=np.floor(np.random.rand(10)*2)
-            v=np.zeros(0)
-            out=np.zeros(L)
-            while True:
-                # print(out)
-                new=(bool(out[-1])^bool(out[CHECK]))^1
-                out=np.concatenate([[new],out[:-1]])
-                v=np.concatenate([v,[new]])
-                if allzero(out)==1:
-                    break
-            print(f"checkIDX {C}    len= {len(v)}")
+    for L in range(MIN_LEN,MAX_LEN+1):
+        for G in range(1,min(MAX_GATES+1,L)):  #number of checking positions
+            print(f"\nlength(L)= {L}    number of intermediate checking places(G)= {G}")
+            print(f"checkIDX(C)\trnd str len\tefficency")
+            check_mx=getChecks(L,G)
+            for i in range(np.shape(check_mx)[0]):
+                check_comb = check_mx[i]
+                if not anyMatch(check_comb) and is_sorted(check_comb):
+                    # print(check_comb)
+                    # out=np.floor(np.random.rand(10)*2)
+                    v=np.zeros(0)
+                    out=np.zeros(L)
+                    while True:
+                        # print(out)
+                        # new=(((((bool(out[-1])^bool(out[CHECK0]))^bool(out[CHECK1]))^bool(out[CHECK2]))^bool(out[CHECK3])))^1
+                        # new=(bool(out[-1])^bool(out[CHECK0]))^1
+                        checked_outs=get_checked_outs(out,check_comb)
+                        new=nxor(checked_outs)
+                        out=np.concatenate([[new],out[:-1]])
+                        v=np.concatenate([v,[new]])
+                        # print(out)
+                        if allzero(out)==1:
+                            break
+                    print(f"{check_comb}\t{len(v)}\t{len(v)/(2**L-1)*100:.2f} %")
 
-if 1:
+if 0:
     v=np.zeros(0)
     out=np.zeros(8)
     print("complex float z[217] = {",end="")

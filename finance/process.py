@@ -20,7 +20,8 @@ def are_dates_in_same_month(timestamp1, timestamp2):
     # Compare the year and month
     return out
 
-def getSpending(Date, incomes_sorted):
+def getSpending(Date, cumbal):
+    incomes_sorted=-cumbal[:-1]+cumbal[1::]
     spending = [0]
     outDate = []
     for i in range(len(incomes_sorted)):
@@ -86,7 +87,7 @@ balance=balance[1::]
 
 cumdate,cumbal=getCumbal(Date,balance)
 
-spendingDate, mondthlySpending = getSpending(Date, incomes_sorted)
+spendingDate, mondthlySpending = getSpending(cumdate, cumbal)
 
 plt.step(data_otp['date'], data_otp['balance'],'o-',where='post')
 plt.step(data_otp_eur['date'], 400*data_otp_eur['balance'],'o-',where='post')
