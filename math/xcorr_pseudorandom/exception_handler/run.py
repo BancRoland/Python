@@ -4,9 +4,9 @@ import time
 
 def get_checked_outs(out, check_comb):
     checked_outs=np.zeros(len(check_comb)+1)
-    checked_outs[0]=out[-1]
+    checked_outs[-1]=out[-1]
     for i in range(len(check_comb)):
-        checked_outs[i+1]=out[int(check_comb[i])]
+        checked_outs[i]=out[int(check_comb[i])]
     return checked_outs
     
 
@@ -25,13 +25,13 @@ def is_sorted(v):
     else:
         return False
 
-def nxor(v):
+def xor(v):
     out=0
     for i in v:
         if i:
             out=out^1
     # print(f'nxor{v} = {out^1}')
-    return out^1
+    return out
 
 def anyMatch(v):
     for i in range(len(v)):
@@ -45,6 +45,18 @@ def allzero(v):
         if v[i]==1:
             return 0
     return 1
+
+def initVal(v):
+    w=np.zeros(len(v))
+    w[0]=1
+    return w
+def isInitVal(v):
+    w=initVal(v)
+    if np.array_equal(w,v):
+        return 1
+    else:
+        return 0
+
 
 # print("""
 #                                     ---------------------+                
@@ -80,8 +92,8 @@ print("""
 +------------------------------------------------------------------------------------------------+       
 """)                                                                                                         
 
-MIN_LEN = 5
-MAX_LEN = 5
+MIN_LEN = 16
+MAX_LEN = 16
 
 MIN_GATES = 3
 MAX_GATES = 3
@@ -104,26 +116,31 @@ if 1:
                     # out=np.floor(np.random.rand(10)*2)
                     v=np.zeros(0)
                     out=np.zeros(L)
+                    out=initVal(out)
                     while True:
                         # print(out)
                         # new=(((((bool(out[-1])^bool(out[CHECK0]))^bool(out[CHECK1]))^bool(out[CHECK2]))^bool(out[CHECK3])))^1
                         # new=(bool(out[-1])^bool(out[CHECK0]))^1
-                        # print(out)
                         checked_outs=get_checked_outs(out,check_comb)
-                        # print(checked_outs)
-                        new=nxor(checked_outs)
-                        # print(new)
-                        # print()
+                        new=xor(checked_outs)
+                        if 0:
+                            print(f"out: {out}")
+                            print(f"checked_outs: {checked_outs}")
+                            print(f"check_comb: {check_comb}")
+                            print(f"new: {new}")
+                            print()
                         out=np.concatenate([[new],out[:-1]])
                         v=np.concatenate([v,[new]])
-                        # print(out)
-                        if allzero(out)==1:
+                        if isInitVal(out):
                             break
                     if not PRINT_ONLY_WIN or (len(v) >= (2**L-1)):
                         print(f"{check_comb}\t{len(v)}\t{len(v)/(2**L-1)*100:.4f} %")
                         if PRINT_FULL_STRING:
-                            w=v[::-1]
-                            print(w.astype(int))
+                            # w=v[::-1]
+                            w=v.astype(int)
+                            w=np.concatenate([[w[-1]],w[0:-1:]])
+                            print(w)
+                            np.save("out.npy",w)
 
 if 0:
     v=np.zeros(0)
