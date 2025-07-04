@@ -2,7 +2,9 @@
 
 source ../venv/bin/activate
 
-name=full
+# name=blind_elevation
+# name=blind_spots
+# name=full
 # name=equatorial
 # name=zodiac_only
 # name=zodiac
@@ -11,7 +13,7 @@ name=full
 # name=perseus
 # name=spring_midnight
 # name=winter_midnight
-#name=summer_midnight
+name=summer_midnight
 # name=fall_midnight
 
 source scenarios/$name/list.sh

@@ -5,6 +5,8 @@ import utils
 import argparse
 import toml
 
+CONNECT=0
+
 # Path to the TOML file
 toml_file = "variables.toml"
 
@@ -69,6 +71,8 @@ const=np.load("stars_test.npy", allow_pickle=True)
 
 if 1:
     plt.figure(figsize=(10, 8)) 
+    x=[]
+    y=[]
     for star in const:
         ra  = star['Right Ascension (deg)']/180*pi
         dec = star['Declination (deg)']/180*np.pi
@@ -76,6 +80,11 @@ if 1:
         w = utils.upproject(v)
         S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
         plt.scatter(w[1], w[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
+        x.append(w[1])
+        y.append(w[0])
+    if CONNECT:
+        plt.plot(x, y, color="black")
+
     # plt.grid()
     plt.gca().set_aspect('equal', adjustable='box')
     plt.savefig("toprint.png", dpi=500)
@@ -83,6 +92,8 @@ if 1:
 
 if 1:
     plt.figure(figsize=(15, 9)) 
+    x=[]
+    y=[]
     for star in const:
         ra  = star['Right Ascension (deg)']/180*pi
         dec = star['Declination (deg)']/180*np.pi
@@ -90,6 +101,16 @@ if 1:
         w = utils.cylinder_project(v)
         S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
         plt.scatter(w[0], w[1], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
+        y.append(w[1])
+        x.append(w[0])
+    if CONNECT:
+        # plt.plot(y, x, color="black")
+        for i in range(len(x)-1):
+            dx = x[i+1] - x[i]
+            dy = y[i+1] - y[i]
+            plt.arrow(x[i], y[i], dx*1 , dy*1, 
+            head_width=0.05, head_length=0.1, fc='red', ec='red', length_includes_head=True)
+
     plt.xlim([-np.pi,np.pi])
     plt.ylim([-np.pi/2,np.pi/2])
     plt.gca().set_aspect('equal', adjustable='box')
@@ -101,9 +122,49 @@ if 1:
     plt.savefig("toprint2.png", dpi=500)
     # plt.show()
 
+print("toprint2 DONE")
+
+
+if 1:
+    plt.figure(figsize=(15, 9)) 
+    x=[]
+    y=[]
+    for star in const:
+        ra  = star['Right Ascension (deg)']
+        dec = star['Declination (deg)']
+        # v = utils.get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
+        # w = utils.cylinder_project(v)
+        S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
+        plt.scatter(ra, dec, color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
+        y.append(ra)
+        x.append(dec)
+    if CONNECT:
+        # plt.plot(y, x, color="black")
+        for i in range(len(x)-1):
+            dx = x[i+1] - x[i]
+            dy = y[i+1] - y[i]
+            plt.arrow(y[i], x[i], dy*1 , dx*1, 
+            head_width=0.05, head_length=0.1, fc='red', ec='red', length_includes_head=True)
+
+    # plt.xlim([-np.pi,np.pi])
+    # plt.ylim([-np.pi/2,np.pi/2])
+    plt.xlim([-10,370])
+    plt.ylim([-180,180])
+    # plt.gca().set_aspect('equal', adjustable='box')
+    for i in range(0,13):
+        plt.axvline(i/6*180,linestyle="--",color="gray",linewidth=0.5)
+    for i in range(-6,6):
+        plt.axhline(i/6*180,linestyle="--",color="gray",linewidth=0.5)
+
+    plt.savefig("toprint3.png", dpi=500)
+    # plt.show()
+print("toprint3 DONE")
+
 
 plt.figure(figsize=(10, 8)) 
 ax = plt.subplot(111, projection='polar')
+x=[]
+y=[]
 for star in const:
     ra  = star['Right Ascension (deg)']/180*pi
     dec = star['Declination (deg)']/180*np.pi
@@ -112,22 +173,26 @@ for star in const:
     S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
     # plt.scatter(w[1], w[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
     ax.scatter(theta_R[0], theta_R[1], c="black", marker=marker, s=a*(1+hmg-S), alpha=alpha)
-plt.grid()
+    x.append(theta_R[1])
+    y.append(theta_R[0])
+if CONNECT:
+    plt.plot(y, x, color="black")
+# plt.grid()
 ax.set_ylim(0, np.tan(fov/4/180*np.pi))
 ax.set_yticklabels([])
 plt.gca().set_aspect('equal', adjustable='box')
 plt.grid(False)
 # plt.grid(True)
 
-for i in range(-6,6):
-    plt.axvline(i/6*np.pi,linestyle="--",color="gray",linewidth=0.5)
-plt.axhline(y=0.5, linestyle='--', color='gray',linewidth=0.5)
+# for i in range(-6,6):
+#     plt.axvline(i/6*np.pi,linestyle="--",color="gray",linewidth=0.5)
+# plt.axhline(y=0.5, linestyle='--', color='gray',linewidth=0.5)
 
-circle_radius = np.tan(15/180*np.pi)*2
-ax.plot(np.linspace(0, 2 * np.pi, 100), [circle_radius] * 100, linestyle='--', color='gray', label=f'r = {circle_radius}')
+# # circle_radius = np.tan(15/180*np.pi)*2
+# ax.plot(np.linspace(0, 2 * np.pi, 100), [circle_radius] * 100, linestyle='--', color='gray', label=f'r = {circle_radius}')
 
-circle_radius = np.tan(15/180*np.pi)
-ax.plot(np.linspace(0, 2 * np.pi, 100), [circle_radius] * 100, linestyle='--', color='gray', label=f'r = {circle_radius}')
+# circle_radius = np.tan(15/180*np.pi)
+# ax.plot(np.linspace(0, 2 * np.pi, 100), [circle_radius] * 100, linestyle='--', color='gray', label=f'r = {circle_radius}')
 
 
 # for i in range(-3,3):

@@ -10,7 +10,7 @@ import struct
 # 	return(v*2)
 
 fs=44100
-fm=1000
+fm=1024
 
 size=int(fs/10)
 
