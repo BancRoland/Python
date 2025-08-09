@@ -2,6 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.io.wavfile import write
 
+import sys
+sys.path.append('/home/roland/Desktop/Python/DSP')
+import dsp
+
 
 Nz=5      #kitöltőnullák
 sr=5    #samprate
@@ -92,11 +96,15 @@ def resa(v,fs,b):
 
 codes=[]
 
-frq_list=[1000, 1050, 1100, 1150, 1200, 1250]
+# frq_list=[1000, 1050, 1100, 1150, 1200, 1250]
 text_list=["NOAA", "MANT", "URTABOR", "MISKOLC", "K NORBI", "K TIBOR", "KOROLJOV", "TUCSOK","KALIMBA","NEWTON"]
 
-# frq_list=[1000, 1010]
-# text_list=["ab", "cde"]
+# frq_list=[100, 1000, 10000]
+# text_list=["a", "e", "e"]
+
+# frq_list=[10, 100, 1000]
+# text_list=["a", "e", "T"]
+
 for i in range(len(text_list)):
     text=text_list[i]
     morse_code=text_to_morse(text)
@@ -110,6 +118,8 @@ for i in range(len(text_list)):
     #code3=resa(code21,fs,sr)
     code3=inc(code21,int(fs/sr))
     code4=upmix(code3,f+i*50,fs)
+    # code4=upmix(code3,frq_list[i],fs)
+
 
 
     plt.plot(code21,'.-')
@@ -133,3 +143,23 @@ for arr in codes:
 result=np.array(result)/len(text_list)
 scaled = np.int16(result * 32767)
 write(f'out.wav', fs, scaled)
+
+t=np.arange(len(result))/fs
+plt.figure()
+plt.plot(t,result)
+plt.xlabel("time [sec]")
+plt.ylabel("Amplitude []")
+plt.grid()
+plt.savefig("time_dom.png")
+plt.show()
+
+
+# # powerspec=dsp.average_correlation_spectrum(result,result, 10000, True)
+# powerspec=np.abs(np.fft.fft(result))**2
+# f=np.range(len(result)
+
+
+# plt.figure()
+# plt.plot(np.log(powerspec))
+# plt.grid()
+# plt.show()

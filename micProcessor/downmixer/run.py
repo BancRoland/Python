@@ -10,7 +10,7 @@ import struct
 # 	return(v*2)
 
 fs=44100
-fm=3844
+fm=1024
 
 RATIO=1
 

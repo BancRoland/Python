@@ -34,6 +34,7 @@ def agwn(v,A):
     out=v+np.random.normal(0,A/np.sqrt(2),len(v))+1j*np.random.normal(0,A/np.sqrt(2),len(v))
     return(out)
 
+"also good for power spectrum, if two signals match"
 def average_correlation_spectrum(surv, ref, correlation_length, do_avg=True):
 
     number_of_iterations = int(len(ref)/correlation_length)
