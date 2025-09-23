@@ -96,3 +96,4 @@ pipe
 *.S2P
 constellations/zodiac/stars_test.npy
 *.npz
+*.npy

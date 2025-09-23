@@ -11,6 +11,7 @@ _,ax = plt.subplots(subplot_kw = {'projection': 'polar', 'theta_direction': -1})
 
 ax.set_theta_zero_location("N")
 ax.plot(angle, value, 'o', markersize=8, color=f"C0")
+ax.plot([0,1],[0,1])
 # ax.annotate('', xy=(angle,1), xytext=(0, 0), arrowprops=dict(arrowstyle="->"))
 ax.set_rmin(0)
 ax.set_rmax(2)

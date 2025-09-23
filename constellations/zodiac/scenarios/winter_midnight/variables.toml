@@ -10,3 +10,4 @@ Dec_sec=0
 
 [z_rotation]
 zrot=180.0
+fov  = 180.0

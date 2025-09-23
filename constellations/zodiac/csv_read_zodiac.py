@@ -41,8 +41,8 @@ def convert_coords(ra, dec):
 
     # print(f'ra: {ra} = {c.ra.deg} = {matchesRA} = {RA}')
     # print(f'dec: {dec} = {c.dec.deg} = {matchesDEC} = {DEC}')
-    print(f'ra: {ra} = {matchesRA} = {RA}')
-    print(f'dec: {dec} = {matchesDEC} = {DEC}')
+    # print(f'ra: {ra} = {matchesRA} = {RA}')
+    # print(f'dec: {dec} = {matchesDEC} = {DEC}')
     return RA, DEC
 
 
@@ -74,3 +74,41 @@ stars_data = read_csv(filename)
 np.save("stars_test.npy", stars_data)
 # for star in stars_data:
 #     print(star)
+
+
+# Function to read the CSV file
+def read_lines_csv(filename):
+    data = []
+    with open(filename, newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            # Convert RA and Dec to degrees
+            # print(row['Right Ascension'], row['Declination'])
+            # print(row['Name'])
+            ra_deg1, dec_deg1 = convert_coords(row['Right Ascension1'], row['Declination1'])
+            ra_deg2, dec_deg2 = convert_coords(row['Right Ascension2'], row['Declination2'])
+            # Append the processed data to the list
+            # print(row['Name1'])
+            data.append({
+                'Name1': row['Name1'],
+                'Right Ascension (deg)1': ra_deg1,
+                'Declination (deg)1': dec_deg1,
+                'Apparent Magnitude1': float(row['Apparent Magnitude1']),
+                'Constellation1': row['Constellation1'],
+                'Name2': row['Name2'],
+                'Right Ascension (deg)2': ra_deg2,
+                'Declination (deg)2': dec_deg2,
+                'Apparent Magnitude2': float(row['Apparent Magnitude2']),
+                'Constellation2': row['Constellation2'],
+                'linestyle': row['linestyle'],
+                'color': row['color'],
+                'width': row['width'],
+                'alpha': row['alpha']
+                })
+    return data
+
+# Example usage
+filename_lines = 'zodiac_lines.csv'  # Replace 'stars.csv' with the path to your CSV file
+lines_data = read_lines_csv(filename_lines)
+
+np.save("lines_data.npy", lines_data)

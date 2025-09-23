@@ -68,6 +68,7 @@ hmg     = args.hmg
 hmg2    = args.hmg2
 
 const=np.load("stars_test.npy", allow_pickle=True)
+lines=np.load("lines_data.npy", allow_pickle=True)
 
 if 1:
     plt.figure(figsize=(10, 8)) 
@@ -82,8 +83,25 @@ if 1:
         plt.scatter(w[1], w[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
         x.append(w[1])
         y.append(w[0])
-    if CONNECT:
-        plt.plot(x, y, color="black")
+    if 1:
+        # plt.plot(x, y, color="black")
+        for line in lines:
+                    ra1  = line['Right Ascension (deg)1']/180*pi
+                    dec1 = line['Declination (deg)1']/180*np.pi
+                    ra2  = line['Right Ascension (deg)2']/180*pi
+                    dec2 = line['Declination (deg)2']/180*np.pi
+                    linestyle = line['linestyle']
+                    color = line['color']
+                    width = line['width']
+                    alpha = line['alpha']
+
+                    v1 = utils.get_transformed_vector(ra1,dec1,center_Dec_deg, center_ra_deg, zrot_deg)
+                    w1 = utils.upproject(v1)
+                    v2 = utils.get_transformed_vector(ra2,dec2,center_Dec_deg, center_ra_deg, zrot_deg)
+                    w2 = utils.upproject(v2)
+                    S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
+                    # plt.scatter(w[1], w[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
+                    plt.plot([w1[1],w2[1]],[w1[0],w2[0]],linewidth=width,linestyle=linestyle,alpha=alpha,color=color)
 
     # plt.grid()
     plt.gca().set_aspect('equal', adjustable='box')
@@ -200,6 +218,33 @@ plt.grid(False)
 plt.savefig("toprint_polar.png", dpi=500)
 # plt.show()
 
+if 1:
+    # plt.plot(x, y, color="black")
+    for line in lines:
+                ra1  = line['Right Ascension (deg)1']/180*pi
+                dec1 = line['Declination (deg)1']/180*np.pi
+                ra2  = line['Right Ascension (deg)2']/180*pi
+                dec2 = line['Declination (deg)2']/180*np.pi
+                linestyle = line['linestyle']
+                color = line['color']
+                width = line['width']
+                alpha = line['alpha']
+
+                v1 = utils.get_transformed_vector(ra1,dec1,center_Dec_deg, center_ra_deg, zrot_deg)
+                theta_R1 = utils.polar_upproject(v1)
+
+                v2 = utils.get_transformed_vector(ra2,dec2,center_Dec_deg, center_ra_deg, zrot_deg)
+                theta_R2 = utils.polar_upproject(v2)
+                
+                # S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
+                # plt.scatter(w[1], w[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
+                plt.plot([theta_R1[0],theta_R2[0]],[theta_R1[1],theta_R2[1]],linewidth=width,linestyle=linestyle,alpha=1,color=color)
+                plt.plot([0,0],[1,1])
+
+                
+plt.savefig("toprint_polar_lines.png", dpi=500)
+
+
 
 # plt.figure(figsize=(10, 8)) 
 # ax = plt.subplot(111, projection='polar')
@@ -219,3 +264,5 @@ plt.savefig("toprint_polar.png", dpi=500)
 # ax.set_theta_zero_location('N')
 # plt.savefig("toprint_polar2.png", dpi=500)
 # plt.show()
+
+

@@ -40,6 +40,7 @@ constellations=(
 "Triangulum"
 "Canis_Minor"
 "Libra"
+"Lepus"
 "Orion"
 "Sagittarius"
 "Corvus"

@@ -244,3 +244,32 @@ def get_random_manchester(size):
             out[idx*2+1]=-1
     return out
 
+def inc(v, R):
+    w=1j*np.zeros(len(v)*R)
+    print(len(v)*R)
+    for i in range(len(v)):
+        for j in range(R):
+            #print(i*R+j)
+            #w[i*R+j]=v[i]
+            w[i*R+j]=v[i]
+    return(w)
+
+def repeat(v,a):
+    w=np.zeros(len(v)*a)
+    for i in range(a):
+        w[(i*len(v)):((i+1)*len(v))]=np.array(v)
+    return(w)
+
+def upmix(v,f,fs):
+    P=np.arange(len(v))*f/fs*2*np.pi
+    mix=np.exp(1j*P)
+    w=v*mix
+    return(w)
+
+def dec(v,a):
+    w=v[::a]
+    return(w)
+
+def resa(v,fs,b):
+    w=dec(inc(v,fs),b)
+    return(w)

@@ -30,7 +30,8 @@ def cShape(i,N):
         return 0,0
 
 # Open an image file
-image_path = 'zebra.png'
+# image_path = 'zebra.png'
+image_path = 'rails.png'
 # image_path = 'galaxy.png'
 # image_path = 'glx2.png'
 img = Image.open(image_path)
@@ -81,7 +82,7 @@ dumm=1j*np.zeros(np.shape(Fr))
 dumm3=1j*np.zeros(np.shape(Fr))
 # dumm2=1j*np.zeros(np.shape(Fr))
 
-N=50
+N=30
 # print(np.shape(Fr))
 
 # for k in range(5):
