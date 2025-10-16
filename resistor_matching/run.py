@@ -122,13 +122,13 @@ plt.figure(figsize=(10, 6))
 # plt.scatter(Resistors_target, Resistors_target, color='gray', label='Available resistors', marker='o', alpha=0.5)
 
 # Plot target values as red Xs
-plt.scatter(Resistors_target, Resistors_target, color='red', label='Target values', marker='x', s=50, zorder=0)
+plt.scatter(Resistors_target, Resistors_target, color='C0', label='Target values', marker='+', s=200, zorder=0)
 
 # Plot step function connecting target indices to their best match
-plt.step(Resistors_target, best_values, where='mid', color='C0', label='Best matches', linewidth=1, zorder=1)
+plt.step(Resistors_target, best_values, where='mid', color='grey', linestyle="--", linewidth=1, zorder=1, alpha=0.7)
 
 # Also plot best matches as green triangles for clarity
-plt.scatter(Resistors_target, best_values, color='C1', marker='o', s=40, zorder=2)
+plt.scatter(Resistors_target, best_values, color='C1', marker='.', s=40, zorder=2, label='Best matches')
 
 # # Annotate with indexes
 # for i, m in enumerate(matches):
@@ -140,7 +140,12 @@ plt.title("Approximation of target resistances with parellel combination of avai
 plt.xlabel("Target resistance [Ω]")
 plt.ylabel("Resistance [Ω]")
 plt.legend()
-plt.grid(True)
+
+# Major grid
+plt.grid(which='major', linestyle='-', linewidth=0.75)
+# Minor grid
+plt.grid(which='minor', linestyle=':', linewidth=0.25, color='gray')
+
 plt.tight_layout()
 
 plt.xscale('log')
@@ -163,12 +168,10 @@ plt.figure(figsize=(10, 6))
 diff= np.abs(best_values-Resistors_target)
 
 # Also plot best matches as green triangles for clarity
-plt.scatter(Resistors_target, diff, color='C1', marker='o', s=40, zorder=2)
+plt.scatter(Resistors_target, diff, color='C1', marker='.', s=40, zorder=2, label='Best matches')
 
 # Plot step function connecting target indices to their best match
-plt.step(Resistors_target, diff, where='mid', color='C0', label='Best matches', linewidth=1, zorder=1)
-
-
+plt.step(Resistors_target, diff, where='mid', color='grey', linewidth=1, zorder=1, alpha=0.7, linestyle="--")
 
 # # Annotate with indexes
 # for i, m in enumerate(matches):
@@ -180,7 +183,12 @@ plt.title("Absolute Difference between nominal and measured resistor values for 
 plt.xlabel("Target resistance [Ω]")
 plt.ylabel("Absolute resistance difference [Ω]")
 plt.legend()
-plt.grid(True)
+
+# Major grid
+plt.grid(which='major', linestyle='-', linewidth=0.75)
+# Minor grid
+plt.grid(which='minor', linestyle=':', linewidth=0.5, color='gray')
+
 plt.tight_layout()
 
 plt.xscale('log')
@@ -205,10 +213,10 @@ plt.figure(figsize=(10, 6))
 diff_percent= np.abs((best_values-Resistors_target)/Resistors_target*100)
 
 # Also plot best matches as green triangles for clarity
-plt.scatter(Resistors_target, diff_percent, color='C1', marker='.', s=40, zorder=2)
+plt.scatter(Resistors_target, diff_percent, color='C1', marker='.', s=40, zorder=2, label='Best matches')
 
 # Plot step function connecting target indices to their best match
-plt.step(Resistors_target, diff_percent, where='mid', color='C0', label='Best matches', linewidth=1, zorder=1)
+plt.step(Resistors_target, diff_percent, where='mid', color='grey', linestyle="--", linewidth=1, zorder=1, alpha=0.7)
 
 
 # # Annotate with indexes
@@ -221,11 +229,18 @@ plt.title("Relative difference between nominal and measured resistor values for 
 plt.xlabel("Target Resistance [Ω]")
 plt.ylabel("relative difference [%]")
 plt.legend()
-plt.grid(True)
+
+# Major grid
+plt.grid(which='major', linestyle='-', linewidth=0.75)
+# Minor grid
+plt.grid(which='minor', linestyle=':', linewidth=0.5, color='gray')
+
 plt.tight_layout()
 
-plt.axhline(1,linestyle="--",linewidth=1, color="C2")
-plt.axhline(5,linestyle="--",linewidth=1, color="C2")
+plt.axhline(1,linestyle="--",linewidth=1, color="black")
+plt.axhline(5,linestyle="--",linewidth=1, color="black")
+plt.text(2,1.1," 1% threshold line", color="black")
+plt.text(2,5.5," 5% threshold line", color="black")
 
 
 plt.xscale('log')
