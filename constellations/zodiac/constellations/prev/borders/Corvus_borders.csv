@@ -1,0 +1,7 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+-,12h56m31.9326s,-11.6773882˚00'00",0,CRV,-,12h56m40.0488s,-22.6773415˚00'00",0,CRV,:,grey,1,0.5
+-,11h56m23.2224s,-11.6957970˚00'00",0,CRV,-,12h56m31.9326s,-11.6773882˚00'00",0,CRV,:,grey,1,0.5
+-,11h56m21.9145s,-25.1957951˚00'00",0,CRV,-,11h56m23.2224s,-11.6957970˚00'00",0,CRV,:,grey,1,0.5
+-,12h41m37.0860s,-25.1864014˚00'00",0,CRV,-,11h56m21.9145s,-25.1957951˚00'00",0,CRV,:,grey,1,0.5
+-,12h41m35.6406s,-22.6864090˚00'00",0,CRV,-,12h41m37.0860s,-25.1864014˚00'00",0,CRV,:,grey,1,0.5
+-,12h56m40.0488s,-22.6773415˚00'00",0,CRV,-,12h41m35.6406s,-22.6864090˚00'00",0,CRV,:,grey,1,0.5
