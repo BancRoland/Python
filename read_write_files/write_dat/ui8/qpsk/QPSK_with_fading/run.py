@@ -20,8 +20,10 @@ symNum    = 10000    # []     number of symbols
 f_sample  = 800000 # [Hz]     sample rate
 f_symbol  = 32000   # [Hz]     symbol rate
 f_offset  = 10000       # frequency offset error simulation
-A   = 30
-noise_val = 10  #szórás
+A   = 40
+noise_val = 20  #szórás
+
+f_mod     = 20 # [Hz]  frequenc of modulation
 
 samples_in_one_symbol = int(np.floor(f_sample/f_symbol))
 
@@ -45,6 +47,12 @@ dsp.complex_plot(signal)
 # signal=A*np.exp(1j*np.pi*2*np.arange(N)/N*fc*T)
 # print(np.sqrt(np.sum(np.abs(signal)**2)/len(signal)))
 print((np.mean(np.abs(signal)**2)))
+
+
+t=np.arange(len(signal))/f_sample
+modulator = 1+1*np.sin(2*np.pi*f_mod*t)
+signal=signal*modulator
+
 signal=dsp.agwn(signal,noise_val)
 print((np.mean(np.abs(signal)**2)))
 # print(np.sqrt(np.mean(np.abs(signal)**2)-64**2))

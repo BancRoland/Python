@@ -12,8 +12,9 @@ source ../venv/bin/activate
 # name=circumpolar_easy
 # name=perseus
 # name=spring_midnight
-name=winter_midnight
-# name=summer_midnight
+# name=winter_midnight
+name=summer_midnight
+# name=full_only_border
 # name=summer_midnight_all
 # name=fall_midnight
 # name=full
@@ -71,3 +72,4 @@ mv toprint.png scenarios/$name
 mv toprint2.png scenarios/$name
 mv toprint_polar.png scenarios/$name
 mv toprint_polar2.png scenarios/$name
+mv toprint_polar_lines.png scenarios/$name

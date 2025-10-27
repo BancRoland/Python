@@ -4,7 +4,7 @@ from scipy.io.wavfile import write
 
 
 Nz=5      #kitöltőnullák
-sr=5    #samprate
+sr=10    #samprate
 fs=44100    
 f=1024      #modFrq
 rep=1      #repeat
@@ -93,7 +93,7 @@ def resa(v,fs,b):
 
 # textlist=["HA4RBA", "MANT", "URTABOR", "MISKOLC"]
 # for i in range(len(textlist)):
-text="HA4RBA"
+text="CQ CQ CQ DE HA4RBA HA4RBA K"
 morse_code=text_to_morse(text)
 print(morse_code)
 code=morse_to_binary(morse_code)

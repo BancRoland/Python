@@ -6,12 +6,13 @@ import sys
 sys.path.append('/home/roland/Desktop/Python/DSP')
 import dsp
 
-
 Nz=5      #kitöltőnullák
-sr=5    #samprate
+sr=10    #samprate
 fs=44100    
-f=1000      #modFrq
+f=1024      #modFrq
 rep=1      #repeat
+
+AGWN = 0.05
 
 # Morse code dictionary
 morse_code_dict = {
@@ -94,10 +95,26 @@ def resa(v,fs,b):
     w=dec(inc(v,fs),b)
     return(w)
 
+def comp2cui8(v):
+    code=np.zeros(len(v)*2)
+    code[::2]=np.real(v)+128
+    code[1::2]=np.imag(v)+128
+    out=code.astype('uint8')
+    return out
+
+def modulation_depth_from_dB(dB:float):
+    c=10**(dB/20)
+    modulation_depth = (c-1)/(c+1)
+    return modulation_depth
+
 codes=[]
 
 # frq_list=[1000, 1050, 1100, 1150, 1200, 1250]
-text_list=["NOAA", "MANT", "URTABOR", "MISKOLC", "K NORBI", "K TIBOR", "KOROLJOV", "TUCSOK","KALIMBA","NEWTON"]
+# text_list=["NOAA ", "MANT ", "URTABOR ", "MISKOLC", "K NORBI", "K TIBOR", "KOROLJOV", "TUCSOK","KALIMBA","NEWTON"]
+# text_list=["ANTAL", "BELA", "CECIL", "DENS", "ENDRE"]
+text_list=["       CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ"]
+
+# text_list=["HA4RBA"]
 
 # frq_list=[100, 1000, 10000]
 # text_list=["a", "e", "e"]
@@ -141,17 +158,28 @@ for arr in codes:
         result[i] += arr[i]
 
 result=np.array(result)/len(text_list)
-scaled = np.int16(result * 32767)
+
+scaled = np.int16(np.real(result) * 32767)
 write(f'out.wav', fs, scaled)
 
-t=np.arange(len(result))/fs
-plt.figure()
-plt.plot(t,result)
-plt.xlabel("time [sec]")
-plt.ylabel("Amplitude []")
-plt.grid()
-plt.savefig("time_dom.png")
-plt.show()
+result = result*(1+0.9*np.real(dsp.sines(0.05,fs,len(result))))
+
+result=0.4*dsp.agwn(result,AGWN)
+out=(np.real(result)*128+127).astype('uint8')
+out.tofile("out.ui8")
+
+
+
+
+
+# t=np.arange(len(result))/fs
+# plt.figure()
+# plt.plot(t,result)
+# plt.xlabel("time [sec]")
+# plt.ylabel("Amplitude []")
+# plt.grid()
+# plt.savefig("time_dom.png")
+# plt.show()
 
 
 # # powerspec=dsp.average_correlation_spectrum(result,result, 10000, True)

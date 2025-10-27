@@ -4,6 +4,8 @@ import astropy.units as u
 import numpy as np
 import re
 
+print("csv_read_zodiac.py started")
+
 # Function to convert Right Ascension and Declination to degrees
 def convert_coords0(ra, dec):
     ra = ra.replace('\xa0', ' ')
@@ -57,7 +59,7 @@ def read_csv(filename):
             # print(row['Name'])
             ra_deg, dec_deg = convert_coords(row['Right Ascension'], row['Declination'])
             # Append the processed data to the list
-            print(row['Name'])
+            # print(row['Name'])
             data.append({
                 'Name': row['Name'],
                 'Right Ascension (deg)': ra_deg,

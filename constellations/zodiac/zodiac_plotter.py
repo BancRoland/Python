@@ -5,6 +5,9 @@ import utils
 import argparse
 import toml
 
+print("zodiac_plotter.py started")
+
+
 CONNECT=0
 
 # Path to the TOML file
@@ -70,7 +73,7 @@ hmg2    = args.hmg2
 const=np.load("stars_test.npy", allow_pickle=True)
 lines=np.load("lines_data.npy", allow_pickle=True)
 
-if 1:
+if 0:
     plt.figure(figsize=(10, 8)) 
     x=[]
     y=[]
@@ -108,7 +111,7 @@ if 1:
     plt.savefig("toprint.png", dpi=500)
     # plt.show()
 
-if 1:
+if 0:
     plt.figure(figsize=(15, 9)) 
     x=[]
     y=[]
@@ -143,29 +146,24 @@ if 1:
 print("toprint2 DONE")
 
 
-if 1:
+if 0:
     plt.figure(figsize=(15, 9)) 
     x=[]
     y=[]
     for star in const:
         ra  = star['Right Ascension (deg)']
         dec = star['Declination (deg)']
-        # v = utils.get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
-        # w = utils.cylinder_project(v)
         S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
         plt.scatter(ra, dec, color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
         y.append(ra)
         x.append(dec)
     if CONNECT:
-        # plt.plot(y, x, color="black")
         for i in range(len(x)-1):
             dx = x[i+1] - x[i]
             dy = y[i+1] - y[i]
             plt.arrow(y[i], x[i], dy*1 , dx*1, 
             head_width=0.05, head_length=0.1, fc='red', ec='red', length_includes_head=True)
 
-    # plt.xlim([-np.pi,np.pi])
-    # plt.ylim([-np.pi/2,np.pi/2])
     plt.xlim([-10,370])
     plt.ylim([-180,180])
     # plt.gca().set_aspect('equal', adjustable='box')
@@ -178,49 +176,37 @@ if 1:
     # plt.show()
 print("toprint3 DONE")
 
+if 1:
+    plt.figure(figsize=(10, 8)) 
+    ax = plt.subplot(111, projection='polar')
+    x=[]
+    y=[]
+    for idx,star in enumerate(const):
+        print(f"stars:\t{idx/len(const)*100:.2f}%")
+        ra  = star['Right Ascension (deg)']/180*pi
+        dec = star['Declination (deg)']/180*np.pi
+        v = utils.get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
+        theta_R = utils.polar_upproject(v)
+        S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
+        ax.scatter(theta_R[0], theta_R[1], c="black", marker=marker, s=a*(1+hmg-S), alpha=alpha)
+        x.append(theta_R[1])
+        y.append(theta_R[0])
+    if CONNECT:
+        plt.plot(y, x, color="black")
+    # plt.grid()
+    ax.set_ylim(0, np.tan(fov/4/180*np.pi))
+    ax.set_yticklabels([])
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.grid(False)
+    # plt.grid(True)
 
-plt.figure(figsize=(10, 8)) 
-ax = plt.subplot(111, projection='polar')
-x=[]
-y=[]
-for star in const:
-    ra  = star['Right Ascension (deg)']/180*pi
-    dec = star['Declination (deg)']/180*np.pi
-    v = utils.get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
-    theta_R = utils.polar_upproject(v)
-    S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
-    # plt.scatter(w[1], w[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
-    ax.scatter(theta_R[0], theta_R[1], c="black", marker=marker, s=a*(1+hmg-S), alpha=alpha)
-    x.append(theta_R[1])
-    y.append(theta_R[0])
-if CONNECT:
-    plt.plot(y, x, color="black")
-# plt.grid()
-ax.set_ylim(0, np.tan(fov/4/180*np.pi))
-ax.set_yticklabels([])
-plt.gca().set_aspect('equal', adjustable='box')
-plt.grid(False)
-# plt.grid(True)
-
-# for i in range(-6,6):
-#     plt.axvline(i/6*np.pi,linestyle="--",color="gray",linewidth=0.5)
-# plt.axhline(y=0.5, linestyle='--', color='gray',linewidth=0.5)
-
-# # circle_radius = np.tan(15/180*np.pi)*2
-# ax.plot(np.linspace(0, 2 * np.pi, 100), [circle_radius] * 100, linestyle='--', color='gray', label=f'r = {circle_radius}')
-
-# circle_radius = np.tan(15/180*np.pi)
-# ax.plot(np.linspace(0, 2 * np.pi, 100), [circle_radius] * 100, linestyle='--', color='gray', label=f'r = {circle_radius}')
-
-
-# for i in range(-3,3):
-#     plt.axhline(i/6*np.pi,linestyle="--",color="gray",linewidth=0.5)
-plt.savefig("toprint_polar.png", dpi=500)
-# plt.show()
+    plt.savefig("toprint_polar.png", dpi=500)
+    # plt.show()
 
 if 1:
-    # plt.plot(x, y, color="black")
-    for line in lines:
+
+    for idx,line in enumerate(lines):
+                print(f"lines:\t{idx/len(lines)*100:.2f}%")
                 ra1  = line['Right Ascension (deg)1']/180*pi
                 dec1 = line['Declination (deg)1']/180*np.pi
                 ra2  = line['Right Ascension (deg)2']/180*pi
@@ -230,19 +216,64 @@ if 1:
                 width = line['width']
                 alpha = line['alpha']
 
-                v1 = utils.get_transformed_vector(ra1,dec1,center_Dec_deg, center_ra_deg, zrot_deg)
-                theta_R1 = utils.polar_upproject(v1)
+                if linestyle==":":
+                    ra_diff = (ra2-ra1)
+                    if abs(ra_diff)>pi:
+                        if ra1<ra2:
+                            ra1=ra1+2*pi
+                        else:
+                            ra1=ra1-2*pi  
+                        ra_diff = (ra2-ra1)
 
-                v2 = utils.get_transformed_vector(ra2,dec2,center_Dec_deg, center_ra_deg, zrot_deg)
-                theta_R2 = utils.polar_upproject(v2)
-                
-                # S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
-                # plt.scatter(w[1], w[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
-                plt.plot([theta_R1[0],theta_R2[0]],[theta_R1[1],theta_R2[1]],linewidth=width,linestyle=linestyle,alpha=1,color=color)
-                plt.plot([0,0],[1,1])
+                    dec_diff = (dec2-dec1)
+                    if abs(dec_diff)>pi:
+                        if dec1<dec2:
+                            dec1=dec1+2*pi
+                        else:
+                            dec1=dec1-2*pi   
+                        dec_diff = (dec2-dec1)
+                    iteration_num = max((np.floor(abs(ra_diff)/(2*np.pi)*360))+1 , (np.floor(abs(dec_diff)/(2*np.pi)*360))+1)
 
-                
-plt.savefig("toprint_polar_lines.png", dpi=500)
+                    ra_step = ra_diff/iteration_num
+                    dec_step = dec_diff/iteration_num
+                    ra_now = ra1
+                    dec_now = dec1
+
+
+                    for i in range(int(iteration_num)):
+                        ra_next = ra_now + ra_step
+                        dec_next = dec_now + dec_step
+
+                        v1 = utils.get_transformed_vector(ra_now,dec_now,center_Dec_deg, center_ra_deg, zrot_deg)
+                        theta_R1 = utils.polar_upproject(v1)
+
+                        v2 = utils.get_transformed_vector(ra_next,dec_next,center_Dec_deg, center_ra_deg, zrot_deg)
+                        theta_R2 = utils.polar_upproject(v2)
+
+                        theta1=theta_R1[0]
+                        theta2=theta_R2[0]
+                        R1=theta_R1[1]
+                        R2=theta_R2[1]
+                        ax.plot([theta1,theta2],[R1,R2],linewidth=0.5,linestyle="-",alpha=1,color=color)
+
+                        ra_now = ra_next
+                        dec_now = dec_next
+
+                else:
+                    v1 = utils.get_transformed_vector(ra1,dec1,center_Dec_deg, center_ra_deg, zrot_deg)
+                    theta_R1 = utils.polar_upproject(v1)
+
+                    v2 = utils.get_transformed_vector(ra2,dec2,center_Dec_deg, center_ra_deg, zrot_deg)
+                    theta_R2 = utils.polar_upproject(v2)
+
+                    theta1=theta_R1[0]
+                    theta2=theta_R2[0]
+                    R1=theta_R1[1]
+                    R2=theta_R2[1]
+                    ax.plot([theta1,theta2],[R1,R2],linewidth=width,linestyle=linestyle,alpha=1,color=color)
+                                 
+
+    plt.savefig("toprint_polar_lines.png", dpi=500)
 
 
 

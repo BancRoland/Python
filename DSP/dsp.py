@@ -273,3 +273,4 @@ def dec(v,a):
 def resa(v,fs,b):
     w=dec(inc(v,fs),b)
     return(w)
+
