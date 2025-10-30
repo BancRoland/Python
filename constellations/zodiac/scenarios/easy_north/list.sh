@@ -5,63 +5,63 @@ Ursa_Minor
 Cassiopeia
 Cepheus
 
-Andromeda
-Antlia
-Aquarius
-Aquila
-Aries
-Auriga
-Boötes
-Camelopardalis
-Cancer
-Canes_Venatici
-Canis_Major
-Canis_Minor
-Capricornus
-Cetus
-Coma_Berenices
-Corona_Australis
-Corona_Borealis
-Corvus
-Crater
-Cygnus
-Delphinus
-Draco
-Equuleus
-Eridanus
-Fornax
-Gemini
-Hercules
-Hydra
-Lacerta
-Leo
-Leo_Minor
-Lepus
-Libra
-Lynx
-Lyra
-Microscopium
-Monoceros
-Ophiuchus
-Orion
-Pegasus
-Perseus
-Pisces
-Piscis_Austrinus
-Pyxis
-Sagitta
-Sagittarius
-Scorpius
-Sculptor
-Scutum
-Serpens_caput
-Serpens_cauda
-Serpens
-Sextans
-Taurus
-Telescopium
-Triangulum
-Ursa_Major_full
-Virgo
-Vulpecula
+# Andromeda
+# Antlia
+# Aquarius
+# Aquila
+# Aries
+# Auriga
+# Boötes
+# Camelopardalis
+# Cancer
+# Canes_Venatici
+# Canis_Major
+# Canis_Minor
+# Capricornus
+# Cetus
+# Coma_Berenices
+# Corona_Australis
+# Corona_Borealis
+# Corvus
+# Crater
+# Cygnus
+# Delphinus
+# Draco
+# Equuleus
+# Eridanus
+# Fornax
+# Gemini
+# Hercules
+# Hydra
+# Lacerta
+# Leo
+# Leo_Minor
+# Lepus
+# Libra
+# Lynx
+# Lyra
+# Microscopium
+# Monoceros
+# Ophiuchus
+# Orion
+# Pegasus
+# Perseus
+# Pisces
+# Piscis_Austrinus
+# Pyxis
+# Sagitta
+# Sagittarius
+# Scorpius
+# Sculptor
+# Scutum
+# Serpens_caput
+# Serpens_cauda
+# Serpens
+# Sextans
+# Taurus
+# Telescopium
+# Triangulum
+# Ursa_Major_full
+# Virgo
+# Vulpecula
 )

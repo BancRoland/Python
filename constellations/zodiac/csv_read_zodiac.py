@@ -114,3 +114,11 @@ filename_lines = 'zodiac_lines.csv'  # Replace 'stars.csv' with the path to your
 lines_data = read_lines_csv(filename_lines)
 
 np.save("lines_data.npy", lines_data)
+
+
+
+# Example usage
+filename_borders = 'zodiac_borders.csv'  # Replace 'stars.csv' with the path to your CSV file
+borders_data = read_lines_csv(filename_borders)
+
+np.save("borders_data.npy", borders_data)
