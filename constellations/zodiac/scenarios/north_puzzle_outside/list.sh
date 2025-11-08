@@ -38,35 +38,32 @@ Aquila
 
 
 
-# Antlia
-# Aquarius
-
-# # Cetus
-# Corona_Australis
-# Corvus
-# Crater
-# Eridanus
-# Fornax
-# Hydra
-
-# Lepus
-# Libra
-# Lyra
-# Microscopium
-# Monoceros
-# # Ophiuchus
-# # Orion
-# Piscis_Austrinus
-# Pyxis
-# Sagitta
-# Sagittarius
-# Scorpius
-# Sculptor
-# Scutum
-# # Serpens_cauda
-# # Serpens
-# Sextans
-# Telescopium
-# Virgo
-# Vulpecula
+Antlia
+Aquarius
+Cetus
+Corona_Australis
+Corvus
+Crater
+Eridanus
+Fornax
+Hydra
+Lepus
+Libra
+Lyra
+Microscopium
+Monoceros
+Ophiuchus
+Orion
+Piscis_Austrinus
+Pyxis
+Sagitta
+Sagittarius
+Scorpius
+Sculptor
+Scutum
+Serpens_cauda
+Sextans
+Telescopium
+Virgo
+Vulpecula
 )

@@ -14,11 +14,16 @@ source ../venv/bin/activate
 # name=spring_midnight
 # name=winter_midnight
 # name=summer_midnight
-name=full_only_border_NORTH
+# name=full_only_border_NORTH
 # name=summer_midnight_all
 # name=fall_midnight
 # name=full
 # name=easy_north
+# name=north_puzzle_outside
+name=north_puzzle_inside
+
+
+mkdir scenarios/$name/polar
 
 source scenarios/$name/list.sh
 source scenarios/$name/list_lines.sh
@@ -82,14 +87,18 @@ rm zodiac0_borders.csv
 
 
 
-
 python3 csv_read_zodiac.py
 python3 zodiac_plotter.py
-# python3 zodiac_plotter.py -dec_deg0 $Dec_deg -dec_degmin $Dec_min -dec_degsec $Dec_sec -RA_hour $Ra_hour -RA_min $Ra_min -RA_sec $Ra_sec -zrot $zrot
-# rm ./variables.toml
+
 
 mv cylindrical.png scenarios/$name
 mv polar_lines.png scenarios/$name
 mv polar.png scenarios/$name
 mv sphereical.png scenarios/$name
 mv str_grph_proj.png scenarios/$name
+mv all.png scenarios/$name
+mv stars_\&_lines.png scenarios/$name
+mv borders_\&_stars.png scenarios/$name
+mv borders.png scenarios/$name
+mv stars.png scenarios/$name
+

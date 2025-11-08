@@ -1,64 +1,56 @@
 #!/bin/bash
 borders=(
-Andromeda_borders
-Antlia_borders
-Aquarius_borders
-Aquila_borders
-Aries_borders
-Auriga_borders
-Boötes_borders
-Camelopardalis_borders
-Cancer_borders
-Canes_Venatici_borders
-Canis_Major_borders
-Canis_Minor_borders
-Capricornus_borders
 Cassiopeia_borders
-Cepheus_borders
-Cetus_borders
-Coma_Berenices_borders
-Corona_Australis_borders
-Corona_Borealis_borders
-Corvus_borders
-Crater_borders
-Cygnus_borders
-Delphinus_borders
+Andromeda_borders
+Canes_Venatici_borders
+Canis_Minor_borders
 Draco_borders
-Equuleus_borders
-Eridanus_borders
-Fornax_borders
-Gemini_borders
-Hercules_borders
-Hydra_borders
-Lacerta_borders
 Leo_borders
 Leo_Minor_borders
-Lepus_borders
-Libra_borders
-Lynx_borders
-Lyra_borders
-Microscopium_borders
-Monoceros_borders
-Ophiuchus_borders
-Orion_borders
+Cancer_borders
+Gemini_borders
+Taurus_borders
+Aries_borders
+Camelopardalis_borders
+Boötes_borders
+Auriga_borders
+Pisces_borders
 Pegasus_borders
 Perseus_borders
-Pisces_borders
-Piscis_Austrinus_borders
-Pyxis_borders
-Sagitta_borders
-Sagittarius_borders
-Scorpius_borders
-Sculptor_borders
-Scutum_borders
-Serpens_caput_borders
-Serpens_cauda_borders
-Sextans_borders
-Taurus_borders
-Telescopium_borders
+Cepheus_borders
+Coma_Berenices_borders
+Lacerta_borders
+Hercules_borders
+Equuleus_borders
 Triangulum_borders
-Ursa_Major_full_borders
+Lynx_borders
 Ursa_Minor_borders
-Virgo_borders
+Cygnus_borders
+Lyra_borders
+Sagitta_borders
 Vulpecula_borders
+Delphinus_borders
+Ursa_Major_full_borders
+Corona_Borealis_borders
+Serpens_caput_borders
+Aquila_borders
+
+# Ursa_Minor_borders
+# Ursa_Major_full_borders
+# Cassiopeia_borders
+# Cepheus_borders
+# Camelopardalis_borders
+# Perseus_borders
+# Andromeda_borders
+# Lacerta_borders
+# Cygnus_borders
+# Lyra_borders
+# Hercules_borders
+# Boötes_borders
+# Canes_Venatici_borders
+# Leo_Minor_borders
+# Lynx_borders
+# Auriga_borders
+# Triangulum_borders
+# Corona_Borealis_borders
 )
