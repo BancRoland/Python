@@ -3,6 +3,9 @@ import numpy as np
 from numpy import sin, cos, pi
 
 def upproject(v):
+    """
+    return: [x,y,z]
+    """
     v=np.array(v)+np.array([0,0,1])
     w=v/v[2]
     return w
@@ -98,6 +101,30 @@ def plot_lines_polar(lines, center_Dec_deg,center_ra_deg,zrot_deg, ax):
         R1=theta_R1[1]
         R2=theta_R2[1]
         ax.plot([theta1,theta2],[R1,R2],linewidth=width,linestyle=linestyle,alpha=1,color=color,zorder=2)
+
+def plot_lines_str_grph(lines, center_Dec_deg,center_ra_deg,zrot_deg, ax):
+    for idx,line in enumerate(lines):
+        print(f"lines:\t{idx/len(lines)*100:.2f}%")
+        ra1  = line['Right Ascension (deg)1']/180*pi
+        dec1 = line['Declination (deg)1']/180*np.pi
+        ra2  = line['Right Ascension (deg)2']/180*pi
+        dec2 = line['Declination (deg)2']/180*np.pi
+        linestyle = line['linestyle']
+        color = line['color']
+        width = line['width']
+        alpha = line['alpha']
+        
+        v1 = get_transformed_vector(ra1,dec1,center_Dec_deg, center_ra_deg, zrot_deg)
+        xyz_1 = upproject(v1)
+
+        v2 = get_transformed_vector(ra2,dec2,center_Dec_deg, center_ra_deg, zrot_deg)
+        xyz_2 = upproject(v2)
+
+        x1=xyz_1[0]
+        x2=xyz_2[0]
+        y1=xyz_1[1]
+        y2=xyz_2[1]
+        plt.plot([y1,y2],[x1,x2],linewidth=width,linestyle=linestyle,alpha=1,color=color,zorder=2)
                         
 def plot_borders_polar(borders, center_Dec_deg,center_ra_deg,zrot_deg, ax):
     for idx,line in enumerate(borders):
@@ -151,6 +178,65 @@ def plot_borders_polar(borders, center_Dec_deg,center_ra_deg,zrot_deg, ax):
 
             ra_now = ra_next
             dec_now = dec_next
+
+        
+
+def plot_borders_str_grph(borders, center_Dec_deg,center_ra_deg,zrot_deg, ax):
+    for idx,line in enumerate(borders):
+        print(f"borders:\t{idx/len(borders)*100:.2f}%")
+        ra1  = line['Right Ascension (deg)1']/180*pi
+        dec1 = line['Declination (deg)1']/180*np.pi
+        ra2  = line['Right Ascension (deg)2']/180*pi
+        dec2 = line['Declination (deg)2']/180*np.pi
+        linestyle = line['linestyle']
+        color = line['color']
+        width = line['width']
+        alpha = line['alpha']
+
+        ra_diff = (ra2-ra1)
+        if abs(ra_diff)>pi:
+            if ra1<ra2:
+                ra1=ra1+2*pi
+            else:
+                ra1=ra1-2*pi  
+            ra_diff = (ra2-ra1)
+
+        dec_diff = (dec2-dec1)
+        if abs(dec_diff)>pi:
+            if dec1<dec2:
+                dec1=dec1+2*pi
+            else:
+                dec1=dec1-2*pi   
+            dec_diff = (dec2-dec1)
+        iteration_num = max((np.floor(abs(ra_diff)/(2*np.pi)*360))+1 , (np.floor(abs(dec_diff)/(2*np.pi)*360))+1)
+
+        ra_step = ra_diff/iteration_num
+        dec_step = dec_diff/iteration_num
+        ra_now = ra1
+        dec_now = dec1
+
+        for i in range(int(iteration_num)):
+            ra_next = ra_now + ra_step
+            dec_next = dec_now + dec_step
+
+            v1 = get_transformed_vector(ra_now,dec_now,center_Dec_deg, center_ra_deg, zrot_deg)
+            # theta_R1 = polar_upproject(v1)
+            x_y_z__1 = upproject(v1)
+
+            v2 = get_transformed_vector(ra_next,dec_next,center_Dec_deg, center_ra_deg, zrot_deg)
+            # theta_R2 = polar_upproject(v2)
+            x_y_z__2 = upproject(v2)
+
+
+            x1=x_y_z__1[0]
+            x2=x_y_z__2[0]
+            y1=x_y_z__1[1]
+            y2=x_y_z__2[1]
+            plt.plot([y1,y2],[x1,x2],linewidth=0.5,linestyle="-",alpha=1,color="red")
+
+            ra_now = ra_next
+            dec_now = dec_next
+
 
 def plot_stars_polar(const, center_Dec_deg,center_ra_deg,zrot_deg, ax, hmg, hmg2, a):
     x=[]

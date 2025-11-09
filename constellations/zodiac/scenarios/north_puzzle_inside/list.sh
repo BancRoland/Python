@@ -1,72 +1,65 @@
 #!/bin/bash
 constellations=(
-Cassiopeia
 Andromeda
+Antlia
+Aquarius
+Aquila
+Aries
+Auriga
+Boötes
+Camelopardalis
+Cancer
 Canes_Venatici
+Canis_Major
 Canis_Minor
+Capricornus
+Cassiopeia
+Cepheus
+Cetus
+Coma_Berenices
+Corona_Australis
+Corona_Borealis
+Corvus
+Crater
+Cygnus
+Delphinus
 Draco
+Equuleus
+Eridanus
+Fornax
+Gemini
+Hercules
+Hydra
+Lacerta
 Leo
 Leo_Minor
-Cancer
-Gemini
-Taurus
-Aries
-Camelopardalis
-Boötes
-Auriga
-Pisces
+Lepus
+Libra
+Lynx
+Lyra
+Microscopium
+Monoceros
+Ophiuchus
+Orion
 Pegasus
 Perseus
-Cepheus
-Coma_Berenices
-Lacerta
-Hercules
-Equuleus
-Triangulum
-Lynx
-Ursa_Minor
-Cygnus
-Lyra
+Pisces
+Piscis_Austrinus
+Pyxis
 Sagitta
-Vulpecula
-Delphinus
-Ursa_Major_full
-Corona_Borealis
+Sagittarius
+Scorpius
+Sculptor
+Scutum
 Serpens_caput
-Aquila
-
-
-
-
-# Antlia
-# Aquarius
-
-# # Cetus
-# Corona_Australis
-# Corvus
-# Crater
-# Eridanus
-# Fornax
-# Hydra
-
-# Lepus
-# Libra
-# Lyra
-# Microscopium
-# Monoceros
-# # Ophiuchus
-# # Orion
-# Piscis_Austrinus
-# Pyxis
-# Sagitta
-# Sagittarius
-# Scorpius
-# Sculptor
-# Scutum
-# # Serpens_cauda
-# # Serpens
-# Sextans
-# Telescopium
-# Virgo
-# Vulpecula
+Serpens_cauda
+Serpens
+Sextans
+Taurus
+Telescopium
+Triangulum
+Ursa_Major_full
+Ursa_Minor
+Virgo
+Vulpecula
 )

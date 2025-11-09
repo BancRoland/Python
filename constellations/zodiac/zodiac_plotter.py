@@ -4,16 +4,16 @@ from numpy import sin, cos, pi
 import utils
 import argparse
 import toml
+import time
 
 print("zodiac_plotter.py started")
 
-STR_GRPH_PROJ = True
-
-CYLINDRICAL=1
-POLAR=1
-POLAR_LINES = 1
-SPHERRICAL=1
-DRAW_BORDERS=1
+STR_GRPH_PROJ   =   True
+CYLINDRICAL     =   0
+POLAR           =   0
+POLAR_LINES     =   0
+SPHERRICAL      =   0
+DRAW_BORDERS    =   1
 
 DPI=500
 # DPI=50
@@ -76,22 +76,30 @@ lines=np.load("lines_data.npy", allow_pickle=True)
 borders=np.load("borders_data.npy", allow_pickle=True)
 
 if STR_GRPH_PROJ:
-    plt.figure(figsize=(10, 8)) 
+    ax=plt.figure(figsize=(10, 8)) 
     x=[]
     y=[]
     for star in const:
         ra  = star['Right Ascension (deg)']/180*pi
         dec = star['Declination (deg)']/180*np.pi
         v = utils.get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
-        w = utils.upproject(v)
+        x_y_z = utils.upproject(v)
         S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
-        plt.scatter(w[1], w[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
-        x.append(w[1])
-        y.append(w[0])
+        plt.scatter(x_y_z[1], x_y_z[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha, zorder=3)
+        x.append(x_y_z[1])
+        y.append(x_y_z[0])
         
+    utils.plot_borders_str_grph(borders, center_Dec_deg,center_ra_deg,zrot_deg, ax)
+    utils.plot_lines_str_grph(lines,center_Dec_deg,center_ra_deg, zrot_deg, ax)
+
     # plt.grid()
     plt.gca().set_aspect('equal', adjustable='box')
-    plt.savefig("str_grph_proj.png", dpi=DPI)
+    plt.xlim([-1,1])
+    plt.ylim([-1,1])
+    plt.tight_layout(pad=0)
+    plt.axis('off')
+    plt.margins(0)
+    plt.savefig("str_grph_proj.png", dpi=DPI, pad_inches=0)
     # plt.show()
 
 if CYLINDRICAL:
@@ -102,11 +110,11 @@ if CYLINDRICAL:
         ra  = star['Right Ascension (deg)']/180*pi
         dec = star['Declination (deg)']/180*np.pi
         v = utils.get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
-        w = utils.cylinder_project(v)
+        x_y_z = utils.cylinder_project(v)
         S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
-        plt.scatter(w[0], w[1], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
-        y.append(w[1])
-        x.append(w[0])
+        plt.scatter(x_y_z[0], x_y_z[1], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
+        y.append(x_y_z[1])
+        x.append(x_y_z[0])
 
     plt.xlim([-np.pi,np.pi])
     plt.ylim([-np.pi/2,np.pi/2])
