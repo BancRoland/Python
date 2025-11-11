@@ -1,5 +1,5 @@
 #!/bin/bash
-constellations=(
+borders=(
 Andromeda_borders
 Antlia_borders
 Aquarius_borders

@@ -1,5 +1,5 @@
 #!/bin/bash
-constellations=(
+lines=(
 Andromeda_lines
 Antlia_lines
 Aquarius_lines

@@ -9,11 +9,10 @@ import time
 print("zodiac_plotter.py started")
 
 STR_GRPH_PROJ   =   True
-CYLINDRICAL     =   0
-POLAR           =   0
-POLAR_LINES     =   0
-SPHERRICAL      =   0
-DRAW_BORDERS    =   1
+CYLINDRICAL     =   False
+POLAR           =   False
+POLAR_LINES     =   False
+SPHERRICAL      =   False
 
 DPI=500
 # DPI=50
@@ -99,22 +98,16 @@ if STR_GRPH_PROJ:
     plt.tight_layout(pad=0)
     plt.axis('off')
     plt.margins(0)
-    plt.savefig("str_grph_proj.png", dpi=DPI, pad_inches=0)
+    # plt.savefig("str_grph_proj.pdf", dpi=DPI, pad_inches=0)
+    plt.savefig("str_grph_proj.pdf", dpi=DPI, pad_inches=0)
     # plt.show()
 
 if CYLINDRICAL:
-    plt.figure(figsize=(15, 9)) 
-    x=[]
-    y=[]
-    for star in const:
-        ra  = star['Right Ascension (deg)']/180*pi
-        dec = star['Declination (deg)']/180*np.pi
-        v = utils.get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
-        x_y_z = utils.cylinder_project(v)
-        S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
-        plt.scatter(x_y_z[0], x_y_z[1], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha)
-        y.append(x_y_z[1])
-        x.append(x_y_z[0])
+    plt.figure(figsize=(15, 9))
+
+    utils.plot_cylindrical_stars(const,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a)
+    utils.plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg)
+    utils.plot_borders_cylindrical(borders, center_Dec_deg,center_ra_deg,zrot_deg)
 
     plt.xlim([-np.pi,np.pi])
     plt.ylim([-np.pi/2,np.pi/2])
@@ -124,7 +117,7 @@ if CYLINDRICAL:
     for i in range(-3,3):
         plt.axhline(i/6*np.pi,linestyle="--",color="gray",linewidth=0.5)
 
-    plt.savefig("cylindrical.png", dpi=DPI)
+    plt.savefig("cylindrical.pdf", dpi=DPI)
     # plt.show()
 
 print("cylindrical DONE")
@@ -146,7 +139,7 @@ if POLAR:
         plt.gca().set_aspect('equal', adjustable='box')
         plt.grid(False)
 
-    plt.savefig("all.png", dpi=DPI)
+    plt.savefig("all.pdf", dpi=DPI)
 
 
 
@@ -165,7 +158,7 @@ if POLAR:
         plt.gca().set_aspect('equal', adjustable='box')
         plt.grid(False)
 
-    plt.savefig("borders_&_stars.png", dpi=DPI)
+    plt.savefig("borders_&_stars.pdf", dpi=DPI)
     
 
     plt.figure(figsize=(10, 8)) 
@@ -181,7 +174,7 @@ if POLAR:
         plt.gca().set_aspect('equal', adjustable='box')
         plt.grid(False)
 
-    plt.savefig("stars_&_lines.png", dpi=DPI)
+    plt.savefig("stars_&_lines.pdf", dpi=DPI)
 
 
     plt.figure(figsize=(10, 8)) 
@@ -197,7 +190,7 @@ if POLAR:
         plt.gca().set_aspect('equal', adjustable='box')
         plt.grid(False)
 
-    plt.savefig("borders.png", dpi=DPI)
+    plt.savefig("borders.pdf", dpi=DPI)
 
 
     plt.figure(figsize=(10, 8)) 
@@ -213,7 +206,7 @@ if POLAR:
         plt.gca().set_aspect('equal', adjustable='box')
         plt.grid(False)
 
-    plt.savefig("stars.png", dpi=DPI)
+    plt.savefig("stars.pdf", dpi=DPI)
 
 
 
@@ -234,7 +227,7 @@ if SPHERRICAL:
     plt.grid(False)
     ax.set_theta_direction(-1)
     ax.set_theta_zero_location('N')
-    plt.savefig("sphereical.png", dpi=DPI)
+    plt.savefig("sphereical.pdf", dpi=DPI)
     # plt.show()
 
 

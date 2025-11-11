@@ -4,7 +4,6 @@ source ../venv/bin/activate
 
 # name=blind_elevation
 # name=blind_spots
-# name=full
 # name=equatorial
 # name=zodiac_only
 # name=zodiac
@@ -18,9 +17,9 @@ source ../venv/bin/activate
 # name=summer_midnight_all
 # name=fall_midnight
 # name=full
-# name=easy_north
+name=easy_north
 # name=north_puzzle_outside
-name=north_puzzle_inside
+# name=north_puzzle_inside
 
 
 mkdir scenarios/$name/polar
@@ -91,14 +90,14 @@ python3 csv_read_zodiac.py
 python3 zodiac_plotter.py
 
 
-mv cylindrical.png scenarios/$name
-mv polar_lines.png scenarios/$name
-mv polar.png scenarios/$name
-mv sphereical.png scenarios/$name
-mv str_grph_proj.png scenarios/$name
-mv all.png scenarios/$name
-mv stars_\&_lines.png scenarios/$name
-mv borders_\&_stars.png scenarios/$name
-mv borders.png scenarios/$name
-mv stars.png scenarios/$name
+mv cylindrical.pdf scenarios/$name
+mv polar_lines.pdf scenarios/$name
+mv polar.pdf scenarios/$name
+mv sphereical.pdf scenarios/$name
+mv str_grph_proj.pdf scenarios/$name
+mv all.pdf scenarios/$name
+mv stars_\&_lines.pdf scenarios/$name
+mv borders_\&_stars.pdf scenarios/$name
+mv borders.pdf scenarios/$name
+mv stars.pdf scenarios/$name
 
