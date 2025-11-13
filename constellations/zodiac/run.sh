@@ -17,9 +17,10 @@ source ../venv/bin/activate
 # name=summer_midnight_all
 # name=fall_midnight
 # name=full
-name=easy_north
+# name=easy_north
 # name=north_puzzle_outside
 # name=north_puzzle_inside
+name=TOTAL_template
 
 
 mkdir scenarios/$name/polar

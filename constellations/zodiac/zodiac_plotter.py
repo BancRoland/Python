@@ -8,8 +8,8 @@ import time
 
 print("zodiac_plotter.py started")
 
-STR_GRPH_PROJ   =   True
-CYLINDRICAL     =   False
+STR_GRPH_PROJ   =   False
+CYLINDRICAL     =   True
 POLAR           =   False
 POLAR_LINES     =   False
 SPHERRICAL      =   False
@@ -74,8 +74,15 @@ const=np.load("stars_test.npy", allow_pickle=True)
 lines=np.load("lines_data.npy", allow_pickle=True)
 borders=np.load("borders_data.npy", allow_pickle=True)
 
+
+# if True:
+#     ax=plt.figure(figsize=(10, 8)) 
+#     utils.read_borders__gen_graph(borders)
+# plt.show()
+
+
 if STR_GRPH_PROJ:
-    ax=plt.figure(figsize=(10, 8)) 
+    ax=plt.figure(figsize=(10, 10)) 
     x=[]
     y=[]
     for star in const:
@@ -98,8 +105,8 @@ if STR_GRPH_PROJ:
     plt.tight_layout(pad=0)
     plt.axis('off')
     plt.margins(0)
-    # plt.savefig("str_grph_proj.pdf", dpi=DPI, pad_inches=0)
     plt.savefig("str_grph_proj.pdf", dpi=DPI, pad_inches=0)
+    # plt.savefig("str_grph_proj.png", dpi=DPI, pad_inches=0)
     # plt.show()
 
 if CYLINDRICAL:
@@ -112,10 +119,11 @@ if CYLINDRICAL:
     plt.xlim([-np.pi,np.pi])
     plt.ylim([-np.pi/2,np.pi/2])
     plt.gca().set_aspect('equal', adjustable='box')
-    for i in range(-6,6):
-        plt.axvline(i/6*np.pi,linestyle="--",color="gray",linewidth=0.5)
-    for i in range(-3,3):
-        plt.axhline(i/6*np.pi,linestyle="--",color="gray",linewidth=0.5)
+    # for i in range(-6,6):
+    #     plt.axvline(i/6*np.pi,linestyle="--",color="gray",linewidth=0.5)
+    # for i in range(-3,3):
+    #     plt.axhline(i/6*np.pi,linestyle="--",color="gray",linewidth=0.5)
+    
 
     plt.savefig("cylindrical.pdf", dpi=DPI)
     # plt.show()
