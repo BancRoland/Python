@@ -82,11 +82,13 @@ np.save("stars_test.npy", stars_data)
 def read_lines_csv(filename):
     data = []
     with open(filename, newline='') as csvfile:
+        # print(f"csvfile:\t{csvfile}")
         reader = csv.DictReader(csvfile)
         for row in reader:
             # Convert RA and Dec to degrees
             # print(row['Right Ascension'], row['Declination'])
             # print(row['Name'])
+            # print(row)
             ra_deg1, dec_deg1 = convert_coords(row['Right Ascension1'], row['Declination1'])
             ra_deg2, dec_deg2 = convert_coords(row['Right Ascension2'], row['Declination2'])
             # Append the processed data to the list

@@ -20,8 +20,9 @@ source ../venv/bin/activate
 # name=easy_north
 # name=north_puzzle_outside
 # name=north_puzzle_inside
-name=TOTAL_template
-
+# name=TOTAL_template
+# name=south
+name=cylindrical_puzzle
 
 mkdir scenarios/$name/polar
 

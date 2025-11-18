@@ -114,9 +114,9 @@ if CYLINDRICAL:
 
     utils.plot_cylindrical_stars(const,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a)
     utils.plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg)
-    utils.plot_borders_cylindrical(borders, center_Dec_deg,center_ra_deg,zrot_deg)
+    utils.plot_cylindrical_borders(borders, center_Dec_deg,center_ra_deg,zrot_deg)
 
-    plt.xlim([-np.pi,np.pi])
+    plt.xlim([-1.5*np.pi,1.5*np.pi])
     plt.ylim([-np.pi/2,np.pi/2])
     plt.gca().set_aspect('equal', adjustable='box')
     # for i in range(-6,6):
@@ -136,7 +136,7 @@ if POLAR:
     plt.figure(figsize=(10, 8)) 
     ax = plt.subplot(111, projection='polar')
 
-    if 1:
+    if 0:
         utils.plot_borders_polar(borders, center_Dec_deg,center_ra_deg,zrot_deg, ax)
 
         utils.plot_lines_polar(lines,center_Dec_deg,center_ra_deg, zrot_deg, ax)
@@ -155,7 +155,7 @@ if POLAR:
     plt.figure(figsize=(10, 8)) 
     ax = plt.subplot(111, projection='polar')
 
-    if 1:
+    if 0:
         utils.plot_borders_polar(borders, center_Dec_deg,center_ra_deg,zrot_deg, ax)
 
         # utils.plot_lines_polar(lines,center_Dec_deg,center_ra_deg, zrot_deg, ax)
@@ -171,7 +171,7 @@ if POLAR:
 
     plt.figure(figsize=(10, 8)) 
     ax = plt.subplot(111, projection='polar')
-    if 1:
+    if 0:
         # utils.plot_borders_polar(borders, center_Dec_deg,center_ra_deg,zrot_deg, ax)
 
         utils.plot_lines_polar(lines,center_Dec_deg,center_ra_deg, zrot_deg, ax)
@@ -187,7 +187,7 @@ if POLAR:
 
     plt.figure(figsize=(10, 8)) 
     ax = plt.subplot(111, projection='polar')
-    if 1:
+    if 0:
         utils.plot_borders_polar(borders, center_Dec_deg,center_ra_deg,zrot_deg, ax)
 
         # utils.plot_lines_polar(lines,center_Dec_deg,center_ra_deg, zrot_deg, ax)
@@ -203,7 +203,7 @@ if POLAR:
 
     plt.figure(figsize=(10, 8)) 
     ax = plt.subplot(111, projection='polar')
-    if 1:
+    if 0:
         # utils.plot_borders_polar(borders, center_Dec_deg,center_ra_deg,zrot_deg, ax)
 
         # utils.plot_lines_polar(lines,center_Dec_deg,center_ra_deg, zrot_deg, ax)

@@ -1,8 +1,7 @@
 #!/bin/bash
 lines=(
-Andromeda_lines
 Antlia_lines
-Apus_lines
+Andromeda_lines
 Aquarius_lines
 Aquila_lines
 Ara_lines
@@ -10,7 +9,6 @@ Aries_lines
 Auriga_lines
 Boötes_lines
 Caelum_lines
-Camelopardalis_lines
 Cancer_lines
 Canes_Venatici_lines
 Canis_Major_lines
@@ -19,9 +17,7 @@ Capricornus_lines
 Carina_lines
 Cassiopeia_lines
 Centaurus_lines
-Cepheus_lines
 Cetus_lines
-Chameleon_lines
 Circinus_lines
 Columba_lines
 Coma_Berenices_lines
@@ -42,7 +38,6 @@ Grus_lines
 Hercules_lines
 Horologium_lines
 Hydra_lines
-Hydrus_lines
 Indus_lines
 Lacerta_lines
 Leo_lines
@@ -52,12 +47,9 @@ Libra_lines
 Lupus_lines
 Lynx_lines
 Lyra_lines
-Mensa_lines
 Microscopium_lines
 Monoceros_lines
-Musca_lines
 Norma_lines
-Octans_lines
 Ophiuchus_lines
 Orion_lines
 Pavo_lines
@@ -80,11 +72,9 @@ Serpens_cauda_lines
 Sextans_lines
 Taurus_lines
 Telescopium_lines
-Triangulum_Australe_lines
 Triangulum_lines
 Tucana_lines
 Ursa_Major_full_lines
-Ursa_Minor_lines
 Vela_lines
 Virgo_lines
 Volans_lines
