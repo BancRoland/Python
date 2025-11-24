@@ -54,12 +54,7 @@ def read_csv(filename):
     with open(filename, newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            # Convert RA and Dec to degrees
-            # print(row['Right Ascension'], row['Declination'])
-            # print(row['Name'])
             ra_deg, dec_deg = convert_coords(row['Right Ascension'], row['Declination'])
-            # Append the processed data to the list
-            # print(row['Name'])
             data.append({
                 'Name': row['Name'],
                 'Right Ascension (deg)': ra_deg,
@@ -82,13 +77,8 @@ np.save("stars_test.npy", stars_data)
 def read_lines_csv(filename):
     data = []
     with open(filename, newline='') as csvfile:
-        # print(f"csvfile:\t{csvfile}")
         reader = csv.DictReader(csvfile)
         for row in reader:
-            # Convert RA and Dec to degrees
-            # print(row['Right Ascension'], row['Declination'])
-            # print(row['Name'])
-            # print(row)
             ra_deg1, dec_deg1 = convert_coords(row['Right Ascension1'], row['Declination1'])
             ra_deg2, dec_deg2 = convert_coords(row['Right Ascension2'], row['Declination2'])
             # Append the processed data to the list
@@ -111,16 +101,18 @@ def read_lines_csv(filename):
                 })
     return data
 
-# Example usage
-filename_lines = 'zodiac_lines.csv'  # Replace 'stars.csv' with the path to your CSV file
-lines_data = read_lines_csv(filename_lines)
 
-np.save("lines_data.npy", lines_data)
+def __name__():
+    # Example usage
+    filename_lines = 'zodiac_lines.csv'  # Replace 'stars.csv' with the path to your CSV file
+    lines_data = read_lines_csv(filename_lines)
+
+    np.save("lines_data.npy", lines_data)
 
 
 
-# Example usage
-filename_borders = 'zodiac_borders.csv'  # Replace 'stars.csv' with the path to your CSV file
-borders_data = read_lines_csv(filename_borders)
+    # Example usage
+    filename_borders = 'zodiac_borders.csv'  # Replace 'stars.csv' with the path to your CSV file
+    borders_data = read_lines_csv(filename_borders)
 
-np.save("borders_data.npy", borders_data)
+    np.save("borders_data.npy", borders_data)

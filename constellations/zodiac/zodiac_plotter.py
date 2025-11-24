@@ -5,6 +5,52 @@ import utils
 import argparse
 import toml
 import time
+import csv_read_zodiac
+
+def read_from_file(root: str):
+    items = []
+    
+    with open(f"{root}") as f:
+        for line in f:
+            line = line.strip()
+            if len(line)>=2:
+                first_char = line[0]
+                if (first_char  != "#") and (first_char != ")") and (line[-2:] != "=("):
+                    items.append(line)
+
+    return items
+
+# scenario = "orion"
+# scenario = "north_puzzle_inside"
+scenario = 'cylindrical_puzzle'
+# scenario = 'centaur'
+
+# scenario = 'orion'
+
+
+root = "/home/roland/Desktop/Python/constellations/zodiac"
+scenario_folder=f"{root}/scenarios/{scenario}"
+constellation_line_list = read_from_file(f"{scenario_folder}/list_lines.sh")
+constellations_for_borders_list = read_from_file(f"{scenario_folder}/list_borders.sh")
+constellations_for_stars_list = read_from_file(f"{scenario_folder}/list.sh")
+
+
+# for constellation_for_line in constellation_line_list:
+#     line_data_file_path=f"{root}/constellations/prev/{constellation_for_line}.csv"
+
+#     data = csv_read_zodiac.read_lines_csv(line_data_file_path)
+
+
+# for constellation_for_borders in constellations_for_borders_list:
+#     line_data_file_path=f"{root}/constellations/prev/borders/{constellation_for_borders}.csv"
+
+#     data = csv_read_zodiac.read_lines_csv(line_data_file_path)
+
+# for constellation_for_stars in constellations_for_stars_list:
+#     line_data_file_path=f"{root}/constellations/prev/{constellation_for_stars}.csv"
+
+#     data = csv_read_zodiac.read_csv(line_data_file_path)
+
 
 print("zodiac_plotter.py started")
 
@@ -18,7 +64,7 @@ DPI=500
 # DPI=50
 
 # Path to the TOML file
-toml_file = "variables.toml"
+toml_file = f"{scenario_folder}/variables.toml"
 
 # Load the TOML file
 with open(toml_file, "r") as f:
@@ -112,12 +158,52 @@ if STR_GRPH_PROJ:
 if CYLINDRICAL:
     plt.figure(figsize=(15, 9))
 
-    utils.plot_cylindrical_stars(const,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a)
-    utils.plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg)
-    utils.plot_cylindrical_borders(borders, center_Dec_deg,center_ra_deg,zrot_deg)
+    if 1:
+        # print()
+        # print(constellations_for_borders_list)
+        used_borders_list = []
+        for idx,constellation_for_borders in enumerate(constellations_for_borders_list):
+            print(f"Borders\t{idx} len: {len(constellations_for_borders_list)}\t{constellation_for_borders}")
+            data_file_path=f"{root}/constellations/prev/borders/{constellation_for_borders}.csv"
 
-    plt.xlim([-1.5*np.pi,1.5*np.pi])
-    plt.ylim([-np.pi/2,np.pi/2])
+            borders = csv_read_zodiac.read_lines_csv(data_file_path)
+            # print("B")
+            
+            utils.plot_cylindrical_borders(borders, center_Dec_deg,center_ra_deg,zrot_deg, used_borders_list)
+            # print(used_borders_list)
+            # print("A")
+
+
+    if 1:
+        # print()
+        # print(constellation_line_list)
+        for idx,constellation_for_line in enumerate(constellation_line_list):
+            print(f"lines\t{idx} len: {len(constellation_line_list)}")
+            data_file_path = f"{root}/constellations/prev/{constellation_for_line}.csv"
+
+            data = csv_read_zodiac.read_lines_csv(data_file_path)
+            utils.plot_cylindrical_lines(data,center_Dec_deg,center_ra_deg,zrot_deg, Break_line=0.1)
+
+        print()
+        print(constellations_for_stars_list)
+
+    if 1:
+        DATA=[]
+        for idx, constellation_for_stars in enumerate(constellations_for_stars_list):
+            print(f"stars\t{idx} len: {len(constellations_for_stars_list)}")
+            data_file_path=f"{root}/constellations/prev/{constellation_for_stars}.csv"
+
+            data = csv_read_zodiac.read_csv(data_file_path)
+            DATA.append(data)
+        utils.plot_cylindrical_stars(DATA,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a)
+
+
+    # plt.xlim([0*np.pi,2.25*np.pi])
+    plt.xlim([-3.5,3.6])
+
+    # plt.ylim([-np.pi/2,np.pi/2])
+    plt.ylim([-2,2])
+
     plt.gca().set_aspect('equal', adjustable='box')
     # for i in range(-6,6):
     #     plt.axvline(i/6*np.pi,linestyle="--",color="gray",linewidth=0.5)
@@ -136,7 +222,7 @@ if POLAR:
     plt.figure(figsize=(10, 8)) 
     ax = plt.subplot(111, projection='polar')
 
-    if 0:
+    if 1:
         utils.plot_borders_polar(borders, center_Dec_deg,center_ra_deg,zrot_deg, ax)
 
         utils.plot_lines_polar(lines,center_Dec_deg,center_ra_deg, zrot_deg, ax)
@@ -147,7 +233,7 @@ if POLAR:
         plt.gca().set_aspect('equal', adjustable='box')
         plt.grid(False)
 
-    plt.savefig("all.pdf", dpi=DPI)
+        plt.savefig("all.pdf", dpi=DPI)
 
 
 

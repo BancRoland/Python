@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy import sin, cos, pi
 
+
+
 def upproject(v):
     """
     return: [x,y,z]
@@ -10,12 +12,52 @@ def upproject(v):
     w=v/v[2]
     return w
 
-def cylinder_project(v):
+def equirectangular_project(v):
     x = np.arctan2(v[0],v[1])
     # y=v[2]
     y=np.arcsin(v[2])
     w = np.array([x,y])
     return w
+
+def central_cylindrical_project(v):
+    v_x = v[0]
+    v_y = v[1]
+    v_z = v[2]
+    x = np.arctan2(v[0],v[1])
+    # y=v[2]
+    # y = np.arcsin(v[2])
+    # y = v_z/np.sqrt(v_x**2+v_y**2)
+    b=np.arctan(v_z/np.sqrt(v_x**2+v_y**2))
+    y=np.tan(b)
+    w = np.array([x,y])
+    return w
+
+def mercator_project(v):
+    v_x = v[0]
+    v_y = v[1]
+    v_z = v[2]
+    x = np.arctan2(v[0],v[1])
+    # y=v[2]
+    # y = np.arcsin(v[2])
+    # y = v_z/np.sqrt(v_x**2+v_y**2)
+    b=np.arctan(v_z/np.sqrt(v_x**2+v_y**2))
+    y = np.log(1/np.cos(b) + np.tan(b))
+    w = np.array([x,y])
+    return w
+
+
+def lambert_project(v):
+    v_x = v[0]
+    v_y = v[1]
+    v_z = v[2]
+    x = np.arctan2(v[0],v[1])
+    y=v[2]
+    w = np.array([x,y])
+    return w
+
+
+# cylindrical_project=mercator_project
+cylindrical_project=mercator_project
 
 # X axis originally points to equinox point
 def xrot(v,alpha_deg):
@@ -230,7 +272,7 @@ def read_borders__gen_graph(borders,center_Dec_deg=90,center_ra_deg=0,zrot_deg=0
         dec = star[1]
         # print(dec)
         v = get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
-        x_y_z = cylinder_project(v)
+        x_y_z = cylindrical_project(v)
 
         if rank_count[i] != 4:
             if rank_count[i] == 2:
@@ -256,13 +298,13 @@ def read_borders__gen_graph(borders,center_Dec_deg=90,center_ra_deg=0,zrot_deg=0
                     dec2=point2[1]
 
                     v1 = get_transformed_vector(ra1,dec1,center_Dec_deg, center_ra_deg, zrot_deg)
-                    xyz_1 = cylinder_project(v1)
+                    xyz_1 = cylindrical_project(v1)
 
                     # v2 = get_transformed_vector(ra2,dec2,center_Dec_deg, center_ra_deg, zrot_deg)
                     # xyz_2 = upproject(v2)
 
                     v2 = get_transformed_vector(ra2,dec2,center_Dec_deg, center_ra_deg, zrot_deg)
-                    xyz_2 = cylinder_project(v2)
+                    xyz_2 = cylindrical_project(v2)
 
                     x1=xyz_1[0]
                     x2=xyz_2[0]
@@ -364,29 +406,54 @@ def plot_stars_polar(const, center_Dec_deg,center_ra_deg,zrot_deg, ax, hmg, hmg2
         y.append(theta_R[0])
 
 
-def plot_cylindrical_stars(const,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a):
-    x=[]
-    y=[]
-    for star in const:
-        ra  = star['Right Ascension (deg)']/180*pi
-        dec = star['Declination (deg)']/180*np.pi
-        v = get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
-        x_y_z = cylinder_project(v)
-        S,marker,alpha = condition_magnitudes(star,hmg,hmg2)
-        plt.scatter(x_y_z[0], x_y_z[1], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha, zorder=3)
-        plt.scatter(x_y_z[0]+2*pi, x_y_z[1], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha, zorder=3)
-        plt.scatter(x_y_z[0]-2*pi, x_y_z[1], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha, zorder=3)
-        y.append(x_y_z[1])
-        x.append(x_y_z[0])
+def plot_cylindrical_stars(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a):
+    x_list=[]
+    y_list=[]
+    S_list=[]
+    alpha_list=[]
+    for list_elem in const_list:
+        for i,star in enumerate(list_elem):
+            ra  = star['Right Ascension (deg)']/180*pi
+            dec = star['Declination (deg)']/180*np.pi
+            v = get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
+            x_y_z = cylindrical_project(v)
 
-def plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg):
+            S,marker,alpha = condition_magnitudes(star,hmg,hmg2)
+            s=a*(1+hmg-S)
+            x=x_y_z[0]
+            y=x_y_z[1]
+
+            if x<0:
+                x=x+2*np.pi
+            
+            if marker == ".":
+                S_list.append(s)
+
+                x_list.append(x)
+                y_list.append(y)
+                alpha_list.append(alpha)
+                # print("dot")
+            else:
+                # print("not dot")
+                plt.scatter(x, y, color="black",  s=s, marker=marker, alpha=alpha, zorder=3)  
+                plt.scatter(x-2*pi, y, color="black",  s=s, marker=marker, alpha=alpha, zorder=3) 
+
+    plt.scatter(x_list, y_list, color="black",  s=S_list, marker=".", alpha=alpha_list, zorder=3)
+    # plt.scatter(x_y_z[0]+2*pi, x_y_z[1], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha, zorder=3)
+    plt.scatter(x_list-2*pi*np.ones(len(x_list)), y_list, color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha, zorder=3)
+    # y.append(x_y_z[1])
+    # x.append(x_y_z[0])
+
+
+def plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg,*,Break_line=0):
+    
+    positive_side_flag = False
+    segmentation_flag = False
+    lines_to_print_list=[]
     for idx,line in enumerate(lines):
         if idx%10 == 0:
             print(f"cylindrical lines:\t{idx/len(lines)*100:.2f}%")
         constellation=line['Constellation1']
-        print(constellation)
-        if constellation == "Lynx":
-            print("Canis line is printing")
         ra1  = line['Right Ascension (deg)1']/180*pi
         dec1 = line['Declination (deg)1']/180*np.pi
         ra2  = line['Right Ascension (deg)2']/180*pi
@@ -396,25 +463,24 @@ def plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg):
         width = line['width']
         alpha = line['alpha']
 
-        ra_diff = (ra2-ra1)
-        # print(ra_diff)
-        if abs(ra_diff)>pi:
-            if ra1<ra2:
-                ra1=0
-            else:
-                ra2=0
+        # ra_diff = (ra2-ra1)
+        # if abs(ra_diff)>pi:
+        #     if ra1<ra2:
+        #         ra1=0
+        #     else:
+        #         ra2=0
         
         # v1 = get_transformed_vector(ra1,dec1,center_Dec_deg, center_ra_deg, zrot_deg)
         # xyz_1 = upproject(v1)
 
         v1 = get_transformed_vector(ra1,dec1,center_Dec_deg, center_ra_deg, zrot_deg)
-        xyz_1 = cylinder_project(v1)
+        xyz_1 = cylindrical_project(v1)
 
         # v2 = get_transformed_vector(ra2,dec2,center_Dec_deg, center_ra_deg, zrot_deg)
         # xyz_2 = upproject(v2)
 
         v2 = get_transformed_vector(ra2,dec2,center_Dec_deg, center_ra_deg, zrot_deg)
-        xyz_2 = cylinder_project(v2)
+        xyz_2 = cylindrical_project(v2)
 
         x1=xyz_1[0]
         x2=xyz_2[0]
@@ -422,91 +488,159 @@ def plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg):
         y2=xyz_2[1]
 
         if abs(x1-x2)>np.pi:    
+            segmentation_flag = True
+            print("FLAG!!!")
+
+
+        # if x1<0 or x2<0:
+        #     flag=True
+        # #     print(f"[[{x1},{x2}][{y1},{y2}]]")
+
+        # if x1<Break_line or x2<Break_line:
+        #     positive_side_flag=True
+        #     print(f"[[{x1},{x2}][{y1},{y2}]]")
+
+        lines_to_print_list.append([[x1,x2],[y1,y2]])
+                
+        # plt.plot([x1,x2],[y1,y2],linewidth=0.5,linestyle="-",alpha=1,color="red",zorder=2)
+
+
+    for lines_to_print in lines_to_print_list:
+
+        x1 = lines_to_print[0][0]       
+        x2 = lines_to_print[0][1]
+        y1 = lines_to_print[1][0]
+        y2 = lines_to_print[1][1]
+
+        if segmentation_flag:
+            print("segmentation active")
             if x1<0:
-                x1=x1+2*pi
-            else:
-                x2=x2+2*pi
+                x1=x1+2*np.pi
+            if x2<0:
+                x2=x2+2*np.pi
+
+
+        # if positive_side_flag:
+        #     # x1+=2*np.pi 
+        #     # x2+=2*np.pi 
+
+        #     if x1<Break_line:
+        #         x1+=2*np.pi     
+        #     if x2<Break_line:   
+        #         x2+=2*np.pi 
 
         plt.plot([x1,x2],[y1,y2],linewidth=width,linestyle=linestyle,alpha=1,color=color,zorder=2)
-
-
-
-
-
-def plot_cylindrical_borders(borders, center_Dec_deg,center_ra_deg,zrot_deg):
-    used_borders=[]
-    for idx,line in enumerate(borders):
         
-        if idx%100 == 0:
-            print(f"cylindrical borders:\t{idx/len(borders)*100:.2f}%")
-
-        ra1  = line['Right Ascension (deg)1']/180*np.pi
-        dec1 = line['Declination (deg)1']/180*np.pi
-        ra2  = line['Right Ascension (deg)2']/180*np.pi
-        dec2 = line['Declination (deg)2']/180*np.pi
-        linestyle = line['linestyle']
-        color = line['color']
-        width = line['width']
-        alpha = line['alpha']
-
-        ra1=ra1-(2*np.pi)*np.floor(ra1/(2*np.pi))
-        ra2=ra2-(2*np.pi)*np.floor(ra2/(2*np.pi))
-
-
-        if [[ra1,dec1],[ra2,dec2]] not in used_borders and [[ra2,dec2],[ra1,dec1]] not in used_borders:
-
-            used_borders.append([[ra1,dec1],[ra2,dec2]])  
-
-            ra_diff = (ra2-ra1)
-            if abs(ra_diff)>pi:
-                if ra1<ra2:
-                    ra1=ra1+2*pi
-                else:
-                    ra1=ra1-2*pi  
-                ra_diff = (ra2-ra1)
 
 
 
-            dec_diff = (dec2-dec1)
 
-            iteration_num = max((np.floor(abs(ra_diff)/(2*np.pi)*360))+1 , (np.floor(abs(dec_diff)/(2*np.pi)*360))+1)
+
+def plot_cylindrical_borders(border_line_list, center_Dec_deg,center_ra_deg,zrot_deg, used_borders_list):
+    # used_borders=[]
+    crossing_border_flag = False
+    line_coordinate_list=[]
+
+    for idx,border_line in enumerate(border_line_list):
+        
+        ra1  = border_line['Right Ascension (deg)1']/180*np.pi
+        dec1 = border_line['Declination (deg)1']/180*np.pi
+        ra2  = border_line['Right Ascension (deg)2']/180*np.pi
+        dec2 = border_line['Declination (deg)2']/180*np.pi
+        linestyle = border_line['linestyle']
+        color = border_line['color']
+        width = border_line['width']
+        alpha = border_line['alpha']
+
+        # ra1=ra1-(2*np.pi)*np.floor(ra1/(2*np.pi))
+        # ra2=ra2-(2*np.pi)*np.floor(ra2/(2*np.pi))
+        # print(len(used_borders_list))
+
+        def is_not_yet_used_line(line_params):
+            # print(f"line_params = {line_params}")
+            ra10 = line_params[0][0]
+            dec10 = line_params[0][1]
+
+            ra20 = line_params[1][0]
+            dec20 = line_params[1][1]
+
+            reversed_line_param = [ra20,dec20],[ra10,dec10]
+            # print(f"reversed_line_param = {reversed_line_param}")
             
 
-            ra_step = ra_diff/iteration_num
-            dec_step = dec_diff/iteration_num
+            if (line_params not in used_borders_list) and (reversed_line_param not in used_borders_list):
+                return True
+            else:
+                return False
+
+
+        if abs(ra1-ra2)>np.pi:    
+            segmentation_flag = True
+            print("FLAG!!!")
+
+        line_params = [ra1,dec1],[ra2,dec2]
+        if is_not_yet_used_line(line_params):
+            
+            used_borders_list.append(line_params)  
+
+            ra_diff = (ra2-ra1)
+            # if abs(ra_diff)>pi:
+            #     if ra1<ra2:
+            #         ra1=ra1+2*pi
+            #     else:
+            #         ra1=ra1-2*pi  
+            #     ra_diff = (ra2-ra1)
+
+            dec_diff = (dec2-dec1)
+            ra_diff_rounded_degs = (np.floor(abs(ra_diff)/(2*np.pi)*360))+1
+            dec_diff_rounded_degs = (np.floor(abs(dec_diff)/(2*np.pi)*360))+1
+
+            # border_segment_num = max( ra_diff_rounded_degs, dec_diff_rounded_degs)
+            border_segment_num = 1
+
+            
+
+            ra_step = ra_diff/border_segment_num
+            dec_step = dec_diff/border_segment_num
             ra_now = ra1
             dec_now = dec1
 
-            for i in range(int(iteration_num)):
+            for _ in range(int(border_segment_num)):
                 ra_next = ra_now + ra_step
                 dec_next = dec_now + dec_step
 
                 v1 = get_transformed_vector(ra_now,dec_now,center_Dec_deg, center_ra_deg, zrot_deg)
                 # theta_R1 = polar_upproject(v1)
-                x_y_z__1 = cylinder_project(v1)
+                xyz_1 = cylindrical_project(v1)
 
                 v2 = get_transformed_vector(ra_next,dec_next,center_Dec_deg, center_ra_deg, zrot_deg)
                 # theta_R2 = polar_upproject(v2)
-                x_y_z__2 = cylinder_project(v2)
+                xyz_2 = cylindrical_project(v2)
 
 
-                x1 = x_y_z__1[0]
-                x2 = x_y_z__2[0]
-                y1 = x_y_z__1[1]
-                y2 = x_y_z__2[1]
+                x1 = xyz_1[0]
+                x2 = xyz_2[0]
+                y1 = xyz_1[1]
+                y2 = xyz_2[1]
 
-                if abs(x1-x2)>np.pi:
-                    if x1<0:
-                        x1=x1+2*pi
-                    else:
-                        x2=x2+2*pi
+
+
+                line_coordinate_list.append([[x1,x2],[y1,y2]])
                         
-                plt.plot([x1,x2],[y1,y2],linewidth=0.5,linestyle="-",alpha=1,color="red",zorder=2)
+                # plt.plot([x1,x2],[y1,y2],linewidth=0.5,linestyle="-",alpha=1,color="red",zorder=2)
 
 
                 ra_now = ra_next
                 dec_now = dec_next
 
+    for line_coordinate in line_coordinate_list:
 
-        # else:
-        #     print("Border already found!")
+        if crossing_border_flag:
+            line_coordinate[0][0] += 2*np.pi
+            line_coordinate[0][1] += 2*np.pi
+
+        plt.plot(line_coordinate[0], line_coordinate[1], linewidth=0.5, linestyle="-", alpha=1, color="red", zorder=2)
+
+    # else:
+    #     print("border_line_already_found")        
+
