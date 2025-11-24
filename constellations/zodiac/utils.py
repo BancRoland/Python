@@ -447,7 +447,6 @@ def plot_cylindrical_stars(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hmg,
 
 def plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg,*,Break_line=0):
     
-    positive_side_flag = False
     segmentation_flag = False
     lines_to_print_list=[]
     for idx,line in enumerate(lines):
@@ -463,21 +462,9 @@ def plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg,*,Break_l
         width = line['width']
         alpha = line['alpha']
 
-        # ra_diff = (ra2-ra1)
-        # if abs(ra_diff)>pi:
-        #     if ra1<ra2:
-        #         ra1=0
-        #     else:
-        #         ra2=0
-        
-        # v1 = get_transformed_vector(ra1,dec1,center_Dec_deg, center_ra_deg, zrot_deg)
-        # xyz_1 = upproject(v1)
-
         v1 = get_transformed_vector(ra1,dec1,center_Dec_deg, center_ra_deg, zrot_deg)
         xyz_1 = cylindrical_project(v1)
 
-        # v2 = get_transformed_vector(ra2,dec2,center_Dec_deg, center_ra_deg, zrot_deg)
-        # xyz_2 = upproject(v2)
 
         v2 = get_transformed_vector(ra2,dec2,center_Dec_deg, center_ra_deg, zrot_deg)
         xyz_2 = cylindrical_project(v2)
@@ -491,18 +478,7 @@ def plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg,*,Break_l
             segmentation_flag = True
             print("FLAG!!!")
 
-
-        # if x1<0 or x2<0:
-        #     flag=True
-        # #     print(f"[[{x1},{x2}][{y1},{y2}]]")
-
-        # if x1<Break_line or x2<Break_line:
-        #     positive_side_flag=True
-        #     print(f"[[{x1},{x2}][{y1},{y2}]]")
-
         lines_to_print_list.append([[x1,x2],[y1,y2]])
-                
-        # plt.plot([x1,x2],[y1,y2],linewidth=0.5,linestyle="-",alpha=1,color="red",zorder=2)
 
 
     for lines_to_print in lines_to_print_list:
@@ -513,33 +489,42 @@ def plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg,*,Break_l
         y2 = lines_to_print[1][1]
 
         if segmentation_flag:
-            print("segmentation active")
             if x1<0:
                 x1=x1+2*np.pi
             if x2<0:
                 x2=x2+2*np.pi
 
-
-        # if positive_side_flag:
-        #     # x1+=2*np.pi 
-        #     # x2+=2*np.pi 
-
-        #     if x1<Break_line:
-        #         x1+=2*np.pi     
-        #     if x2<Break_line:   
-        #         x2+=2*np.pi 
-
         plt.plot([x1,x2],[y1,y2],linewidth=width,linestyle=linestyle,alpha=1,color=color,zorder=2)
         
 
+def revese_line_params(line_params):
+    ra10 = line_params[0][0]
+    ra20 = line_params[0][1]
 
+    dec10 = line_params[1][0]
+    dec20 = line_params[1][1]
+
+    reversed_line_param = [ra20,ra10],[dec20,dec10]
+    return reversed_line_param
+
+def is_not_yet_used_line(line_params,used_borders_list):
+    reversed_line_param = revese_line_params(line_params)          
+
+    if (line_params not in used_borders_list) and (reversed_line_param not in used_borders_list):
+        return True
+    else:
+        return False
 
 
 
 def plot_cylindrical_borders(border_line_list, center_Dec_deg,center_ra_deg,zrot_deg, used_borders_list):
     # used_borders=[]
     crossing_border_flag = False
-    line_coordinate_list=[]
+    break_flag = False
+    segmented_lines_to_print_list=[]
+    possibly_broken_lines_list=[]
+    unsegmented_lines_to_print_list=[]
+    current_constellation_used_lines=[]
 
     for idx,border_line in enumerate(border_line_list):
         
@@ -556,91 +541,80 @@ def plot_cylindrical_borders(border_line_list, center_Dec_deg,center_ra_deg,zrot
         # ra2=ra2-(2*np.pi)*np.floor(ra2/(2*np.pi))
         # print(len(used_borders_list))
 
-        def is_not_yet_used_line(line_params):
-            # print(f"line_params = {line_params}")
-            ra10 = line_params[0][0]
-            dec10 = line_params[0][1]
+        v1 = get_transformed_vector(ra1,dec1,center_Dec_deg, center_ra_deg, zrot_deg)
+        xyz_1 = cylindrical_project(v1)
 
-            ra20 = line_params[1][0]
-            dec20 = line_params[1][1]
+        v2 = get_transformed_vector(ra2,dec2,center_Dec_deg, center_ra_deg, zrot_deg)
+        xyz_2 = cylindrical_project(v2)
 
-            reversed_line_param = [ra20,dec20],[ra10,dec10]
-            # print(f"reversed_line_param = {reversed_line_param}")
-            
+        x1=xyz_1[0]
+        x2=xyz_2[0]
+        y1=xyz_1[1]
+        y2=xyz_2[1]
 
-            if (line_params not in used_borders_list) and (reversed_line_param not in used_borders_list):
-                return True
-            else:
-                return False
-
-
-        if abs(ra1-ra2)>np.pi:    
-            segmentation_flag = True
+        if abs(x1-x2)>np.pi:    
+            break_flag = True
             print("FLAG!!!")
 
-        line_params = [ra1,dec1],[ra2,dec2]
-        if is_not_yet_used_line(line_params):
+        possibly_boken_line = [x1,x2],[y1,y2]
+
+        possibly_broken_lines_list.append(possibly_boken_line)
+    
+    for possibly_boken_line in possibly_broken_lines_list:
+
+        x1 = possibly_boken_line[0][0]       
+        x2 = possibly_boken_line[0][1]
+        y1 = possibly_boken_line[1][0]
+        y2 = possibly_boken_line[1][1]
+
+        if break_flag:
+            if x1<0:
+                x1=x1+2*np.pi
+            if x2<0:
+                x2=x2+2*np.pi
+
+        unsegmented_line = [x1,x2],[y1,y2]
+
+        unsegmented_lines_to_print_list.append(unsegmented_line)
+
+        
+        if is_not_yet_used_line(unsegmented_line,used_borders_list):
             
-            used_borders_list.append(line_params)  
+            used_borders_list.append(unsegmented_line)  
+            current_constellation_used_lines.append(unsegmented_line)
 
-            ra_diff = (ra2-ra1)
-            # if abs(ra_diff)>pi:
-            #     if ra1<ra2:
-            #         ra1=ra1+2*pi
-            #     else:
-            #         ra1=ra1-2*pi  
-            #     ra_diff = (ra2-ra1)
-
-            dec_diff = (dec2-dec1)
-            ra_diff_rounded_degs = (np.floor(abs(ra_diff)/(2*np.pi)*360))+1
-            dec_diff_rounded_degs = (np.floor(abs(dec_diff)/(2*np.pi)*360))+1
-
+            # ra_diff = (ra2-ra1)
+            # dec_diff = (dec2-dec1)
+            # ra_diff_rounded_degs = (np.floor(abs(ra_diff)/(2*np.pi)*360))+1
+            # dec_diff_rounded_degs = (np.floor(abs(dec_diff)/(2*np.pi)*360))+1
             # border_segment_num = max( ra_diff_rounded_degs, dec_diff_rounded_degs)
-            border_segment_num = 1
+            # border_segment_num = 1
 
-            
+            # ra_step = ra_diff/border_segment_num
+            # dec_step = dec_diff/border_segment_num
+            # ra_now = ra1
+            # dec_now = dec1
 
-            ra_step = ra_diff/border_segment_num
-            dec_step = dec_diff/border_segment_num
-            ra_now = ra1
-            dec_now = dec1
+            # for _ in range(int(border_segment_num)):
+            #     ra_next = ra_now + ra_step
+            #     dec_next = dec_now + dec_step
 
-            for _ in range(int(border_segment_num)):
-                ra_next = ra_now + ra_step
-                dec_next = dec_now + dec_step
-
-                v1 = get_transformed_vector(ra_now,dec_now,center_Dec_deg, center_ra_deg, zrot_deg)
-                # theta_R1 = polar_upproject(v1)
-                xyz_1 = cylindrical_project(v1)
-
-                v2 = get_transformed_vector(ra_next,dec_next,center_Dec_deg, center_ra_deg, zrot_deg)
-                # theta_R2 = polar_upproject(v2)
-                xyz_2 = cylindrical_project(v2)
-
-
-                x1 = xyz_1[0]
-                x2 = xyz_2[0]
-                y1 = xyz_1[1]
-                y2 = xyz_2[1]
-
-
-
-                line_coordinate_list.append([[x1,x2],[y1,y2]])
+            #     segmented_lines_to_print_list.append([[x1,x2],[y1,y2]])
                         
-                # plt.plot([x1,x2],[y1,y2],linewidth=0.5,linestyle="-",alpha=1,color="red",zorder=2)
+            #     # plt.plot([x1,x2],[y1,y2],linewidth=0.5,linestyle="-",alpha=1,color="red",zorder=2)
+
+            #     ra_now = ra_next
+            #     dec_now = dec_next
 
 
-                ra_now = ra_next
-                dec_now = dec_next
+    print(f"len = {len(used_borders_list)}")
 
-    for line_coordinate in line_coordinate_list:
+    for line_coordinate in current_constellation_used_lines:
+        x_coordinates = line_coordinate[0]+np.random.random(2)/20*0
+        y_coordinates = line_coordinate[1]+np.random.random(2)/20*0
+        
+        plt.plot(x_coordinates, y_coordinates, linewidth=0.5, linestyle="-", alpha=1, color="red", zorder=2)
 
-        if crossing_border_flag:
-            line_coordinate[0][0] += 2*np.pi
-            line_coordinate[0][1] += 2*np.pi
-
-        plt.plot(line_coordinate[0], line_coordinate[1], linewidth=0.5, linestyle="-", alpha=1, color="red", zorder=2)
-
-    # else:
+    # # else:
     #     print("border_line_already_found")        
 

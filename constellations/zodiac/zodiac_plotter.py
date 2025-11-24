@@ -199,10 +199,10 @@ if CYLINDRICAL:
 
 
     # plt.xlim([0*np.pi,2.25*np.pi])
-    plt.xlim([-3.5,3.6])
+    plt.xlim([-3.5,4])
 
     # plt.ylim([-np.pi/2,np.pi/2])
-    plt.ylim([-2,2])
+    plt.ylim([-2.5,2])
 
     plt.gca().set_aspect('equal', adjustable='box')
     # for i in range(-6,6):
