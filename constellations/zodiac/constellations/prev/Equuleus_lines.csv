@@ -1,0 +1,7 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Alpha Equulei,21h 15m 49.40s,+05° 14′ 53.1″,3.92,Equuleus,Gamma Equulei,21h 10m 20.47s,+10° 07′ 55.0″,4.7,Equuleus,-,grey,1,0.5
+Gamma Equulei,21h 10m 20.47s,+10° 07′ 55.0″,4.7,Equuleus,Delta Equulei,21h 14m 28.79s,+10° 00′ 27.8″,4.47,Equuleus,-,grey,1,0.5
+Delta Equulei,21h 14m 28.79s,+10° 00′ 27.8″,4.47,Equuleus,Beta Equulei,21h 22m 53.58s,+06° 48′ 40.0″,5.16,Equuleus,-,grey,1,0.5
+Beta Equulei,21h 22m 53.58s,+06° 48′ 40.0″,5.16,Equuleus,Alpha Equulei,21h 15m 49.40s,+05° 14′ 53.1″,3.92,Equuleus,-,grey,1,0.5
+

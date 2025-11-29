@@ -1,0 +1,25 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Xi2 Ceti,02h 28m 09.52s,+08° 27′ 36.3″,4.3,Cetus,Xi1 Ceti,02h 13m 00.01s,+08° 50′ 48.3″,4.36,Cetus,-,grey,1,0.5
+
+Alpha Ceti,03h 02m 16.78s,+04° 05′ 23.7″,2.54,Cetus,Lambda Ceti,02h 59m 42.90s,+08° 54′ 26.6″,4.71,Cetus,-,grey,1,0.5
+Lambda Ceti,02h 59m 42.90s,+08° 54′ 26.6″,4.71,Cetus,Mu Ceti,02h 44m 56.37s,+10° 06′ 51.2″,4.27,Cetus,-,grey,1,0.5
+Mu Ceti,02h 44m 56.37s,+10° 06′ 51.2″,4.27,Cetus,Xi2 Ceti,02h 28m 09.52s,+08° 27′ 36.3″,4.3,Cetus,-,grey,1,0.5
+Xi2 Ceti,02h 28m 09.52s,+08° 27′ 36.3″,4.3,Cetus,Nu Ceti,02h 35m 52.49s,+05° 35′ 35.9″,4.87,Cetus,-,grey,1,0.5
+Nu Ceti,02h 35m 52.49s,+05° 35′ 35.9″,4.87,Cetus,Gamma Ceti,02h 43m 18.12s,+03° 14′ 10.2″,3.47,Cetus,-,grey,1,0.5
+Gamma Ceti,02h 43m 18.12s,+03° 14′ 10.2″,3.47,Cetus,Alpha Ceti,03h 02m 16.78s,+04° 05′ 23.7″,2.54,Cetus,-,grey,1,0.5
+
+Gamma Ceti,02h 43m 18.12s,+03° 14′ 10.2″,3.47,Cetus,Delta Ceti,02h 39m 28.95s,+00° 19′ 42.7″,4.08,Cetus,-,grey,1,0.5
+Delta Ceti,02h 39m 28.95s,+00° 19′ 42.7″,4.08,Cetus,Mira,02h 19m 20.79s,-02° 58′ 37.4″,3.04,Cetus,-,grey,1,0.5
+Mira,02h 19m 20.79s,-02° 58′ 37.4″,3.04,Cetus,Epsilon Ceti,02h 39m 33.73s,-11° 52′ 17.7″,4.83,Cetus,-,grey,1,0.5
+Epsilon Ceti,02h 39m 33.73s,-11° 52′ 17.7″,4.83,Cetus,Pi Ceti,02h 44m 07.35s,-13° 51′ 31.2″,4.24,Cetus,-,grey,1,0.5
+Pi Ceti,02h 44m 07.35s,-13° 51′ 31.2″,4.24,Cetus,Sigma Ceti,02h 32m 05.28s,-15° 14′ 39.6″,4.74,Cetus,-,grey,1,0.5
+Sigma Ceti,02h 32m 05.28s,-15° 14′ 39.6″,4.74,Cetus,Tau Ceti,01h 44m 05.13s,-15° 56′ 22.4″,3.49,Cetus,-,grey,1,0.5
+Tau Ceti,01h 44m 05.13s,-15° 56′ 22.4″,3.49,Cetus,Beta Ceti,00h 43m 35.23s,-17° 59′ 12.1″,2.04,Cetus,-,grey,1,0.5
+Beta Ceti,00h 43m 35.23s,-17° 59′ 12.1″,2.04,Cetus,Eta Ceti,01h 08m 35.26s,-10° 10′ 54.9″,3.46,Cetus,-,grey,1,0.5
+Eta Ceti,01h 08m 35.26s,-10° 10′ 54.9″,3.46,Cetus,Theta Ceti,01h 24m 01.45s,-08° 10′ 57.9″,3.6,Cetus,-,grey,1,0.5
+Theta Ceti,01h 24m 01.45s,-08° 10′ 57.9″,3.6,Cetus,Zeta Ceti,01h 51m 27.61s,-10° 20′ 05.8″,3.74,Cetus,-,grey,1,0.5
+Zeta Ceti,01h 51m 27.61s,-10° 20′ 05.8″,3.74,Cetus,Rho Ceti,02h 25m 57.01s,-12° 17′ 25.6″,4.88,Cetus,-,grey,1,0.5
+Rho Ceti,02h 25m 57.01s,-12° 17′ 25.6″,4.88,Cetus,Epsilon Ceti,02h 39m 33.73s,-11° 52′ 17.7″,4.83,Cetus,-,grey,1,0.5
+
+Beta Ceti,00h 43m 35.23s,-17° 59′ 12.1″,2.04,Cetus,Iota Ceti,00h 19m 25.68s,-08° 49′ 25.8″,3.56,Cetus,-,grey,1,0.5

@@ -29,7 +29,7 @@ Crux_lines
 Cygnus_lines
 Delphinus_lines
 Dorado_lines
-Draco_lines
+# Draco_lines
 Equuleus_lines
 Eridanus_lines
 Fornax_lines
@@ -52,7 +52,7 @@ Monoceros_lines
 Norma_lines
 Ophiuchus_lines
 Orion_lines
-Pavo_lines
+# Pavo_lines
 Pegasus_lines
 Perseus_lines
 Phoenix_lines
@@ -77,6 +77,6 @@ Tucana_lines
 Ursa_Major_full_lines
 Vela_lines
 Virgo_lines
-Volans_lines
+# Volans_lines
 Vulpecula_lines
 )

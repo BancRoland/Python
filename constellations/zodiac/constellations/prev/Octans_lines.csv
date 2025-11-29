@@ -1,0 +1,6 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+
+Beta Octantis,22h 46m 03.72s,-81° 22′ 53.8″,4.13,Octans,Nu Octantis,21h 41m 28.47s,-77° 23′ 22.1″,3.76,Octans,-,grey,1,0.5
+Nu Octantis,21h 41m 28.47s,-77° 23′ 22.1″,3.76,Octans,Delta Octantis,14h 26m 55.74s,-83° 40′ 04.3″,4.31,Octans,-,grey,1,0.5
+Delta Octantis,14h 26m 55.74s,-83° 40′ 04.3″,4.31,Octans,Beta Octantis,22h 46m 03.72s,-81° 22′ 53.8″,4.13,Octans,-,grey,1,0.5

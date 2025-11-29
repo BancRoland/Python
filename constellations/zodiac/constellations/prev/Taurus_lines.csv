@@ -1,0 +1,20 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+
+
+Atlas (star),03h 49m 09.73s,+24° 03′ 12.7″,3.62,Taurus,Delta Tauri,04h 22m 56.03s,+17° 32′ 33.3″,3.77,Taurus,-,grey,1,0.5
+
+Zeta Tauri,05h 37m 38.68s,+21° 08′ 33.3″,2.97,Taurus,Aldebaran,04h 35m 55.20s,+16° 30′ 35.1″,0.87,Taurus,-,grey,1,0.5
+
+Beta Tauri,05h 26m 17.50s,+28° 36′ 28.3″,1.65,Taurus,Tau Tauri,04h 42m 14.70s,+22° 57′ 25.1″,4.27,Taurus,-,grey,1,0.5
+Tau Tauri,04h 42m 14.70s,+22° 57′ 25.1″,4.27,Taurus,Epsilon Tauri,04h 28m 36.93s,+19° 10′ 49.9″,3.53,Taurus,-,grey,1,0.5
+
+Aldebaran,04h 35m 55.20s,+16° 30′ 35.1″,0.87,Taurus,Theta Tauri,04h 28m 39.67s,+15° 52′ 15.4″,3.4,Taurus,-,grey,1,0.5
+Theta Tauri,04h 28m 39.67s,+15° 52′ 15.4″,3.4,Taurus,Gamma Tauri,04h 19m 47.53s,+15° 37′ 39.7″,3.65,Taurus,-,grey,1,0.5
+Gamma Tauri,04h 19m 47.53s,+15° 37′ 39.7″,3.65,Taurus,Delta Tauri,04h 22m 56.03s,+17° 32′ 33.3″,3.77,Taurus,-,grey,1,0.5
+Delta Tauri,04h 22m 56.03s,+17° 32′ 33.3″,3.77,Taurus,68 Tauri,04h 25m 29.32s,+17° 55′ 40.8″,4.3,Taurus,-,grey,1,0.5
+68 Tauri,04h 25m 29.32s,+17° 55′ 40.8″,4.3,Taurus,Epsilon Tauri,04h 28m 36.93s,+19° 10′ 49.9″,3.53,Taurus,-,grey,1,0.5
+Epsilon Tauri,04h 28m 36.93s,+19° 10′ 49.9″,3.53,Taurus,Aldebaran,04h 35m 55.20s,+16° 30′ 35.1″,0.87,Taurus,-,grey,1,0.5
+
+Gamma Tauri,04h 19m 47.53s,+15° 37′ 39.7″,3.65,Taurus,Lambda Tauri,04h 00m 40.82s,+12° 29′ 25.4″,3.41,Taurus,-,grey,1,0.5
+Lambda Tauri,04h 00m 40.82s,+12° 29′ 25.4″,3.41,Taurus,Omicron Tauri,03h 24m 48.84s,+09° 01′ 44.6″,3.61,Taurus,-,grey,1,0.5

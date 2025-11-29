@@ -1,0 +1,19 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+
+Lambda Draconis,11h 31m 24.29s,+69° 19′ 52.0″,3.82,Draco,Kappa Draconis,12h 33m 29.04s,+69° 47′ 17.6″,3.85,Draco,-,grey,1,0.5
+Kappa Draconis,12h 33m 29.04s,+69° 47′ 17.6″,3.85,Draco,Thuban,14h 04m 23.43s,+64° 22′ 32.9″,3.67,Draco,-,grey,1,0.5
+Thuban,14h 04m 23.43s,+64° 22′ 32.9″,3.67,Draco,Iota Draconis,15h 24m 55.78s,+58° 57′ 57.7″,3.29,Draco,-,grey,1,0.5
+Iota Draconis,15h 24m 55.78s,+58° 57′ 57.7″,3.29,Draco,Theta Draconis,16h 01m 53.70s,+58° 33′ 52.0″,4.01,Draco,-,grey,1,0.5
+Theta Draconis,16h 01m 53.70s,+58° 33′ 52.0″,4.01,Draco,Eta Draconis,16h 23m 59.51s,+61° 30′ 50.7″,2.73,Draco,-,grey,1,0.5
+Eta Draconis,16h 23m 59.51s,+61° 30′ 50.7″,2.73,Draco,Zeta Draconis,17h 08m 47.23s,+65° 42′ 52.7″,3.17,Draco,-,grey,1,0.5
+Zeta Draconis,17h 08m 47.23s,+65° 42′ 52.7″,3.17,Draco,Chi Draconis,18h 21m 02.34s,+72° 44′ 01.3″,3.55,Draco,-,grey,1,0.5
+Chi Draconis,18h 21m 02.34s,+72° 44′ 01.3″,3.55,Draco,Tau Draconis,19h 15m 33.29s,+73° 21′ 18.8″,4.45,Draco,-,grey,1,0.5
+Tau Draconis,19h 15m 33.29s,+73° 21′ 18.8″,4.45,Draco,Epsilon Draconis,19h 48m 10.21s,+70° 16′ 04.2″,3.84,Draco,-,grey,1,0.5
+Epsilon Draconis,19h 48m 10.21s,+70° 16′ 04.2″,3.84,Draco,Epsilon Draconis,19h 48m 10.21s,+70° 16′ 04.2″,3.84,Draco,-,grey,1,0.5
+Epsilon Draconis,19h 48m 10.21s,+70° 16′ 04.2″,3.84,Draco,Delta Draconis,19h 12m 33.15s,+67° 39′ 40.7″,3.07,Draco,-,grey,1,0.5
+Delta Draconis,19h 12m 33.15s,+67° 39′ 40.7″,3.07,Draco,Xi Draconis,17h 53m 31.63s,+56° 52′ 20.8″,3.73,Draco,-,grey,1,0.5
+Xi Draconis,17h 53m 31.63s,+56° 52′ 20.8″,3.73,Draco,Gamma Draconis,17h 56m 36.38s,+51° 29′ 20.2″,2.24,Draco,-,grey,1,0.5
+Gamma Draconis,17h 56m 36.38s,+51° 29′ 20.2″,2.24,Draco,Beta Draconis,17h 30m 25.98s,+52° 18′ 04.9″,2.79,Draco,-,grey,1,0.5
+Beta Draconis,17h 30m 25.98s,+52° 18′ 04.9″,2.79,Draco,Nu Draconis,17h 32m 15.88s,+55° 10′ 22.1″,4.86,Draco,-,grey,1,0.5
+Nu Draconis,17h 32m 15.88s,+55° 10′ 22.1″,4.86,Draco,Xi Draconis,17h 53m 31.63s,+56° 52′ 20.8″,3.73,Draco,-,grey,1,0.5

@@ -156,7 +156,15 @@ if STR_GRPH_PROJ:
     # plt.show()
 
 if CYLINDRICAL:
-    plt.figure(figsize=(15, 9))
+
+    x_realm = [-3.3, 4]
+    y_realm = [-1.8, 1.5]
+    x_span = abs(x_realm[0]-x_realm[1])
+    y_span = abs(y_realm[0]-y_realm[1])
+    x_y_scale=x_span/y_span
+    base_scale=5
+
+    plt.figure(figsize=(x_y_scale*base_scale, base_scale))
 
     if 1:
         # print()
@@ -199,18 +207,22 @@ if CYLINDRICAL:
 
 
     # plt.xlim([0*np.pi,2.25*np.pi])
-    plt.xlim([-3.5,4])
 
     # plt.ylim([-np.pi/2,np.pi/2])
-    plt.ylim([-2.5,2])
 
-    plt.gca().set_aspect('equal', adjustable='box')
     # for i in range(-6,6):
     #     plt.axvline(i/6*np.pi,linestyle="--",color="gray",linewidth=0.5)
     # for i in range(-3,3):
     #     plt.axhline(i/6*np.pi,linestyle="--",color="gray",linewidth=0.5)
-    
 
+    plt.gca().set_aspect('equal', adjustable='box')
+ 
+    plt.xlim(x_realm)
+    plt.ylim(y_realm)
+    plt.tight_layout(pad=0)
+    plt.axis('off')
+    plt.margins(0)
+    
     plt.savefig("cylindrical.pdf", dpi=DPI)
     # plt.show()
 
@@ -325,3 +337,37 @@ if SPHERRICAL:
     # plt.show()
 
 
+import shutil
+import os
+
+dest = os.path.join("scenarios", scenario)
+
+# Ensure destination directory exists
+os.makedirs(dest, exist_ok=True)
+
+files = [
+    "cylindrical.pdf",
+    "polar_lines.pdf",
+    "polar.pdf",
+    "sphereical.pdf",
+    "str_grph_proj.pdf",
+    "all.pdf",
+    "stars_&_lines.pdf",
+    "borders_&_stars.pdf",
+    "borders.pdf",
+    "stars.pdf",
+]
+
+for f in files:
+    target = os.path.join(dest, f)
+
+    try:
+        # If file exists at destination, remove it so move can overwrite
+        if os.path.exists(target):
+            os.remove(target)
+
+        shutil.move(f, target)
+        print(f"Moved {f} → {target}")
+
+    except FileNotFoundError:
+        print(f"Skipped (missing): {f}")

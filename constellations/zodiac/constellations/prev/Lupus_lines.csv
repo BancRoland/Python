@@ -1,0 +1,23 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Alpha Lupi,14h 41m 55.77s,-47° 23′ 17.3″,2.3,Lupus,Zeta Lupi,15h 12m 17.20s,-52° 05′ 56.7″,3.41,Lupus,-,grey,1,0.5
+Zeta Lupi,15h 12m 17.20s,-52° 05′ 56.7″,3.41,Lupus,Omega Lupi,15h 38m 03.32s,-42° 34′ 02.9″,4.34,Lupus,-,grey,1,0.5
+Omega Lupi,15h 38m 03.32s,-42° 34′ 02.9″,4.34,Lupus,Gamma Lupi,15h 35m 08.46s,-41° 10′ 00.1″,2.8,Lupus,-,grey,1,0.5
+Gamma Lupi,15h 35m 08.46s,-41° 10′ 00.1″,2.8,Lupus,Delta Lupi,15h 21m 22.34s,-40° 38′ 50.9″,3.22,Lupus,-,grey,1,0.5
+Delta Lupi,15h 21m 22.34s,-40° 38′ 50.9″,3.22,Lupus,Beta Lupi,14h 58m 31.95s,-43° 08′ 01.9″,2.68,Lupus,-,grey,1,0.5
+Beta Lupi,14h 58m 31.95s,-43° 08′ 01.9″,2.68,Lupus,Alpha Lupi,14h 41m 55.77s,-47° 23′ 17.3″,2.3,Lupus,-,grey,1,0.5
+
+Zeta Lupi,15h 12m 17.20s,-52° 05′ 56.7″,3.41,Lupus,Rho Lupi,14h 37m 53.25s,-49° 25′ 32.7″,4.05,Lupus,-,grey,1,0.5
+
+Alpha Lupi,14h 41m 55.77s,-47° 23′ 17.3″,2.3,Lupus,Tau2 Lupi,14h 26m 10.80s,-45° 22′ 45.3″,4.33,Lupus,-,grey,1,0.5
+Tau2 Lupi,14h 26m 10.80s,-45° 22′ 45.3″,4.33,Lupus,Tau1 Lupi,14h 26m 08.24s,-45° 13′ 17.0″,4.56,Lupus,-,grey,1,0.5
+
+Delta Lupi,15h 21m 22.34s,-40° 38′ 50.9″,3.22,Lupus,Phi2 Lupi,15h 23m 09.36s,-36° 51′ 30.4″,4.54,Lupus,-,grey,1,0.5
+Phi2 Lupi,15h 23m 09.36s,-36° 51′ 30.4″,4.54,Lupus,Phi1 Lupi,15h 21m 48.44s,-36° 15′ 40.2″,3.57,Lupus,-,grey,1,0.5
+
+Gamma Lupi,15h 35m 08.46s,-41° 10′ 00.1″,2.8,Lupus,Eta Lupi,16h 00m 07.34s,-38° 23′ 47.9″,3.42,Lupus,-,grey,1,0.5
+
+Eta Lupi,16h 00m 07.34s,-38° 23′ 47.9″,3.42,Lupus,Chi Lupi,15h 50m 57.54s,-33° 37′ 37.6″,3.97,Lupus,-,grey,1,0.5
+Chi Lupi,15h 50m 57.54s,-33° 37′ 37.6″,3.97,Lupus,Theta Lupi,16h 06m 35.56s,-36° 48′ 08.0″,4.22,Lupus,-,grey,1,0.5
+Theta Lupi,16h 06m 35.56s,-36° 48′ 08.0″,4.22,Lupus,Eta Lupi,16h 00m 07.34s,-38° 23′ 47.9″,3.42,Lupus,-,grey,1,0.5
+

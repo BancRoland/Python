@@ -1,0 +1,5 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+Beta Trianguli,02h 09m 32.52s,+34° 59′ 14.6″,3.0,Triangulum,Alpha Trianguli,01h 53m 04.90s,+29° 34′ 45.8″,3.42,Triangulum,-,grey,1,0.5
+Alpha Trianguli,01h 53m 04.90s,+29° 34′ 45.8″,3.42,Triangulum,Gamma Trianguli,02h 17m 18.84s,+33° 50′ 50.4″,4.03,Triangulum,-,grey,1,0.5
+Gamma Trianguli,02h 17m 18.84s,+33° 50′ 50.4″,4.03,Triangulum,Beta Trianguli,02h 09m 32.52s,+34° 59′ 14.6″,3.0,Triangulum,-,grey,1,0.5
+

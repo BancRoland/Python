@@ -1,0 +1,6 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+Alpha Andromedae,00h 08m 23.17s,+29° 05′ 27.0″,2.07,Andromeda,Delta Andromedae,00h 39m 19.60s,+30° 51′ 40.4″,3.27,Andromeda,-,grey,1,0.5
+Delta Andromedae,00h 39m 19.60s,+30° 51′ 40.4″,3.27,Andromeda,Beta Andromedae,01h 09m 43.80s,+35° 37′ 15.0″,2.07,Andromeda,-,grey,1,0.5
+Beta Andromedae,01h 09m 43.80s,+35° 37′ 15.0″,2.07,Andromeda,Gamma Andromedae,02h 03m 53.92s,+42° 19′ 47.5″,2.1,Andromeda,-,grey,1,0.5
+Beta Andromedae,01h 09m 43.80s,+35° 37′ 15.0″,2.07,Andromeda,Mu Andromedae,00h 56m 45.10s,+38° 29′ 57.3″,3.86,Andromeda,-,grey,1,0.5
+Mu Andromedae,00h 56m 45.10s,+38° 29′ 57.3″,3.86,Andromeda,Nu Andromedae,00h 49m 48.83s,+41° 04′ 44.2″,4.53,Andromeda,-,grey,1,0.5

@@ -1,0 +1,13 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+
+Alpha Crateris,10h 59m 46.75s,-18° 17′ 56.8″,4.08,Crater,Delta Crateris,11h 19m 20.52s,-14° 46′ 44.6″,3.56,Crater,-,grey,1,0.5
+Delta Crateris,11h 19m 20.52s,-14° 46′ 44.6″,3.56,Crater,Epsilon Crateris,11h 24m 36.61s,-10° 51′ 33.8″,4.81,Crater,-,grey,1,0.5
+Epsilon Crateris,11h 24m 36.61s,-10° 51′ 33.8″,4.81,Crater,Theta Crateris,11h 36m 40.95s,-09° 48′ 08.1″,4.7,Crater,-,grey,1,0.5
+Eta Crateris,11h 56m 00.98s,-17° 09′ 02.9″,5.17,Crater,Zeta Crateris,11h 44m 45.76s,-18° 21′ 02.2″,4.71,Crater,-,grey,1,0.5
+Zeta Crateris,11h 44m 45.76s,-18° 21′ 02.2″,4.71,Crater,Gamma Crateris,11h 24m 52.98s,-17° 41′ 02.5″,4.06,Crater,-,grey,1,0.5
+Gamma Crateris,11h 24m 52.98s,-17° 41′ 02.5″,4.06,Crater,Beta Crateris,11h 11m 39.49s,-22° 49′ 32.2″,4.46,Crater,-,grey,1,0.5
+Beta Crateris,11h 11m 39.49s,-22° 49′ 32.2″,4.46,Crater,Alpha Crateris,10h 59m 46.75s,-18° 17′ 56.8″,4.08,Crater,-,grey,1,0.5
+
+Delta Crateris,11h 19m 20.52s,-14° 46′ 44.6″,3.56,Crater,Gamma Crateris,11h 24m 52.98s,-17° 41′ 02.5″,4.06,Crater,-,grey,1,0.5
+

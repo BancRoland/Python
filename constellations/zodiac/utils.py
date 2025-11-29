@@ -2,7 +2,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy import sin, cos, pi
 
+def abs_vector(v:np.ndarray) -> float:
+    x = v[0]
+    y = v[1]
+    z = v[2]
+    return np.sqrt(x**2+y**2+z**2)
 
+def norm_vector(v:np.ndarray) -> np.ndarray:
+    return v/abs_vector(v)
+
+def disolve_vector(v):
+    return v[0],v[1],v[2]
 
 def upproject(v):
     """
@@ -56,7 +66,7 @@ def lambert_project(v):
     return w
 
 
-# cylindrical_project=mercator_project
+# cylindrical_project=equirectangular_project
 cylindrical_project=mercator_project
 
 # X axis originally points to equinox point
@@ -87,7 +97,7 @@ def get_3d_vec_from_RaDec(ra,dec):
     v = np.array([cos(ra)*cos(dec),sin(ra)*cos(dec), sin(dec)])
     return v
 
-def get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg):    
+def get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg):   
     v = get_3d_vec_from_RaDec(ra,dec)
     v = center_to_RaDec(v,center_Dec_deg,center_ra_deg)
     v = zrot(v,zrot_deg)
@@ -229,7 +239,8 @@ def read_borders__gen_graph(borders,center_Dec_deg=90,center_ra_deg=0,zrot_deg=0
     matrix_of_borders=np.zeros([0,0])
 
     for idx,line in enumerate(borders):
-        print(f"gen_graph_borders:\t{idx/len(borders)*100:.2f}%")
+        if idx%10 == 0:
+            print(f"gen_graph_borders:\t{idx/len(borders)*100:.2f}%")
         ra1  = line['Right Ascension (deg)1']/180*pi
         dec1 = line['Declination (deg)1']/180*np.pi
         ra2  = line['Right Ascension (deg)2']/180*pi
@@ -411,6 +422,9 @@ def plot_cylindrical_stars(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hmg,
     y_list=[]
     S_list=[]
     alpha_list=[]
+
+    star_color="orange"
+    star_color2="black"
     for list_elem in const_list:
         for i,star in enumerate(list_elem):
             ra  = star['Right Ascension (deg)']/180*pi
@@ -432,15 +446,14 @@ def plot_cylindrical_stars(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hmg,
                 x_list.append(x)
                 y_list.append(y)
                 alpha_list.append(alpha)
-                # print("dot")
             else:
-                # print("not dot")
-                plt.scatter(x, y, color="black",  s=s, marker=marker, alpha=alpha, zorder=3)  
-                plt.scatter(x-2*pi, y, color="black",  s=s, marker=marker, alpha=alpha, zorder=3) 
+                plt.scatter(x, y, color=star_color,  s=s, marker=marker, alpha=alpha, zorder=3)  
+                plt.scatter(x-2*pi, y, color=star_color,  s=s, marker=marker, alpha=alpha, zorder=3) 
 
-    plt.scatter(x_list, y_list, color="black",  s=S_list, marker=".", alpha=alpha_list, zorder=3)
+
+    plt.scatter(x_list, y_list, color=star_color2,  s=S_list, marker=".", alpha=alpha_list, zorder=5)
     # plt.scatter(x_y_z[0]+2*pi, x_y_z[1], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha, zorder=3)
-    plt.scatter(x_list-2*pi*np.ones(len(x_list)), y_list, color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha, zorder=3)
+    plt.scatter(x_list-2*pi*np.ones(len(x_list)), y_list, color=star_color2,  s=a*(1+hmg-S), marker=marker, alpha=alpha_list, zorder=3)
     # y.append(x_y_z[1])
     # x.append(x_y_z[0])
 
@@ -449,6 +462,7 @@ def plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg,*,Break_l
     
     segmentation_flag = False
     lines_to_print_list=[]
+    # alpha_list=[]
     for idx,line in enumerate(lines):
         if idx%10 == 0:
             print(f"cylindrical lines:\t{idx/len(lines)*100:.2f}%")
@@ -459,7 +473,8 @@ def plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg,*,Break_l
         dec2 = line['Declination (deg)2']/180*np.pi
         linestyle = line['linestyle']
         color = line['color']
-        width = line['width']
+        # width = line['width']
+        width = 0.5
         alpha = line['alpha']
 
         v1 = get_transformed_vector(ra1,dec1,center_Dec_deg, center_ra_deg, zrot_deg)
@@ -479,6 +494,7 @@ def plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg,*,Break_l
             print("FLAG!!!")
 
         lines_to_print_list.append([[x1,x2],[y1,y2]])
+        # alpha_list.append(alpha)
 
 
     for lines_to_print in lines_to_print_list:
@@ -494,8 +510,24 @@ def plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg,*,Break_l
             if x2<0:
                 x2=x2+2*np.pi
 
-        plt.plot([x1,x2],[y1,y2],linewidth=width,linestyle=linestyle,alpha=1,color=color,zorder=2)
-        
+        teasing_lines = False
+        if teasing_lines:
+            # R=0.02
+            R=0.0
+            
+            v1 = np.array([x1,y1,0])
+            v2 = np.array([x2,y2,0])
+            if abs_vector(v1-v2)> 2*R:
+                v3 = norm_vector(v2-v1)*R
+                v10 = v1 + v3
+                v20 = v2 - v3
+
+                x1,y1,_ = disolve_vector(v10)
+                x2,y2,_ = disolve_vector(v20)
+
+                plt.plot([x1,x2],[y1,y2],linewidth=width,linestyle=linestyle,alpha=1,color=color,zorder=2)
+        else:   
+            plt.plot([x1,x2],[y1,y2],linewidth=width,linestyle=linestyle,alpha=1,color=color,zorder=2)
 
 def revese_line_params(line_params):
     ra10 = line_params[0][0]
@@ -607,13 +639,12 @@ def plot_cylindrical_borders(border_line_list, center_Dec_deg,center_ra_deg,zrot
             #     dec_now = dec_next
 
 
-    print(f"len = {len(used_borders_list)}")
 
     for line_coordinate in current_constellation_used_lines:
         x_coordinates = line_coordinate[0]+np.random.random(2)/20*0
         y_coordinates = line_coordinate[1]+np.random.random(2)/20*0
         
-        plt.plot(x_coordinates, y_coordinates, linewidth=0.5, linestyle="-", alpha=1, color="red", zorder=2)
+        plt.plot(x_coordinates, y_coordinates, linewidth=0.5, linestyle="-", alpha=1, color="red", zorder=4)
 
     # # else:
     #     print("border_line_already_found")        

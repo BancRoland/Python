@@ -1,0 +1,19 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Nu Virginis,11h 45m 51.57s,+06° 31′ 47.3″,4.04,Virgo,Eta Virginis,12h 19m 54.39s,-00° 40′ 00.3″,3.89,Virgo,-,grey,1,0.5
+Eta Virginis,12h 19m 54.39s,-00° 40′ 00.3″,3.89,Virgo,Gamma Virginis,12h 41m 40.00s,-01° 26′ 58.3″,2.74,Virgo,-,grey,1,0.5
+
+Epsilon Virginis,13h 02m 10.76s,+10° 57′ 32.8″,2.85,Virgo,Delta Virginis,12h 55m 36.48s,+03° 23′ 51.4″,3.39,Virgo,-,grey,1,0.5
+
+Mu Virginis,14h 43m 03.56s,-05° 39′ 26.7″,3.87,Virgo,Iota Virginis,14h 16m 00.88s,-05° 59′ 58.3″,4.07,Virgo,-,grey,1,0.5
+Iota Virginis,14h 16m 00.88s,-05° 59′ 58.3″,4.07,Virgo,Kappa Virginis,14h 12m 53.74s,-10° 16′ 26.6″,4.18,Virgo,-,grey,1,0.5
+Kappa Virginis,14h 12m 53.74s,-10° 16′ 26.6″,4.18,Virgo,Spica,13h 25m 11.60s,-11° 09′ 40.5″,0.98,Virgo,-,grey,1,0.5
+
+109 Virginis,14h 46m 14.99s,+01° 53′ 34.6″,3.73,Virgo,Tau Virginis,14h 01m 38.78s,+01° 32′ 40.5″,4.23,Virgo,-,grey,1,0.5
+Tau Virginis,14h 01m 38.78s,+01° 32′ 40.5″,4.23,Virgo,Zeta Virginis,13h 34m 41.75s,-00° 35′ 45.4″,3.38,Virgo,-,grey,1,0.5
+
+Spica,13h 25m 11.60s,-11° 09′ 40.5″,0.98,Virgo,Gamma Virginis,12h 41m 40.00s,-01° 26′ 58.3″,2.74,Virgo,-,grey,1,0.5
+Gamma Virginis,12h 41m 40.00s,-01° 26′ 58.3″,2.74,Virgo,Delta Virginis,12h 55m 36.48s,+03° 23′ 51.4″,3.39,Virgo,-,grey,1,0.5
+Delta Virginis,12h 55m 36.48s,+03° 23′ 51.4″,3.39,Virgo,Zeta Virginis,13h 34m 41.75s,-00° 35′ 45.4″,3.38,Virgo,-,grey,1,0.5
+Zeta Virginis,13h 34m 41.75s,-00° 35′ 45.4″,3.38,Virgo,Spica,13h 25m 11.60s,-11° 09′ 40.5″,0.98,Virgo,-,grey,1,0.5
+

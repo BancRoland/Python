@@ -1,0 +1,10 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Rho Puppis,08h 07m 32.70s,-24° 18′ 16.0″,2.83,Puppis,Xi Puppis,07h 49m 17.66s,-24° 51′ 35.2″,3.34,Puppis,-,grey,1,0.5
+Xi Puppis,07h 49m 17.66s,-24° 51′ 35.2″,3.34,Puppis,Pi Puppis,07h 17m 08.56s,-37° 05′ 51.0″,2.71,Puppis,-,grey,1,0.5
+Pi Puppis,07h 17m 08.56s,-37° 05′ 51.0″,2.71,Puppis,Nu Puppis,06h 37m 45.67s,-43° 11′ 45.3″,3.17,Puppis,-,grey,1,0.5
+Nu Puppis,06h 37m 45.67s,-43° 11′ 45.3″,3.17,Puppis,Tau Puppis,06h 49m 56.14s,-50° 36′ 51.8″,2.94,Puppis,-,grey,1,0.5
+Tau Puppis,06h 49m 56.14s,-50° 36′ 51.8″,2.94,Puppis,QW Puppis,07h 12m 33.74s,-46° 45′ 34.4″,4.49,Puppis,-,grey,1,0.5
+QW Puppis,07h 12m 33.74s,-46° 45′ 34.4″,4.49,Puppis,Sigma Puppis,07h 29m 13.88s,-43° 18′ 06.8″,3.25,Puppis,-,grey,1,0.5
+Sigma Puppis,07h 29m 13.88s,-43° 18′ 06.8″,3.25,Puppis,Zeta Puppis,08h 03m 35.07s,-40° 00′ 11.5″,2.21,Puppis,-,grey,1,0.5
+Zeta Puppis,08h 03m 35.07s,-40° 00′ 11.5″,2.21,Puppis,Rho Puppis,08h 07m 32.70s,-24° 18′ 16.0″,2.83,Puppis,-,grey,1,0.5

@@ -1,0 +1,7 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+HD 33564,05h 22m 33.78s,+79° 13′ 50.7″,5.08,Camelopardalis,Gamma Camelopardalis,03h 50m 21.48s,+71° 19′ 56.5″,4.59,Camelopardalis,-,grey,1,0.5
+Gamma Camelopardalis,03h 50m 21.48s,+71° 19′ 56.5″,4.59,Camelopardalis,Alpha Camelopardalis,04h 54m 03.01s,+66° 20′ 33.6″,4.26,Camelopardalis,-,grey,1,0.5
+Gamma Camelopardalis,03h 50m 21.48s,+71° 19′ 56.5″,4.59,Camelopardalis,CS Camelopardalis,03h 29m 04.13s,+59° 56′ 25.2″,4.21,Camelopardalis,-,grey,1,0.5
+Alpha Camelopardalis,04h 54m 03.01s,+66° 20′ 33.6″,4.26,Camelopardalis,H Camelopardalis,03h 57m 25.44s,+63° 04′ 20.1″,4.95,Camelopardalis,-,grey,1,0.5
+H Camelopardalis,03h 57m 25.44s,+63° 04′ 20.1″,4.95,Camelopardalis,CS Camelopardalis,03h 29m 04.13s,+59° 56′ 25.2″,4.21,Camelopardalis,-,grey,1,0.5

@@ -14,10 +14,10 @@ Canes_Venatici_borders
 Canis_Major_borders
 Canis_Minor_borders
 Capricornus_borders
-Carina_borders
+# Carina_borders
 Centaurus_borders
 Cetus_borders
-Circinus_borders
+# Circinus_borders
 Columba_borders
 Coma_Berenices_borders
 Corona_Australis_borders
@@ -26,7 +26,7 @@ Corvus_borders
 Crater_borders
 Cygnus_borders
 Delphinus_borders
-Dorado_borders
+# Dorado_borders
 Equuleus_borders
 Eridanus_borders
 Fornax_borders
@@ -35,7 +35,7 @@ Grus_borders
 Hercules_borders
 Horologium_borders
 Hydra_borders
-Indus_borders
+# Indus_borders
 Lacerta_borders
 Leo_borders
 Leo_Minor_borders
@@ -57,6 +57,7 @@ Pisces_borders
 Piscis_Austrinus_borders
 Puppis_borders
 Pyxis_borders
+Reticulum_borders
 Sagitta_borders
 Sagittarius_borders
 Scorpius_borders
@@ -68,9 +69,9 @@ Sextans_borders
 Taurus_borders
 Telescopium_borders
 Triangulum_borders
-Tucana_borders
+# Tucana_borders
 Vela_borders
 Virgo_borders
-Volans_borders
+# Volans_borders
 Vulpecula_borders
 )

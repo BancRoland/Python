@@ -1,0 +1,7 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+
+Alpha Indi,20h 37m 33.99s,-47° 17′ 30.0″,3.11,Indus,Theta Indi,21h 19m 51.88s,-53° 26′ 57.4″,4.39,Indus,-,grey,1,0.5
+Theta Indi,21h 19m 51.88s,-53° 26′ 57.4″,4.39,Indus,Beta Indi,20h 54m 48.58s,-58° 27′ 14.7″,3.67,Indus,-,grey,1,0.5
+Beta Indi,20h 54m 48.58s,-58° 27′ 14.7″,3.67,Indus,Eta Indi,20h 44m 02.19s,-51° 55′ 15.0″,4.51,Indus,-,grey,1,0.5
+Eta Indi,20h 44m 02.19s,-51° 55′ 15.0″,4.51,Indus,Alpha Indi,20h 37m 33.99s,-47° 17′ 30.0″,3.11,Indus,-,grey,1,0.5

@@ -1,0 +1,26 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Sigma Piscium,01h 02m 49.09s,+31° 48′ 15.6″,5.5,Pisces,Upsilon Piscium,01h 19m 27.98s,+27° 15′ 50.7″,4.74,Pisces,-,grey,1,0.5
+Upsilon Piscium,01h 19m 27.98s,+27° 15′ 50.7″,4.74,Pisces,Phi Piscium,01h 13m 44.94s,+24° 35′ 01.6″,4.67,Pisces,-,grey,1,0.5
+Sigma Piscium,01h 02m 49.09s,+31° 48′ 15.6″,5.5,Pisces,Phi Piscium,01h 13m 44.94s,+24° 35′ 01.6″,4.67,Pisces,-,grey,1,0.5
+
+Phi Piscium,01h 13m 44.94s,+24° 35′ 01.6″,4.67,Pisces,Eta Piscium,01h 31m 28.99s,+15° 20′ 45.0″,3.62,Pisces,-,grey,1,0.5
+Eta Piscium,01h 31m 28.99s,+15° 20′ 45.0″,3.62,Pisces,Omicron Piscium,01h 45m 23.59s,+09° 09′ 27.5″,4.26,Pisces,-,grey,1,0.5
+Omicron Piscium,01h 45m 23.59s,+09° 09′ 27.5″,4.26,Pisces,Alpha Piscium,02h 02m 02.80s,+02° 45′ 49.5″,4.33,Pisces,-,grey,1,0.5
+
+Alpha Piscium,02h 02m 02.80s,+02° 45′ 49.5″,4.33,Pisces,Xi Piscium,01h 53m 33.34s,+03° 11′ 14.9″,4.61,Pisces,-,grey,1,0.5
+
+Xi Piscium,01h 53m 33.34s,+03° 11′ 14.9″,4.61,Pisces,Nu Piscium,01h 41m 25.91s,+05° 29′ 15.4″,4.45,Pisces,-,grey,1,0.5
+Nu Piscium,01h 41m 25.91s,+05° 29′ 15.4″,4.45,Pisces,Mu Piscium,01h 30m 10.94s,+06° 08′ 38.2″,4.84,Pisces,-,grey,1,0.5
+Mu Piscium,01h 30m 10.94s,+06° 08′ 38.2″,4.84,Pisces,Epsilon Piscium,01h 02m 56.66s,+07° 53′ 24.3″,4.27,Pisces,-,grey,1,0.5
+Epsilon Piscium,01h 02m 56.66s,+07° 53′ 24.3″,4.27,Pisces,Delta Piscium,00h 48m 40.90s,+07° 35′ 06.7″,4.44,Pisces,-,grey,1,0.5
+Delta Piscium,00h 48m 40.90s,+07° 35′ 06.7″,4.44,Pisces,41 Piscium,00h 20m 35.86s,+08° 11′ 24.9″,5.38,Pisces,-,grey,1,0.5
+41 Piscium,00h 20m 35.86s,+08° 11′ 24.9″,5.38,Pisces,Omega Piscium,23h 59m 18.60s,+06° 51′ 48.9″,4.03,Pisces,-,grey,1,0.5
+Omega Piscium,23h 59m 18.60s,+06° 51′ 48.9″,4.03,Pisces,Iota Piscium,23h 39m 56.82s,+05° 37′ 38.5″,4.13,Pisces,-,grey,1,0.5
+
+Iota Piscium,23h 39m 56.82s,+05° 37′ 38.5″,4.13,Pisces,Theta Piscium,23h 27m 58.17s,+06° 22′ 44.8″,4.27,Pisces,-,grey,1,0.5
+Theta Piscium,23h 27m 58.17s,+06° 22′ 44.8″,4.27,Pisces,Gamma Piscium,23h 17m 09.49s,+03° 16′ 56.1″,3.7,Pisces,-,grey,1,0.5
+Gamma Piscium,23h 17m 09.49s,+03° 16′ 56.1″,3.7,Pisces,Kappa Piscium,23h 26m 55.91s,+01° 15′ 21.0″,4.95,Pisces,-,grey,1,0.5
+Kappa Piscium,23h 26m 55.91s,+01° 15′ 21.0″,4.95,Pisces,Lambda Piscium,23h 42m 02.88s,+01° 46′ 49.5″,4.49,Pisces,-,grey,1,0.5
+Lambda Piscium,23h 42m 02.88s,+01° 46′ 49.5″,4.49,Pisces,Iota Piscium,23h 39m 56.82s,+05° 37′ 38.5″,4.13,Pisces,-,grey,1,0.5
+

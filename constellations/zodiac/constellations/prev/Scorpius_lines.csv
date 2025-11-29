@@ -1,0 +1,20 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Upsilon Scorpii,17h 30m 45.84s,-37° 17′ 44.7″,2.7,Scorpius,Lambda Scorpii,17h 33m 36.53s,-37° 06′ 13.5″,1.62,Scorpius,-,grey,1,0.5
+Lambda Scorpii,17h 33m 36.53s,-37° 06′ 13.5″,1.62,Scorpius,Kappa Scorpii,17h 42m 29.28s,-39° 01′ 47.7″,2.39,Scorpius,-,grey,1,0.5
+Kappa Scorpii,17h 42m 29.28s,-39° 01′ 47.7″,2.39,Scorpius,Iota1 Scorpii,17h 47m 35.08s,-40° 07′ 37.1″,2.99,Scorpius,-,grey,1,0.5
+Iota1 Scorpii,17h 47m 35.08s,-40° 07′ 37.1″,2.99,Scorpius,Theta Scorpii,17h 37m 19.13s,-42° 59′ 52.2″,1.86,Scorpius,-,grey,1,0.5
+Theta Scorpii,17h 37m 19.13s,-42° 59′ 52.2″,1.86,Scorpius,Eta Scorpii,17h 12m 09.18s,-43° 14′ 18.6″,3.32,Scorpius,-,grey,1,0.5
+Eta Scorpii,17h 12m 09.18s,-43° 14′ 18.6″,3.32,Scorpius,Zeta2 Scorpii,16h 54m 35.11s,-42° 21′ 38.7″,3.62,Scorpius,-,grey,1,0.5
+Zeta2 Scorpii,16h 54m 35.11s,-42° 21′ 38.7″,3.62,Scorpius,Zeta1 Scorpii,16h 53m 59.73s,-42° 21′ 43.3″,4.7,Scorpius,-,grey,1,0.5
+Zeta1 Scorpii,16h 53m 59.73s,-42° 21′ 43.3″,4.7,Scorpius,Mu1 Scorpii,16h 51m 52.24s,-38° 02′ 50.4″,3.0,Scorpius,-,grey,1,0.5
+Mu1 Scorpii,16h 51m 52.24s,-38° 02′ 50.4″,3.0,Scorpius,Mu2 Scorpii,16h 52m 20.15s,-38° 01′ 02.9″,3.56,Scorpius,-,grey,1,0.5
+Mu2 Scorpii,16h 52m 20.15s,-38° 01′ 02.9″,3.56,Scorpius,Epsilon Scorpii,16h 50m 10.24s,-34° 17′ 33.4″,2.29,Scorpius,-,grey,1,0.5
+Epsilon Scorpii,16h 50m 10.24s,-34° 17′ 33.4″,2.29,Scorpius,Tau Scorpii,16h 35m 52.96s,-28° 12′ 57.5″,2.82,Scorpius,-,grey,1,0.5
+Tau Scorpii,16h 35m 52.96s,-28° 12′ 57.5″,2.82,Scorpius,Antares,16h 29m 24.47s,-26° 25′ 55.0″,0.91,Scorpius,-,grey,1,0.5
+
+Antares,16h 29m 24.47s,-26° 25′ 55.0″,0.91,Scorpius,Beta1 Scorpii,16h 05m 26.23s,-19° 48′ 19.4″,2.62,Scorpius,-,grey,1,0.5
+
+Antares,16h 29m 24.47s,-26° 25′ 55.0″,0.91,Scorpius,Delta Scorpii,16h 00m 20.01s,-22° 37′ 17.8″,2.29,Scorpius,-,grey,1,0.5
+
+Antares,16h 29m 24.47s,-26° 25′ 55.0″,0.91,Scorpius,Pi Scorpii,15h 58m 51.12s,-26° 06′ 50.6″,2.89,Scorpius,-,grey,1,0.5

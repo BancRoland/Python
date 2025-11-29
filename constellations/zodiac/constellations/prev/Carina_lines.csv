@@ -1,0 +1,21 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+
+
+Beta Carinae,09h 13m 12.24s,-69° 43′ 02.9″,1.67,Carina,Omega Carinae,10h 13m 44.28s,-70° 02′ 16.5″,3.29,Carina,-,grey,1,0.5
+Omega Carinae,10h 13m 44.28s,-70° 02′ 16.5″,3.29,Carina,Theta Carinae,10h 42m 57.43s,-64° 23′ 40.1″,2.74,Carina,-,grey,1,0.5
+Theta Carinae,10h 42m 57.43s,-64° 23′ 40.1″,2.74,Carina,V520 Carinae,10h 43m 32.31s,-60° 33′ 59.9″,4.58,Carina,-,grey,1,0.5
+V520 Carinae,10h 43m 32.31s,-60° 33′ 59.9″,4.58,Carina,V382 Carinae,11h 08m 35.40s,-58° 58′ 30.2″,3.93,Carina,-,grey,1,0.5
+V382 Carinae,11h 08m 35.40s,-58° 58′ 30.2″,3.93,Carina,HD 94510,10h 53m 29.57s,-58° 51′ 11.8″,3.78,Carina,-,grey,1,0.5
+HD 94510,10h 53m 29.57s,-58° 51′ 11.8″,3.78,Carina,HD 90853,10h 27m 52.75s,-58° 44′ 21.9″,3.81,Carina,-,grey,1,0.5
+HD 90853,10h 27m 52.75s,-58° 44′ 21.9″,3.81,Carina,V337 Carinae,10h 17m 05.01s,-61° 19′ 56.4″,3.39,Carina,-,grey,1,0.5
+V337 Carinae,10h 17m 05.01s,-61° 19′ 56.4″,3.39,Carina,Iota Carinae,09h 17m 05.43s,-59° 16′ 30.9″,2.23,Carina,-,grey,1,0.5
+Iota Carinae,09h 17m 05.43s,-59° 16′ 30.9″,2.23,Carina,V357 Carinae,09h 10m 58.11s,-58° 58′ 00.9″,3.43,Carina,-,grey,1,0.5
+V357 Carinae,09h 10m 58.11s,-58° 58′ 00.9″,3.43,Carina,V343 Carinae,08h 40m 37.04s,-59° 45′ 39.7″,4.31,Carina,-,grey,1,0.5
+V343 Carinae,08h 40m 37.04s,-59° 45′ 39.7″,4.31,Carina,Epsilon Carinae,08h 22m 30.86s,-59° 30′ 34.3″,1.86,Carina,-,grey,1,0.5
+Epsilon Carinae,08h 22m 30.86s,-59° 30′ 34.3″,1.86,Carina,Canopus,06h 23m 57.09s,-52° 41′ 44.6″,-0.72,Carina,-,grey,1,0.5
+
+
+Gamma Velorum,08h 09m 31.96s,-47° 20′ 11.8″,1.83,Vela,Epsilon Carinae,08h 22m 30.86s,-59° 30′ 34.3″,1.86,Carina,-,grey,1,0.5
+Nu Puppis,06h 37m 45.67s,-43° 11′ 45.3″,3.17,Puppis,Canopus,06h 23m 57.09s,-52° 41′ 44.6″,-0.72,Carina,-,grey,1,0.5
+Gamma Velorum,08h 09m 31.96s,-47° 20′ 11.8″,1.83,Vela,Zeta Puppis,08h 03m 35.07s,-40° 00′ 11.5″,2.21,Puppis,-,grey,1,0.5

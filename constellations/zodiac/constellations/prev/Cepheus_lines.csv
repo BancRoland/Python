@@ -1,0 +1,10 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Gamma Cephei,23h 39m 20.98s,+77° 37′ 55.1″,3.21,Cepheus,Iota Cephei,22h 49m 40.91s,+66° 12′ 02.6″,3.5,Cepheus,-,grey,1,0.5
+Iota Cephei,22h 49m 40.91s,+66° 12′ 02.6″,3.5,Cepheus,Zeta Cephei,22h 10m 51.26s,+58° 12′ 04.5″,3.39,Cepheus,-,grey,1,0.5
+Zeta Cephei,22h 10m 51.26s,+58° 12′ 04.5″,3.39,Cepheus,Alpha Cephei,21h 18m 34.58s,+62° 35′ 07.6″,2.45,Cepheus,-,grey,1,0.5
+Alpha Cephei,21h 18m 34.58s,+62° 35′ 07.6″,2.45,Cepheus,Beta Cephei,21h 28m 39.58s,+70° 33′ 38.5″,3.23,Cepheus,-,grey,1,0.5
+Gamma Cephei,23h 39m 20.98s,+77° 37′ 55.1″,3.21,Cepheus,Beta Cephei,21h 28m 39.58s,+70° 33′ 38.5″,3.23,Cepheus,-,grey,1,0.5
+
+Iota Cephei,22h 49m 40.91s,+66° 12′ 02.6″,3.5,Cepheus,Beta Cephei,21h 28m 39.58s,+70° 33′ 38.5″,3.23,Cepheus,-,grey,1,0.5
+

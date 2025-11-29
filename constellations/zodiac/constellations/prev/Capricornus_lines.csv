@@ -1,0 +1,14 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Delta Capricorni,21h 47m 02.29s,-16° 07′ 35.6″,2.85,Capricornus,Gamma Capricorni,21h 40m 05.34s,-16° 39′ 44.1″,3.69,Capricornus,-,grey,1,0.5
+Gamma Capricorni,21h 40m 05.34s,-16° 39′ 44.1″,3.69,Capricornus,Iota Capricorni,21h 22m 14.78s,-16° 50′ 04.4″,4.27,Capricornus,-,grey,1,0.5
+Iota Capricorni,21h 22m 14.78s,-16° 50′ 04.4″,4.27,Capricornus,Theta Capricorni,21h 05m 56.78s,-17° 13′ 57.8″,4.08,Capricornus,-,grey,1,0.5
+Theta Capricorni,21h 05m 56.78s,-17° 13′ 57.8″,4.08,Capricornus,Beta Capricorni,20h 21m 00.65s,-14° 46′ 53.0″,3.05,Capricornus,-,grey,1,0.5
+Beta Capricorni,20h 21m 00.65s,-14° 46′ 53.0″,3.05,Capricornus,Alpha² Capricorni,20h 18m 03.22s,-12° 32′ 41.5″,3.58,Capricornus,-,grey,1,0.5
+
+Iota Capricorni,21h 22m 14.78s,-16° 50′ 04.4″,4.27,Capricornus,Zeta Capricorni,21h 26m 40.03s,-22° 24′ 41.0″,3.77,Capricornus,-,grey,1,0.5
+Zeta Capricorni,21h 26m 40.03s,-22° 24′ 41.0″,3.77,Capricornus,Theta Capricorni,21h 05m 56.78s,-17° 13′ 57.8″,4.08,Capricornus,-,grey,1,0.5
+
+Theta Capricorni,21h 05m 56.78s,-17° 13′ 57.8″,4.08,Capricornus,Omega Capricorni,20h 51m 49.30s,-26° 55′ 08.9″,4.12,Capricornus,-,grey,1,0.5
+
+Beta Capricorni,20h 21m 00.65s,-14° 46′ 53.0″,3.05,Capricornus,Psi Capricorni,20h 46m 05.77s,-25° 16′ 13.9″,4.13,Capricornus,-,grey,1,0.5
