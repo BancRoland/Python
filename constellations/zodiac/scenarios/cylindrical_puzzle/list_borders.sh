@@ -1,5 +1,10 @@
 #!/bin/bash
 borders=(
+combined_Delphinus_Equuleus_borders
+combined_Sagitta_Vulpecula_borders
+Combined_Scutum_Serpens_cauda_borders
+combined_Columba_caelum_borders
+combined_Monoceros_Canis_minor_borders
 Antlia_borders
 Andromeda_borders
 Aquarius_borders
@@ -8,26 +13,26 @@ Ara_borders
 Aries_borders
 Auriga_borders
 Boötes_borders
-Caelum_borders
+# Caelum_borders
 Cancer_borders
 Canes_Venatici_borders
 Canis_Major_borders
-Canis_Minor_borders
+# Canis_Minor_borders
 Capricornus_borders
 # Carina_borders
 Centaurus_borders
 Cetus_borders
 # Circinus_borders
-Columba_borders
+# Columba_borders
 Coma_Berenices_borders
 Corona_Australis_borders
 Corona_Borealis_borders
 Corvus_borders
 Crater_borders
 Cygnus_borders
-Delphinus_borders
+# Delphinus_borders
 # Dorado_borders
-Equuleus_borders
+# Equuleus_borders
 Eridanus_borders
 Fornax_borders
 Gemini_borders
@@ -45,7 +50,7 @@ Lupus_borders
 Lynx_borders
 Lyra_borders
 Microscopium_borders
-Monoceros_borders
+# Monoceros_borders
 Norma_borders
 Ophiuchus_borders
 Orion_borders
@@ -58,13 +63,13 @@ Piscis_Austrinus_borders
 Puppis_borders
 Pyxis_borders
 Reticulum_borders
-Sagitta_borders
+# Sagitta_borders
 Sagittarius_borders
 Scorpius_borders
 Sculptor_borders
-Scutum_borders
+# Scutum_borders
 Serpens_caput_borders
-Serpens_cauda_borders
+# Serpens_cauda_borders
 Sextans_borders
 Taurus_borders
 Telescopium_borders
@@ -73,5 +78,5 @@ Triangulum_borders
 Vela_borders
 Virgo_borders
 # Volans_borders
-Vulpecula_borders
+# Vulpecula_borders
 )

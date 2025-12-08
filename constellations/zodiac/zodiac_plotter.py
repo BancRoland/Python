@@ -60,7 +60,7 @@ POLAR           =   False
 POLAR_LINES     =   False
 SPHERRICAL      =   False
 
-DPI=500
+DPI = 500
 # DPI=50
 
 # Path to the TOML file
@@ -181,10 +181,7 @@ if CYLINDRICAL:
             # print(used_borders_list)
             # print("A")
 
-
     if 1:
-        # print()
-        # print(constellation_line_list)
         for idx,constellation_for_line in enumerate(constellation_line_list):
             print(f"lines\t{idx} len: {len(constellation_line_list)}")
             data_file_path = f"{root}/constellations/prev/{constellation_for_line}.csv"
@@ -192,8 +189,6 @@ if CYLINDRICAL:
             data = csv_read_zodiac.read_lines_csv(data_file_path)
             utils.plot_cylindrical_lines(data,center_Dec_deg,center_ra_deg,zrot_deg, Break_line=0.1)
 
-        print()
-        print(constellations_for_stars_list)
 
     if 1:
         DATA=[]
@@ -204,6 +199,22 @@ if CYLINDRICAL:
             data = csv_read_zodiac.read_csv(data_file_path)
             DATA.append(data)
         utils.plot_cylindrical_stars(DATA,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a)
+
+
+    if 1:
+        DATA=[]
+
+        data_file_path=f"{root}/constellations/prev/ecliptic.csv"
+        data = csv_read_zodiac.read_csv(data_file_path)
+        DATA.append(data)
+        utils.plot_cylindrical_ecliptic(DATA,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a)
+
+        DATA=[]
+
+        data_file_path=f"{root}/constellations/prev/eqinox.csv"
+        data = csv_read_zodiac.read_csv(data_file_path)
+        DATA.append(data)
+        utils.plot_cylindrical_equinox(DATA,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a)
 
 
     # plt.xlim([0*np.pi,2.25*np.pi])

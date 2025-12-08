@@ -1,7 +1,64 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import sin, cos, pi
+from dataclasses import dataclass
 
+ORDER_OF_ECLIPTIC_LINE  = 0
+ORDER_OF_LINES          = 1
+ORDER_OF_STARS_MINOR    = 2
+ORDER_OF_STARS_MAJOR    = 3
+ORDER_OF_BORDES         = 4
+
+
+
+@dataclass
+class Sexagesimal:
+    is_positive: bool =True
+    deg: int=0
+    min: int=0
+    sec: float=0.0
+
+    @classmethod
+    def from_hourDeg_to_Sexagesimal(cls, hour_or_deg: float):
+        # cls is the class itself
+        if hour_or_deg < 0:
+            is_positive = False
+        else:
+            is_positive = True
+
+        hour_or_deg = abs(hour_or_deg)
+
+        h = int(hour_or_deg)
+        m = int((hour_or_deg - h) * 60)
+        s = (hour_or_deg - h - m/60) * 3600
+
+        return cls(is_positive, h, m, s)  # creates a new instance
+
+    def from_Sexagesimal_to_hourDeg(self):
+        # self is the specific instance
+        if self.is_positive:
+            sign = 1
+        else:
+            sign = -1
+
+        return sign*(self.deg + self.min/60 + self.sec/3600)
+
+    def get_string__hour_sec_min(self) -> str:
+        if not self.is_positive:
+            hourDeg = self.from_Sexagesimal_to_hourDeg()
+            out = self.from_hourDeg_to_Sexagesimal(hourDeg+24)
+        else:
+            out=self
+        return f"{out.deg:02.0f} h {out.min:02.0f} m {out.sec:02.0f} s"
+    
+    def get_string__deg_min_sec(self) -> str:
+        if self.is_positive:
+            sign = "+"
+        else:
+            sign = "-"
+
+        return f"{sign}{self.deg:02.0f}˚ {self.min:02.0f}' {self.sec:02.0f}\""
+    
 def abs_vector(v:np.ndarray) -> float:
     x = v[0]
     y = v[1]
@@ -67,7 +124,7 @@ def lambert_project(v):
 
 
 # cylindrical_project=equirectangular_project
-cylindrical_project=mercator_project
+cylindrical_project = mercator_project
 
 # X axis originally points to equinox point
 def xrot(v,alpha_deg):
@@ -97,8 +154,23 @@ def get_3d_vec_from_RaDec(ra,dec):
     v = np.array([cos(ra)*cos(dec),sin(ra)*cos(dec), sin(dec)])
     return v
 
-def get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg):   
+def get_RaDec_from_3dVector(v:np.ndarray):
+    v_x = v[0]
+    v_y = v[1]
+    v_z = v[2]
+    ra = np.arctan2(v_y,v_x)*24/(2*np.pi)
+    if ra <0:
+        ra = ra + 24
+    dec = np.arcsin(v_z)*180/np.pi
+    return ra,dec
+
+def get_transformed_vector(ra: float,dec: float,center_Dec_deg: float, center_ra_deg: float, zrot_deg: float):   
     v = get_3d_vec_from_RaDec(ra,dec)
+    v = center_to_RaDec(v,center_Dec_deg,center_ra_deg)
+    v = zrot(v,zrot_deg)
+    return v
+
+def get_transformed_vector_from3d(v: np.ndarray, center_Dec_deg: float, center_ra_deg: float, zrot_deg: float):   
     v = center_to_RaDec(v,center_Dec_deg,center_ra_deg)
     v = zrot(v,zrot_deg)
     return v
@@ -152,7 +224,7 @@ def plot_lines_polar(lines, center_Dec_deg,center_ra_deg,zrot_deg, ax):
         theta2=theta_R2[0]
         R1=theta_R1[1]
         R2=theta_R2[1]
-        ax.plot([theta1,theta2],[R1,R2],linewidth=width,linestyle=linestyle,alpha=1,color=color,zorder=2)
+        ax.plot([theta1,theta2],[R1,R2],linewidth=width,linestyle=linestyle,alpha=1,color=color,zorder=ORDER_OF_LINES)
 
 def plot_lines_str_grph(lines, center_Dec_deg,center_ra_deg,zrot_deg, ax):
     for idx,line in enumerate(lines):
@@ -176,7 +248,7 @@ def plot_lines_str_grph(lines, center_Dec_deg,center_ra_deg,zrot_deg, ax):
         x2=xyz_2[0]
         y1=xyz_1[1]
         y2=xyz_2[1]
-        plt.plot([y1,y2],[x1,x2],linewidth=width,linestyle=linestyle,alpha=0.9,color=color,zorder=2)
+        plt.plot([y1,y2],[x1,x2],linewidth=width,linestyle=linestyle,alpha=0.9,color=color,zorder=ORDER_OF_LINES)
                         
 def plot_borders_polar(borders, center_Dec_deg,center_ra_deg,zrot_deg, ax):
     for idx,line in enumerate(borders):
@@ -321,7 +393,7 @@ def read_borders__gen_graph(borders,center_Dec_deg=90,center_ra_deg=0,zrot_deg=0
                     x2=xyz_2[0]
                     y1=xyz_1[1]
                     y2=xyz_2[1]
-                    plt.plot([x1,x2],[y1,y2],linewidth=2,linestyle="-",alpha=0.1,color="black",zorder=2)
+                    plt.plot([x1,x2],[y1,y2],linewidth=2,linestyle="-",alpha=0.1,color="black",zorder=ORDER_OF_BORDES)
 
     plt.show()
 
@@ -412,7 +484,7 @@ def plot_stars_polar(const, center_Dec_deg,center_ra_deg,zrot_deg, ax, hmg, hmg2
         v = get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
         theta_R = polar_upproject(v)
         S,marker,alpha = condition_magnitudes(star,hmg,hmg2)
-        ax.scatter(theta_R[0], theta_R[1], c="black", marker=marker, s=a*(1+hmg-S), alpha=alpha, zorder=3)
+        ax.scatter(theta_R[0], theta_R[1], c="black", marker=marker, s=a*(1+hmg-S), alpha=alpha, zorder=ORDER_OF_STARS_MINOR)
         x.append(theta_R[1])
         y.append(theta_R[0])
 
@@ -423,11 +495,12 @@ def plot_cylindrical_stars(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hmg,
     S_list=[]
     alpha_list=[]
 
-    star_color="orange"
+    # star_color="orange"
     star_color2="black"
+    star_color="black"
     for list_elem in const_list:
         for i,star in enumerate(list_elem):
-            ra  = star['Right Ascension (deg)']/180*pi
+            ra  = star['Right Ascension (deg)']/180*np.pi
             dec = star['Declination (deg)']/180*np.pi
             v = get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
             x_y_z = cylindrical_project(v)
@@ -447,15 +520,83 @@ def plot_cylindrical_stars(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hmg,
                 y_list.append(y)
                 alpha_list.append(alpha)
             else:
-                plt.scatter(x, y, color=star_color,  s=s, marker=marker, alpha=alpha, zorder=3)  
-                plt.scatter(x-2*pi, y, color=star_color,  s=s, marker=marker, alpha=alpha, zorder=3) 
+                plt.scatter(x, y, color=star_color,  s=s, marker=marker, alpha=alpha, zorder=ORDER_OF_STARS_MAJOR)  
+                plt.scatter(x-2*pi, y, color=star_color,  s=s, marker=marker, alpha=alpha, zorder=ORDER_OF_STARS_MAJOR) 
 
 
-    plt.scatter(x_list, y_list, color=star_color2,  s=S_list, marker=".", alpha=alpha_list, zorder=5)
+    plt.scatter(x_list, y_list, color=star_color2,  s=S_list, marker=".", alpha=alpha_list, zorder=ORDER_OF_STARS_MINOR)
     # plt.scatter(x_y_z[0]+2*pi, x_y_z[1], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha, zorder=3)
-    plt.scatter(x_list-2*pi*np.ones(len(x_list)), y_list, color=star_color2,  s=a*(1+hmg-S), marker=marker, alpha=alpha_list, zorder=3)
+    plt.scatter(x_list-2*pi*np.ones(len(x_list)), y_list, color=star_color2,  s=a*(1+hmg-S), marker=marker, alpha=alpha_list, zorder=ORDER_OF_STARS_MINOR)
     # y.append(x_y_z[1])
     # x.append(x_y_z[0])
+
+ecliptic_color="#ddddddff"
+def plot_cylindrical_ecliptic(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a):
+    x_list=[]
+    y_list=[]
+    S_list=[]
+    alpha_list=[]
+
+    star_color="orange"
+    star_color2="black"
+    for list_elem in const_list:
+        for i,star in enumerate(list_elem):
+            ra  = star['Right Ascension (deg)']/180*np.pi
+            dec = star['Declination (deg)']/180*np.pi
+            v = get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
+            x_y_z = cylindrical_project(v)
+
+            S,marker,alpha = condition_magnitudes(star,hmg,hmg2)
+            s=a*(1+hmg-S)
+            x=x_y_z[0]
+            y=x_y_z[1]
+
+            if x<0:
+                x=x+2*np.pi
+            
+            S_list.append(s)
+
+            x_list.append(x)
+            y_list.append(y)
+            alpha_list.append(alpha)
+
+    x_wrapped = np.concatenate([np.array(x_list) - 2*np.pi, x_list])
+    y_wrapped = np.concatenate([y_list, y_list])
+
+    idx = np.argsort(x_wrapped)
+
+    x_list = x_wrapped[idx]
+    y_list = y_wrapped[idx]
+
+
+    # plt.scatter(x_list, y_list, color=star_color2,  s=1, marker=".", alpha=1, zorder=5)
+    
+    for i in range(len(x_list)-1):
+        plt.plot([x_list[i],x_list[i+1]],[y_list[i],y_list[i+1]],linewidth=1.0,linestyle="-",alpha=1,color=ecliptic_color,zorder=ORDER_OF_ECLIPTIC_LINE)
+
+
+
+def plot_cylindrical_equinox(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a):
+    star_color=ecliptic_color
+
+    for list_elem in const_list:
+        for i,star in enumerate(list_elem):
+            ra  = star['Right Ascension (deg)']/180*np.pi
+            dec = star['Declination (deg)']/180*np.pi
+            v = get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
+            x_y_z = cylindrical_project(v)
+
+            S=1
+            lw = 1.5
+            x=x_y_z[0]
+            y=x_y_z[1]
+
+            if x<0:
+                x=x+2*np.pi
+            
+            plt.scatter(x, y, color=star_color,  s=S, marker="o", alpha=1, zorder=ORDER_OF_STARS_MAJOR,linewidths=lw)   # <— skinny!)  
+            plt.scatter(x-2*pi, y, color=star_color,  s=S, marker="o", alpha=1, zorder=ORDER_OF_STARS_MAJOR,linewidths=lw)   # <— skinny!) 
+
 
 
 def plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg,*,Break_line=0):
@@ -525,9 +666,9 @@ def plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg,*,Break_l
                 x1,y1,_ = disolve_vector(v10)
                 x2,y2,_ = disolve_vector(v20)
 
-                plt.plot([x1,x2],[y1,y2],linewidth=width,linestyle=linestyle,alpha=1,color=color,zorder=2)
+                plt.plot([x1,x2],[y1,y2],linewidth=width,linestyle=linestyle,alpha=1,color=color,zorder=ORDER_OF_LINES)
         else:   
-            plt.plot([x1,x2],[y1,y2],linewidth=width,linestyle=linestyle,alpha=1,color=color,zorder=2)
+            plt.plot([x1,x2],[y1,y2],linewidth=width,linestyle=linestyle,alpha=1,color=color,zorder=ORDER_OF_LINES)
 
 def revese_line_params(line_params):
     ra10 = line_params[0][0]
@@ -644,7 +785,7 @@ def plot_cylindrical_borders(border_line_list, center_Dec_deg,center_ra_deg,zrot
         x_coordinates = line_coordinate[0]+np.random.random(2)/20*0
         y_coordinates = line_coordinate[1]+np.random.random(2)/20*0
         
-        plt.plot(x_coordinates, y_coordinates, linewidth=0.5, linestyle="-", alpha=1, color="red", zorder=4)
+        plt.plot(x_coordinates, y_coordinates, linewidth=0.5, linestyle="-", alpha=1, color="red", zorder=ORDER_OF_BORDES)
 
     # # else:
     #     print("border_line_already_found")        

@@ -2,7 +2,7 @@
 
 source ../venv/bin/activate
 
-
+bash ecliptic_gen.sh
 python3 zodiac_plotter.py
 
 # mkdir scenarios/$name/polar

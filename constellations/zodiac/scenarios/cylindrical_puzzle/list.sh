@@ -1,5 +1,7 @@
 #!/bin/bash
 constellations=(
+# ecliptic
+# eqinox
 Andromeda
 Antlia
 Apus
