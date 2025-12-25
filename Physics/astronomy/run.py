@@ -348,9 +348,6 @@ def get_equatorial_from_vector(vector: descates_vector)->equatorial_coord:
     declination = np.arcsin(vector.z)/np.pi*180
     declination_angle = AngleDegree().from_float(declination)
 
-    print(declination_angle)
-    print(rectascension_angle)
-
     equatorial_coord0 = equatorial_coord()
     equatorial_coord0.declination = declination_angle
     equatorial_coord0.rectascense = rectascension_angle
@@ -368,20 +365,13 @@ def rotate_vector(vector: descates_vector, axis: descates_vector, alpha_deg: flo
 
 def get_sun_pos_in_equatorial_coordinates(time: time_format)->equatorial_coord:
     sun_ecliptic_coord = get_sun_pos_in_ecliptic_coordinates(time= time)   
-    print(sun_ecliptic_coord)
     sun_vector_ecliptic = get_vector_form_ecliptic_coordinates(sun_ecliptic_coord)
-    print("sun_vector_ecliptic")
-    print(sun_vector_ecliptic)
-    print()
 
     equinox_ecliptic_coord = EclipticCoord(AngleDegree(), AngleDegree())
     equinox_vector_ecliptic = get_vector_form_ecliptic_coordinates(equinox_ecliptic_coord)
     
     sun_vector_equatorial = rotate_vector(sun_vector_ecliptic, equinox_vector_ecliptic, AXIAL_TILT)
-    print("sun_vector_equatorial")
-    print(sun_vector_equatorial)
     sun_equatorial = get_equatorial_from_vector(sun_vector_equatorial)
-    print(sun_equatorial)
     return sun_equatorial
 
 
@@ -419,8 +409,6 @@ def equat_2_horiz(equatorial_coordinates: equatorial_coord, time: time_format, g
 
     V = get_vector_form_equatorial(equatorial_coordinates)
 
-    print(f"rotations_deg = {rotations_deg}")
-
     W = rotate_vector(V,rotational_axis,-rotations_deg)
 
     latitude_axis = descates_vector(0,1,0)
@@ -450,7 +438,7 @@ if __name__:
     greenwich_pos.latitude = AngleDegree(degree=51,minute=28,second=48)
     greenwich_pos.longitude = AngleDegree(degree=0,minute=0,second=0)
 
-    pos = fehervar_pos
+    pos = greenwich_pos
 
     if 0:
         recta_list = []
@@ -465,7 +453,7 @@ if __name__:
         plt.grid()
         plt.show()
 
-    if 1:
+    if 0:
         for d in range(0,360,10):
             elev_list=[]
             azim_list=[]
@@ -493,6 +481,127 @@ if __name__:
             print(d)
         # plt.title(f"day={d}")
         plt.grid()
+        plt.show()
+
+
+    if 1:
+
+        plt.figure(figsize=[10,7])
+        rise_time_list=[]
+        day_step = 1
+
+        for d in range(0,365,day_step):
+            elev_list=[]
+            azim_list=[]
+        
+            time_of_day_list=[]
+            rise_found=False
+            if len(rise_time_list):
+                start_h=rise_time_list[-1]/3600-0.01
+            else:
+                start_h = 3
+
+            for h in range(int(start_h),10,1):
+                if rise_found:
+                        break
+                for m in range(0,60,1):
+                    if rise_found:
+                        break
+                    for s in range(0,60,5):
+                        if rise_found:
+                            break
+                        time = time_format(date=d, hour=h, min=m,sec=s)
+                        time_of_day = time_format(hour=h, min=m,sec=s)
+                        # print(f"\n\nhour = {h}")
+                        A = get_sun_pos_in_equatorial_coordinates(time)
+                        # A.print()
+                        B = equat_2_horiz(A,time, geo_pos=pos)
+                        # B.print()
+                        # plt.scatter(A.rectascense_deg, A.declination_deg)
+                        azim_list.append((B.azimuth.as_float()+360)%360)
+                        elev_list.append(B.elevation.as_float())
+                        if B.elevation.as_float() >= 0:
+                            rise_time_list.append(time_of_day.get_sec_from_date())
+                            print(f"day: {d}\t{time_of_day.get_sec_from_date()}")
+                            rise_found = True
+
+
+        fall_time_list=[]
+
+        for d in range(0,365,day_step):
+            elev_list=[]
+            azim_list=[]
+        
+            time_of_day_list=[]
+            rise_found=False
+            if len(fall_time_list):
+                start_h=fall_time_list[-1]/3600-0.01
+            else:
+                start_h = 14
+
+            for h in range(int(start_h),23,1):
+                if rise_found:
+                        break
+                for m in range(0,60,1):
+                    if rise_found:
+                        break
+                    for s in range(0,60,5):
+                        if rise_found:
+                            break
+                        time = time_format(date=d, hour=h, min=m,sec=s)
+                        time_of_day = time_format(hour=h, min=m,sec=s)
+                        # print(f"\n\nhour = {h}")
+                        A = get_sun_pos_in_equatorial_coordinates(time)
+                        # A.print()
+                        B = equat_2_horiz(A,time, geo_pos=pos)
+                        # B.print()
+                        # plt.scatter(A.rectascense_deg, A.declination_deg)
+                        azim_list.append((B.azimuth.as_float()+360)%360)
+                        elev_list.append(B.elevation.as_float())
+                        if B.elevation.as_float() <= 0:
+                            fall_time_list.append(time_of_day.get_sec_from_date())
+                            print(f"day: {d}\t{time_of_day.get_sec_from_date()}")
+                            rise_found = True
+
+
+                    # plt.scatter(B.azimuth,B.elevation,color="C0")
+            # plt.plot(azim_list,elev_list,"o-")
+
+        x_axis = range(0,365,day_step)
+
+        def find_max(time_list):
+            max_idx = time_list.index(max(time_list))
+            max_date = x_axis[max_idx]
+            return max_date
+        
+        def find_min(time_list):
+            min_idx = time_list.index(min(time_list))
+            min_date = x_axis[min_idx]
+            return min_date
+
+        max_rise = find_max(rise_time_list)
+        min_rise = find_min(rise_time_list)
+
+        max_fall = find_max(fall_time_list)
+        min_fall = find_min(fall_time_list)
+
+        plt.plot(x_axis,np.array(rise_time_list)/3600,"o-")
+        plt.plot(x_axis,np.array(fall_time_list)/3600,"o-")
+
+        plt.axvline(max_rise,color="C0",linestyle="--",label="latest rise")
+        plt.axvline(min_rise,color="C0",linestyle=":",label="earliest rise")
+        plt.axvline(max_fall,color="C1",linestyle="--",label="latest set")
+        plt.axvline(min_fall,color="C1",linestyle=":",label="earliest set")
+        
+
+
+        plt.title(f"Rise and set times of the Sun from Greenwich\nearliest rise date= {min_rise}\nlatest set date= {max_fall}\nlatest rise date = {max_rise}\nearliest set date {min_fall}")
+        plt.grid()
+        plt.legend()
+        plt.xlabel("Time passed since spring equinox [day]")
+        plt.ylabel("time of day [hour]")
+        plt.tight_layout()
+        plt.savefig("out.png")
         plt.show()
 
 
