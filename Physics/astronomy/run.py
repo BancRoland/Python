@@ -1,5 +1,5 @@
 import numpy as np
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import sys
 import os
 home_directory = os.path.expanduser("~")
@@ -8,23 +8,82 @@ sys.path.append(home_directory+"/Desktop/Python/math/matrices/Rodrigues_rot")
 import banc_vectorManip as vMp
 import matplotlib.pyplot as plt
 
+
+
+
+@dataclass
+class AngleDegree:
+    positive_sign: bool = True
+    degree: int = 0
+    minute: int = 0
+    second: float = 0.0
+
+    def as_float(self) -> float:
+        out = self.degree + self.minute/60 + self.second/60/60
+        if self.positive_sign == False:
+            out=-1*out
+        return out
+    
+    def as_radian(self) -> float:
+        deg = self.as_float()
+        rad=deg/180*np.pi
+        return rad
+    
+
+    @classmethod
+    def from_float(cls, angle_deg: float) -> "AngleDegree":
+        positive_sign = False if angle_deg < 0 else True
+        angle_deg = abs(angle_deg)
+
+        degree = int(angle_deg)
+        remaining_minutes = (angle_deg - degree) * 60
+        minute = int(remaining_minutes)
+        second = (remaining_minutes - minute) * 60
+
+        return cls(positive_sign, degree, minute, second)
+
+
+    def __add__(self, other) -> "AngleDegree":
+        if isinstance(other, AngleDegree):
+            return AngleDegree.from_float(self.as_float() + other.as_float())
+        elif isinstance(other, (int, float)):
+            return AngleDegree.from_float(self.as_float() + other)
+        return NotImplemented
+
+
+
 @dataclass
 class coordinates:
-    azimuth_like: float = 0
-    elevation_like: float = 0
+    _azimuth_like: AngleDegree = field(default_factory=AngleDegree)
+    _elevation_like: AngleDegree = field(default_factory=AngleDegree)
 
-    def azimuth_like_setter(self, azimuth_deg: float):
-        if azimuth_deg > 360.0 or azimuth_deg < 0.0:
-            raise ValueError ("invalid elevation value")
-        self.azimuth_like = azimuth_deg
+    @property
+    def azimuth_like(self) -> AngleDegree:
+        return self._azimuth_like
 
-    def elevation_like_setter(self,elevation_deg: float):
-        if elevation_deg > 90.0 or elevation_deg < -90.0:
-            raise ValueError ("invalid elevation value")
-        self.elevation_like = elevation_deg
+    @azimuth_like.setter
+    def azimuth_like(self, value: AngleDegree):
+        azimuth_deg = value.as_float()
+        if azimuth_deg >= 0.0 and azimuth_deg <= 360.0:
+            self._azimuth_like = value
+        else:
+            raise ValueError("invalid azimuth")
+        
+    @property
+    def elevation_like(self)->AngleDegree:
+        return self._elevation_like
+    
+    @elevation_like.setter
+    def elevation_like(self, value : AngleDegree):
+        elevation_deg = value.as_float()
+        if elevation_deg >=-90 and elevation_deg <= 90:
+            self._elevation_like = value
+        else:
+            raise ValueError("invalid elevation")
 
-    def print(self):
-        print(f"{self.azimuth_like} , {self.elevation_like}")
+    def __str__(self):
+        return(f"_azimuth like: {self.azimuth_like}\nelevation_like: {self.elevation_like}")
+
 
 
 
@@ -35,33 +94,60 @@ class time_format:
     min: int = 0
     sec: float = 0.0
 
-    def get_secs_of_year(self):
+
+    def get_sec_from_date(self):
         out = self.date*86400 + self.hour*3600 + self.min*60 + self.sec
         return out
     
     def process_of_year(self):
-        return self.get_secs_of_year()/(365.25*86400)
+        return self.get_sec_from_date()/(365.25*86400)
     
-    def print(self):
-        print(f"{self.date:3.0f} d {self.hour:2.0f} h {self.min:2.0f} min {self.sec:2.3} sec")
+    def get_date_from_sec(sec:float):
+        out = time_format()
+
+        out.date = int(sec/60/60/24)
+        remain_sec = sec-out.date*60*60*24
+
+        out.hour = int(remain_sec/60/60)
+        remain_sec = remain_sec - out.hour*60*60
+
+        out.min = int(remain_sec/60)
+        remain_sec = remain_sec - out.min*60
+
+        out.sec = remain_sec
+
+        return out
+    
+    def __str__(self):
+        return(f"{self.date:3} d {self.hour:2} h {self.min:2} min {self.sec:2.3f} sec")
+
     
 
 
 @dataclass
 class geological_pos:
-    _coord = coordinates()
-    latitude = _coord.azimuth_like
-    longitude = _coord.elevation_like
+    _coord: coordinates = field(default_factory=coordinates)
 
-    def latitude_setter(self, latitude_deg: float):
-        self._coord.azimuth_like_setter(latitude_deg)
-        self.latitude = self._coord.azimuth_like
+    @property
+    def latitude(self) -> AngleDegree:
+        return self._coord.elevation_like
+    
+    @property
+    def longitude(self) -> AngleDegree:
+        return self._coord.azimuth_like
+    
+    @latitude.setter
+    def latitude(self, value: AngleDegree):
+        self._coord.elevation_like = value
 
-    def longitude_setter(self, longitude_deg: float):
-        self._coord.elevation_like_setter(longitude_deg)
-        self.longitude = self._coord.elevation_like
+    @longitude.setter
+    def longitude(self, value: AngleDegree):
+        self._coord.azimuth_like = value
 
-def deg_2_time(angle_deg :float)->time_format:
+
+
+def deg_2_time(angle :AngleDegree)->time_format:
+    angle_deg = angle.as_float()
     angle_in_hour  = angle_deg/360*24
 
     hour = int(angle_in_hour)
@@ -72,78 +158,112 @@ def deg_2_time(angle_deg :float)->time_format:
 
 
 class equatorial_coord:
-    _coord = coordinates()
-    rectascense_deg = _coord.azimuth_like
-    rectascense_time : time_format = deg_2_time(rectascense_deg)
 
-    declination_deg = _coord.elevation_like
-
-    def rectascense_setter(self, rectascense_deg: float):
-        self._coord.azimuth_like_setter(rectascense_deg)
-        self.rectascense_deg = self._coord.azimuth_like
-        self.rectascense_time = deg_2_time(self.rectascense_deg)
-
-    def declination_setter(self, declination_deg: float):
-        self._coord.elevation_like_setter(declination_deg)
-        self.declination_deg = self._coord.elevation_like
-
-    def __init__(self,rectascense_deg, declination_deg):
-        self.rectascense_setter(rectascense_deg)
-        self.declination_setter(declination_deg)
-
-    def print(self):
-        print(f"rectascence_deg: {self.rectascense_deg}, rectascence_time:")
-        deg_2_time(self.rectascense_deg).print()
-        print(f"declination: {self.declination_deg}\n")
+    def __init__(self,rectascense_deg: AngleDegree = AngleDegree(), declination_deg: AngleDegree = AngleDegree()):
+        self._coord = coordinates()
+        self.rectascense = rectascense_deg
+        self.declination = declination_deg
 
 
+    @property
+    def rectascense(self) -> AngleDegree:
+        return self._coord.azimuth_like
 
-@dataclass
-class ecliptic_coord:
-    _coord = coordinates()
-    latitude = _coord.azimuth_like
-    longitude = _coord.elevation_like
+    @rectascense.setter
+    def rectascense(self, value: AngleDegree):
+        self._coord.azimuth_like = value
+
+    @property
+    def rectascense_time(self) -> time_format:
+        return deg_2_time(self.rectascense)
+
+    @property
+    def declination(self) -> AngleDegree:
+        return self._coord.elevation_like
+
+    @declination.setter
+    def declination(self, value: AngleDegree):
+        self._coord.elevation_like = value
 
 
-    def latitude_setter(self, latitude_deg: float):
-        self._coord.azimuth_like_setter(latitude_deg)
-        self.latitude = self._coord.azimuth_like
+    def __str__(self):
+        return(f"\nEQ rectascence_deg: {self.rectascense}\nEQ declination: {self.declination}\n")
 
-    def longitude_setter(self, longitude_deg: float):
-        self._coord.elevation_like_setter(longitude_deg)
-        self.longitude = self._coord.elevation_like
 
-    def __init__(self,latitude_deg, longitude_deg):
-        self.latitude_setter(latitude_deg)
-        self.longitude_setter(longitude_deg)
+
+class EclipticCoord:
+    def __init__(self, latitude: AngleDegree, longitude: AngleDegree):
+        # Create the underlying coordinates object
+        self._coord = coordinates()
+        
+        # Use property setters to initialize values (ensures validation)
+        self.latitude = latitude
+        self.longitude = longitude
+
+    # ---------- Latitude property ----------
+    @property
+    def latitude(self) -> AngleDegree:
+        return self._coord.elevation_like
+
+    @latitude.setter
+    def latitude(self, value: AngleDegree):
+        # Use the Coordinates class setter (or property)
+        self._coord.elevation_like = value
+
+    # ---------- Longitude property ----------
+    @property
+    def longitude(self) -> AngleDegree:
+        return self._coord.azimuth_like
+
+    @longitude.setter
+    def longitude(self, value: AngleDegree):
+        # Use the Coordinates class setter (or property)
+        self._coord.azimuth_like = value
+
+    def __str__(self)->str:
+        return f"\nEC latitude = {self.latitude}\nEC longitude = {self.longitude}\n"
+
+
+
 
 
 @dataclass
 class horizontal_coord:
-    _coord = coordinates()
-    azimuth = _coord.azimuth_like
-    elevation = _coord.elevation_like
+    _coord: coordinates = field(default_factory=coordinates)
 
-    def azimuth_setter(self, azimuth_deg: float):
-        self._coord.azimuth_like_setter(azimuth_deg)
-        self.azimuth = self._coord.azimuth_like
+    @property
+    def azimuth(self) -> AngleDegree:
+        return self._coord.azimuth_like
+    
+    @property
+    def elevation(self) -> AngleDegree:
+        return self._coord.elevation_like
 
-    def elevation_setter(self, elevation_deg: float):
-        self._coord.elevation_like_setter(elevation_deg)
-        self.elevation = self._coord.elevation_like
+    @azimuth.setter
+    def azimuth(self, value: AngleDegree):
+        self._coord.azimuth_like = value
+
+    @elevation.setter
+    def elevation(self, value: AngleDegree):
+        self._coord.elevation_like = value
         
 
+    def __str__(self):
+        return (f"azmt:\t{self.azimuth},\telev:\t{self.elevation}")
 
 
 
-def get_sun_pos_in_ecliptic_coordinates(time: time_format)->ecliptic_coord:
+
+def get_sun_pos_in_ecliptic_coordinates(time: time_format)->EclipticCoord:
 
     deg_from_time = 360*time.process_of_year()
-    latitude = (deg_from_time)%360
+    latitude_deg = (deg_from_time)%360
+
+    longitude = AngleDegree.from_float(latitude_deg)
     
-    coord = ecliptic_coord(0,0)
-    coord.longitude_setter(0)
-    coord.latitude_setter(latitude)
+    coord = EclipticCoord(AngleDegree(0),AngleDegree(0))
+    coord.longitude = longitude
+    coord.latitude = AngleDegree(0)
 
     return coord
 
@@ -161,19 +281,34 @@ class descates_vector():
         self.z = z
         self.V = np.array([x,y,z])
 
-    def print(self):
-        print(f"{self.x}, {self.y}, {self.z}")
 
-def cosd(alpha_deg):
-    alpha_rad=alpha_deg/180*np.pi
+    def __str__(self):
+        return (f"{self.x}, {self.y}, {self.z}")
+
+def cosd(alpha: AngleDegree):
+    alpha_rad=alpha.as_radian()
     return(np.cos(alpha_rad))
 
-def sind(alpha_deg):
-    alpha_rad=alpha_deg/180*np.pi
+def sind(alpha: AngleDegree):
+    alpha_rad=alpha.as_radian()
     return(np.sin(alpha_rad))
 
+def arcsind(a):
+    if a > 1 or a <-1:
+        raise ValueError("trigonometrical error")
+    out_rad = np.arcsin(a)
+    out_deg = out_rad/np.pi*180
+    return(out_deg)
+
+def arccosd(a):
+    if a > 1 or a <-1:
+        raise ValueError("trigonometrical error")
+    out_rad = np.arccos(a)
+    out_deg = out_rad/np.pi*180
+    return(out_deg)
+
 AXIAL_TILT = 23.5
-def get_vector_form_ecliptic_coordinates(coord: ecliptic_coord)->descates_vector:
+def get_vector_form_ecliptic_coordinates(coord: EclipticCoord)->descates_vector:
     # tavaszpont: [1,0,0]
     # ekliptikus észak: [0,0,1]
     V = descates_vector()
@@ -191,11 +326,11 @@ def get_vector_form_ecliptic_coordinates(coord: ecliptic_coord)->descates_vector
     # print("cosd")
     # print(cosd(coord.longitude))
     
-    x = cosd(coord.longitude)*cosd(coord.latitude)
+    x = cosd(coord.latitude)*cosd(coord.longitude)
     # print(f"x = {x}")
-    y = cosd(coord.longitude)*sind(coord.latitude)
+    y = cosd(coord.latitude)*sind(coord.longitude)
     # print(f"y = {y}")
-    z = sind(coord.longitude)
+    z = sind(coord.latitude)
     # print(f"z = {z}")
 
     V.setter(x,y,z)
@@ -208,12 +343,20 @@ def get_vector_form_ecliptic_coordinates(coord: ecliptic_coord)->descates_vector
 def get_equatorial_from_vector(vector: descates_vector)->equatorial_coord:
     rectascension = np.arctan2(vector.y,vector.x)/np.pi*180
     rectascension = (rectascension+360)%360
+    rectascension_angle = AngleDegree().from_float(rectascension)
 
     declination = np.arcsin(vector.z)/np.pi*180
-    # declination = (declination+360)%360
+    declination_angle = AngleDegree().from_float(declination)
 
-    equatorial_coord0 = equatorial_coord(rectascense_deg=rectascension, declination_deg=declination)
+    print(declination_angle)
+    print(rectascension_angle)
+
+    equatorial_coord0 = equatorial_coord()
+    equatorial_coord0.declination = declination_angle
+    equatorial_coord0.rectascense = rectascension_angle
+
     return equatorial_coord0
+
 
 def rotate_vector(vector: descates_vector, axis: descates_vector, alpha_deg: float):
     vector  = np.array([vector.x,vector.y,vector.z])
@@ -225,42 +368,69 @@ def rotate_vector(vector: descates_vector, axis: descates_vector, alpha_deg: flo
 
 def get_sun_pos_in_equatorial_coordinates(time: time_format)->equatorial_coord:
     sun_ecliptic_coord = get_sun_pos_in_ecliptic_coordinates(time= time)   
+    print(sun_ecliptic_coord)
     sun_vector_ecliptic = get_vector_form_ecliptic_coordinates(sun_ecliptic_coord)
+    print("sun_vector_ecliptic")
+    print(sun_vector_ecliptic)
+    print()
 
-    equinox_ecliptic_coord = ecliptic_coord(0,0)
+    equinox_ecliptic_coord = EclipticCoord(AngleDegree(), AngleDegree())
     equinox_vector_ecliptic = get_vector_form_ecliptic_coordinates(equinox_ecliptic_coord)
     
     sun_vector_equatorial = rotate_vector(sun_vector_ecliptic, equinox_vector_ecliptic, AXIAL_TILT)
+    print("sun_vector_equatorial")
+    print(sun_vector_equatorial)
     sun_equatorial = get_equatorial_from_vector(sun_vector_equatorial)
+    print(sun_equatorial)
     return sun_equatorial
 
 
 
-    rectascension = np.arctan2(vector.y,vector.x)/np.pi*180
-    rectascension = (rectascension+360)%360
-
-    declination = np.arcsin(vector.z)/np.pi*180
-    # declination = (declination+360)%360
-
-    equatorial_coord0 = equatorial_coord(rectascense_deg=rectascension, declination_deg=declination)
-    return equatorial_coord0
 
 def get_vector_form_equatorial(equatorial_coordinates: equatorial_coord):
     V = descates_vector()
-    V.z=sind(equatorial_coordinates.declination_deg)
-    shadow=cosd(equatorial_coordinates.declination_deg)
-    V.x = shadow*cosd(equatorial_coordinates.rectascense_deg)
-    V.y = shadow*sind(equatorial_coordinates.rectascense_deg)
+    V.z=sind(equatorial_coordinates.declination)
+    shadow=cosd(equatorial_coordinates.declination)
+    V.x = shadow*cosd(equatorial_coordinates.rectascense)
+    V.y = shadow*sind(equatorial_coordinates.rectascense)
     return V
 
-def equat_2_horiz(equatorial_coordinates: equatorial_coord, time: time_format)->horizontal_coord:
+def get_horizontal_from_vector(V:descates_vector):
+    out = horizontal_coord()
+    out.elevation = AngleDegree(degree=arcsind(V.z))
+    out.azimuth = AngleDegree(degree=((np.arctan2(-V.y,V.x)/np.pi*180)+360)%360)
+    return out
+
+def equat_2_horiz(equatorial_coordinates: equatorial_coord, time: time_format, geo_pos: geological_pos)->horizontal_coord:
+    rotational_axis     = descates_vector(0,0,1)
+    solar_day           = time_format(0,hour = 24)
+    siderical_year      = time_format(date=365,hour=6,min=9,sec=10)
+
+    def replus(a,b):
+        return((a*b)/(a+b))
+    
+    siderical_day:time_format = time_format.get_date_from_sec(replus(solar_day.get_sec_from_date(),siderical_year.get_sec_from_date()))
+
+    rotations_by_date = time.get_sec_from_date()/siderical_day.get_sec_from_date()
+    longitude_deg = geo_pos.longitude.as_float()
+
+
+    rotations_deg = rotations_by_date*360-longitude_deg
+
     V = get_vector_form_equatorial(equatorial_coordinates)
 
-    out = horizontal_coord
-    out.elevation_setter(equatorial_coordinates.declination_deg)
-    out.azimut_setter(0)
+    print(f"rotations_deg = {rotations_deg}")
 
-    V.declination
+    W = rotate_vector(V,rotational_axis,-rotations_deg)
+
+    latitude_axis = descates_vector(0,1,0)
+    latitude_deg = geo_pos.latitude.as_float()
+
+    WW = rotate_vector(W,latitude_axis,90-latitude_deg)
+
+    out = get_horizontal_from_vector(WW)
+
+    return out
 
 # def equat_2_horiz(V: equatorial_coord, geological_pos: geological_pos, time: time_format):
 #     equat_2_horiz_on_north_pole(V,time)
@@ -271,15 +441,59 @@ def equat_2_horiz(equatorial_coordinates: equatorial_coord, time: time_format)->
 #     return out
 
 if __name__:
-    
-    for d in range(0,360,30):
-        time = time_format(date=d)
-        print(f"\n\ndate = {d}")
-        A= get_sun_pos_in_equatorial_coordinates(time)
-        A.print()
-        plt.scatter(A.rectascense_deg, A.declination_deg)
 
-# plt.show()
+    fehervar_pos = geological_pos()
+    fehervar_pos.latitude = AngleDegree(degree=47,minute=11,second=28)
+    fehervar_pos.longitude = AngleDegree(degree=18,minute=24,second=39)
+
+    greenwich_pos = geological_pos()
+    greenwich_pos.latitude = AngleDegree(degree=51,minute=28,second=48)
+    greenwich_pos.longitude = AngleDegree(degree=0,minute=0,second=0)
+
+    pos = fehervar_pos
+
+    if 0:
+        recta_list = []
+        decli_list = []
+        for d in range(0,360,1):
+            time = time_format(date=d)
+            A = get_sun_pos_in_equatorial_coordinates(time)
+            recta_list.append((A.rectascense.as_float()+360)%360)
+            decli_list.append(A.declination.as_float())
+
+        plt.plot(recta_list,decli_list,"o-")
+        plt.grid()
+        plt.show()
+
+    if 1:
+        for d in range(0,360,10):
+            elev_list=[]
+            azim_list=[]
+        
+            time_of_day_list=[]
+            for h in range(0,24,1):
+                for m in range(0,60,60):
+                    time = time_format(date=d, hour=h, min=m)
+                    time_of_day = time_format(hour=h, min=m)
+                    time_of_day_list.append(time_of_day.get_sec_from_date()/3600)
+                    # print(f"\n\nhour = {h}")
+                    A = get_sun_pos_in_equatorial_coordinates(time)
+                    # A.print()
+                    B = equat_2_horiz(A,time, geo_pos=pos)
+                    # B.print()
+                    # plt.scatter(A.rectascense_deg, A.declination_deg)
+                    azim_list.append((B.azimuth.as_float()+360)%360)
+                    elev_list.append(B.elevation.as_float())
+
+
+                    # plt.scatter(B.azimuth,B.elevation,color="C0")
+            plt.plot(azim_list,elev_list,"o-")
+            # plt.plot(time_of_day_list,elev_list,"o-")
+
+            print(d)
+        # plt.title(f"day={d}")
+        plt.grid()
+        plt.show()
 
 
 
