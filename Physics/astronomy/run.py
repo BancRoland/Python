@@ -117,9 +117,16 @@ class time_format:
         out.sec = remain_sec
 
         return out
+
+    def get_day_from_time(self):
+        return time_format(date=0, hour=self.hour, min=self.min, sec=self.sec)
     
     def __str__(self):
         return(f"{self.date:3} d {self.hour:2} h {self.min:2} min {self.sec:2.3f} sec")
+    
+    def __add__(self, other: "time_format")->"time_format":
+        return_time = time_format.get_date_from_sec(self.get_sec_from_date() + other.get_sec_from_date())
+        return return_time
 
     
 
@@ -391,7 +398,7 @@ def get_horizontal_from_vector(V:descates_vector):
     out.azimuth = AngleDegree(degree=((np.arctan2(-V.y,V.x)/np.pi*180)+360)%360)
     return out
 
-def equat_2_horiz(equatorial_coordinates: equatorial_coord, time: time_format, geo_pos: geological_pos)->horizontal_coord:
+def equat_2_horiz(equatorial_coordinates: equatorial_coord, time: time_format, utc_plus:time_format, geo_pos: geological_pos)->horizontal_coord:
     rotational_axis     = descates_vector(0,0,1)
     solar_day           = time_format(0,hour = 24)
     siderical_year      = time_format(date=365,hour=6,min=9,sec=10)
@@ -404,8 +411,10 @@ def equat_2_horiz(equatorial_coordinates: equatorial_coord, time: time_format, g
     rotations_by_date = time.get_sec_from_date()/siderical_day.get_sec_from_date()
     longitude_deg = geo_pos.longitude.as_float()
 
+    utc_plus_sec = utc_plus.get_sec_from_date()
+    utc_plus_sec_deg = utc_plus_sec/siderical_day.get_sec_from_date()*360.0
 
-    rotations_deg = rotations_by_date*360-longitude_deg
+    rotations_deg = rotations_by_date*360 - longitude_deg + utc_plus_sec_deg
 
     V = get_vector_form_equatorial(equatorial_coordinates)
 
@@ -419,6 +428,32 @@ def equat_2_horiz(equatorial_coordinates: equatorial_coord, time: time_format, g
     out = get_horizontal_from_vector(WW)
 
     return out
+
+def find_sun_set_time(date: time_format, pos: geological_pos, time_resolution: float=60, sunset: bool = True):
+    time_step = time_format(0,12,0,0)
+    test_time = date + time_step
+    if not is_the_sun_up(test_time,utc_plus,pos):
+        return None
+    
+    if sunset:
+        set_or_rise_multiplier = 1
+    else:
+        set_or_rise_multiplier = -1
+
+        
+    while time_step.get_sec_from_date() >= time_resolution:
+
+        if (is_the_sun_up(test_time,utc_plus,pos)):
+            horizont_multiplier = 1
+        else:
+            horizont_multiplier = -1
+
+        time_step = time_format.get_date_from_sec(time_step.get_sec_from_date()/2)
+
+        new_time_sec = test_time.get_sec_from_date() + set_or_rise_multiplier*horizont_multiplier*time_step.get_sec_from_date()
+        test_time = time_format.get_date_from_sec(new_time_sec)
+
+    return(test_time)
 
 # def equat_2_horiz(V: equatorial_coord, geological_pos: geological_pos, time: time_format):
 #     equat_2_horiz_on_north_pole(V,time)
@@ -438,7 +473,12 @@ if __name__:
     greenwich_pos.latitude = AngleDegree(degree=51,minute=28,second=48)
     greenwich_pos.longitude = AngleDegree(degree=0,minute=0,second=0)
 
-    pos = greenwich_pos
+    budapest_pos = geological_pos()
+    budapest_pos.latitude = AngleDegree(degree=47,minute=29,second=54)
+    budapest_pos.longitude = AngleDegree(degree=19,minute=2,second=27)
+
+    utc_plus = time_format(hour=1)
+    pos = budapest_pos
 
     if 0:
         recta_list = []
@@ -467,7 +507,7 @@ if __name__:
                     # print(f"\n\nhour = {h}")
                     A = get_sun_pos_in_equatorial_coordinates(time)
                     # A.print()
-                    B = equat_2_horiz(A,time, geo_pos=pos)
+                    B = equat_2_horiz(A,time, utc_plus, geo_pos=pos)
                     # B.print()
                     # plt.scatter(A.rectascense_deg, A.declination_deg)
                     azim_list.append((B.azimuth.as_float()+360)%360)
@@ -475,8 +515,9 @@ if __name__:
 
 
                     # plt.scatter(B.azimuth,B.elevation,color="C0")
-            plt.plot(azim_list,elev_list,"o-")
-            # plt.plot(time_of_day_list,elev_list,"o-")
+            # plt.plot(azim_list,elev_list,"o-")
+            plt.plot(time_of_day_list,elev_list,"o-")
+            plt.axvline(12)
 
             print(d)
         # plt.title(f"day={d}")
@@ -484,88 +525,37 @@ if __name__:
         plt.show()
 
 
+    def get_sun_pos_in_horizontal_coordinates(time: time_format, utc_plus: float, geo_pos: geological_pos)->horizontal_coord:
+        A = get_sun_pos_in_equatorial_coordinates(time)
+        B = equat_2_horiz(A,time,utc_plus, geo_pos=geo_pos)
+        return B
+    
+    def is_the_sun_up(time: time_format, utc_plus: float, geo_pos: geological_pos) -> bool:
+        horiontal_pos = get_sun_pos_in_horizontal_coordinates(time, utc_plus, geo_pos)
+        if horiontal_pos.elevation.as_float() >=0:
+            return True
+        else:
+            return False
+
+
+          
+
+
+
+
     if 1:
 
         plt.figure(figsize=[10,7])
         rise_time_list=[]
-        day_step = 1
-
-        for d in range(0,365,day_step):
-            elev_list=[]
-            azim_list=[]
-        
-            time_of_day_list=[]
-            rise_found=False
-            if len(rise_time_list):
-                start_h=rise_time_list[-1]/3600-0.01
-            else:
-                start_h = 3
-
-            for h in range(int(start_h),10,1):
-                if rise_found:
-                        break
-                for m in range(0,60,1):
-                    if rise_found:
-                        break
-                    for s in range(0,60,5):
-                        if rise_found:
-                            break
-                        time = time_format(date=d, hour=h, min=m,sec=s)
-                        time_of_day = time_format(hour=h, min=m,sec=s)
-                        # print(f"\n\nhour = {h}")
-                        A = get_sun_pos_in_equatorial_coordinates(time)
-                        # A.print()
-                        B = equat_2_horiz(A,time, geo_pos=pos)
-                        # B.print()
-                        # plt.scatter(A.rectascense_deg, A.declination_deg)
-                        azim_list.append((B.azimuth.as_float()+360)%360)
-                        elev_list.append(B.elevation.as_float())
-                        if B.elevation.as_float() >= 0:
-                            rise_time_list.append(time_of_day.get_sec_from_date())
-                            print(f"day: {d}\t{time_of_day.get_sec_from_date()}")
-                            rise_found = True
-
-
         fall_time_list=[]
 
-        for d in range(0,365,day_step):
-            elev_list=[]
-            azim_list=[]
-        
-            time_of_day_list=[]
-            rise_found=False
-            if len(fall_time_list):
-                start_h=fall_time_list[-1]/3600-0.01
-            else:
-                start_h = 14
+        day_step = 1
+        step_by_step_differece_assumer = 0.01
 
-            for h in range(int(start_h),23,1):
-                if rise_found:
-                        break
-                for m in range(0,60,1):
-                    if rise_found:
-                        break
-                    for s in range(0,60,5):
-                        if rise_found:
-                            break
-                        time = time_format(date=d, hour=h, min=m,sec=s)
-                        time_of_day = time_format(hour=h, min=m,sec=s)
-                        # print(f"\n\nhour = {h}")
-                        A = get_sun_pos_in_equatorial_coordinates(time)
-                        # A.print()
-                        B = equat_2_horiz(A,time, geo_pos=pos)
-                        # B.print()
-                        # plt.scatter(A.rectascense_deg, A.declination_deg)
-                        azim_list.append((B.azimuth.as_float()+360)%360)
-                        elev_list.append(B.elevation.as_float())
-                        if B.elevation.as_float() <= 0:
-                            fall_time_list.append(time_of_day.get_sec_from_date())
-                            print(f"day: {d}\t{time_of_day.get_sec_from_date()}")
-                            rise_found = True
+        for d in range(365):
+            rise_time_list.append(find_sun_set_time(time_format(date=d), pos, time_resolution=1, sunset=True).get_day_from_time().get_sec_from_date()/3600)
+            fall_time_list.append(find_sun_set_time(time_format(date=d), pos, time_resolution=1, sunset=False).get_day_from_time().get_sec_from_date()/3600)
 
-
-                    # plt.scatter(B.azimuth,B.elevation,color="C0")
-            # plt.plot(azim_list,elev_list,"o-")
 
         x_axis = range(0,365,day_step)
 
@@ -594,8 +584,7 @@ if __name__:
         plt.axvline(min_fall,color="C1",linestyle=":",label="earliest set")
         
 
-
-        plt.title(f"Rise and set times of the Sun from Greenwich\nearliest rise date= {min_rise}\nlatest set date= {max_fall}\nlatest rise date = {max_rise}\nearliest set date {min_fall}")
+        plt.title(f"Rise and set times of the Sun from Budapest\nearliest rise date= {min_rise}\nlatest set date= {max_fall}\nlatest rise date = {max_rise}\nearliest set date {min_fall}")
         plt.grid()
         plt.legend()
         plt.xlabel("Time passed since spring equinox [day]")
