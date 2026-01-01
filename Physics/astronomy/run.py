@@ -268,10 +268,10 @@ def get_eot_from_date(date: time_format)->time_format:
     return out
 
 
-def get_sun_pos_in_ecliptic_coordinates(time: time_format, eot:bool=False)->EclipticCoord:
+def get_sun_pos_in_ecliptic_coordinates(time: time_format, 
+                                        sun_ecliptic_longitude_time_diff_for_eot:time_format=time_format())->EclipticCoord:
 
-    if eot:
-        time=time+get_eot_from_date(time)
+    time = time + sun_ecliptic_longitude_time_diff_for_eot
 
     deg_from_time = 360*time.process_of_year()
     longitude_deg = (deg_from_time)%360
@@ -380,8 +380,11 @@ def rotate_vector(vector: descates_vector, axis: descates_vector, alpha_deg: flo
     out = descates_vector(rotated_vector[0], rotated_vector[1], rotated_vector[2])
     return out
 
-def get_sun_pos_in_equatorial_coordinates(time: time_format, eot:bool=False)->equatorial_coord:
-    sun_ecliptic_coord = get_sun_pos_in_ecliptic_coordinates(time= time, eot=eot)   
+def get_sun_pos_in_equatorial_coordinates(time: time_format, 
+                                          sun_ecliptic_longitude_time_diff_for_eot:time_format=time_format()
+                                          )->equatorial_coord:
+    sun_ecliptic_coord = get_sun_pos_in_ecliptic_coordinates(time= time, 
+                                                             sun_ecliptic_longitude_time_diff_for_eot = sun_ecliptic_longitude_time_diff_for_eot)   
     sun_vector_ecliptic = get_vector_form_ecliptic_coordinates(sun_ecliptic_coord)
 
     equinox_ecliptic_coord = EclipticCoord(AngleDegree(), AngleDegree())
@@ -439,11 +442,15 @@ def equat_2_horiz(equatorial_coordinates: equatorial_coord, time: time_format, u
 
     return out
 
-def find_sun_set_time(date: time_format, utc_plus: time_format, pos: geological_pos, time_resolution: float=60, sunset: bool = True)->time_format:
+def find_sun_set_time(date: time_format, 
+                      utc_plus: time_format, 
+                      pos: geological_pos, 
+                      time_resolution: float=60, 
+                      sunset: bool = True)->time_format:
     time_step = time_format(0,12,0,0)
     test_time = date + time_step
     if not is_the_sun_up(test_time,utc_plus,pos):
-        raise Exception("sun is not over the horizont")
+        raise Exception(f"sun is not over the horizont at {test_time}")
     
     if sunset:
         set_or_rise_multiplier = 1
@@ -466,16 +473,21 @@ def find_sun_set_time(date: time_format, utc_plus: time_format, pos: geological_
     return(test_time)
 
 
-def find_sun_noon_time(date: time_format, utc_plus:time_format, pos: geological_pos, time_resolution: float=60)->time_format:
+def find_sun_noon_time(date: time_format, 
+                       utc_plus:time_format, 
+                       pos: geological_pos, 
+                       time_resolution: float=60,
+                       sun_ecliptic_longitude_time_diff_for_eot:time_format=time_format()
+                       )->time_format:
     time_step:time_format = time_format(0,12,0,0)
     test_time = date + time_step
-    if not is_the_sun_up(test_time,utc_plus,pos):
-        raise Exception("sun is not over the horizont")
+    if not is_the_sun_up(test_time,utc_plus,pos, sun_ecliptic_longitude_time_diff_for_eot):
+        raise Exception(f"sun is not over the horizont at {test_time}, utc plu: {utc_plus}, sun cliptical lon diff: {sun_ecliptic_longitude_time_diff_for_eot}")
     
         
     while time_step.get_sec_from_date() >= time_resolution:
 
-        if (is_the_sun_east(test_time,utc_plus,pos)):
+        if (is_the_sun_east(test_time,utc_plus,pos,sun_ecliptic_longitude_time_diff_for_eot)):
             horizont_multiplier = 1
         else:
             horizont_multiplier = -1
@@ -494,6 +506,78 @@ def find_sun_noon_time(date: time_format, utc_plus:time_format, pos: geological_
 #     V = get_sun_pos_in_equatorial_coordinates(time_sec)
 #     out = equat_2_horiz(V, geological_pos)
 #     return out
+
+@dataclass
+class EclipticCorrectorTime:
+    time_of_year: time_format
+    time_difference: time_format
+
+    def __str__(self):
+        print(f"\n\ntime_of_year =\t{self.time_of_year}\ntime_difference =\t{self.time_difference}")
+
+def calculate_ecliptic_longitude_from_eot_table(day_step=10, time_accuracy: time_format = time_format(0,0,0,10.0), verbose = False):
+    diff_from_noon_list = []
+    expected_diff_list = []
+    diff_from_calculated_and_exoected_list = []
+    test_time_diff_list = []
+    out = []
+
+    time_samples = range(0,365,day_step)
+    for d in time_samples:
+        date = time_format(d)
+        time_step:time_format = time_format(date=2)
+        test_time_diff = time_format()
+
+        while time_step.get_sec_from_date() >= time_accuracy.get_sec_from_date():
+            sun_culmination_time_in_sec = find_sun_noon_time(date,
+                                                            utc_plus = utc_plus, 
+                                                            pos = greenwich_pos,
+                                                            time_resolution = 1,
+                                                            sun_ecliptic_longitude_time_diff_for_eot = test_time_diff).get_day_from_time().get_sec_from_date()
+            noon_time_in_sec = time_format(date=0,hour=12).get_sec_from_date()
+
+            diff_from_noon = sun_culmination_time_in_sec - noon_time_in_sec
+
+            expected_diff = get_eot_from_date(date).get_sec_from_date()
+
+            diff_from_calculated_and_exoected = diff_from_noon - expected_diff
+
+            if diff_from_calculated_and_exoected > 0:
+                multiplier = -1
+            else:
+                multiplier = 1
+
+            time_step = time_format.get_date_from_sec(time_step.get_sec_from_date()/2)
+
+            new_time_sec = test_time_diff.get_sec_from_date() + multiplier*time_step.get_sec_from_date()
+            test_time_diff = time_format.get_date_from_sec(new_time_sec)
+
+        if verbose:
+            print(f"{date}: {test_time_diff}")
+
+        out.append(EclipticCorrectorTime(time_of_year=date, time_difference=test_time_diff))
+        test_time_diff_list.append(test_time_diff.get_sec_from_date())
+        expected_diff_list.append(expected_diff)
+        diff_from_noon_list.append(diff_from_noon)
+        diff_from_calculated_and_exoected_list.append(diff_from_calculated_and_exoected)
+
+    if verbose:
+        plt.plot(time_samples,expected_diff_list,label="expected_diff_list")
+        plt.plot(time_samples,diff_from_noon_list,label="diff_from_noon_list")
+        plt.plot(time_samples,diff_from_calculated_and_exoected_list,label="diff_from_calculated_and_exoected_list")
+        plt.grid()
+        plt.legend()
+        plt.show()
+
+        plt.plot(time_samples,np.array(test_time_diff_list)/60/60,"o-")
+        plt.ylabel("hour diff")
+        plt.xlabel("date")
+        plt.grid()
+        plt.show()
+    
+    np.save("sun_ecliptic_time_corr.npy",out)
+    return out
+
 
 if __name__:
 
@@ -561,20 +645,32 @@ if __name__:
         plt.show()
 
 
-    def get_sun_pos_in_horizontal_coordinates(time: time_format, utc_plus: float, geo_pos: geological_pos,eot:bool=False)->horizontal_coord:
-        A = get_sun_pos_in_equatorial_coordinates(time,eot)
+    def get_sun_pos_in_horizontal_coordinates(time: time_format, 
+                                              utc_plus: float, 
+                                              geo_pos: geological_pos,
+                                              sun_ecliptic_longitude_time_diff_for_eot:time_format=time_format()
+                                              )->horizontal_coord:
+        A = get_sun_pos_in_equatorial_coordinates(time, sun_ecliptic_longitude_time_diff_for_eot)
         B = equat_2_horiz(A,time,utc_plus, geo_pos=geo_pos)
         return B
     
-    def is_the_sun_up(time: time_format, utc_plus: float, geo_pos: geological_pos) -> bool:
-        horiontal_pos = get_sun_pos_in_horizontal_coordinates(time, utc_plus, geo_pos)
+    def is_the_sun_up(time: time_format, 
+                      utc_plus: float, 
+                      geo_pos: geological_pos,
+                      sun_ecliptic_longitude_time_diff_for_eot:time_format=time_format()
+                      ) -> bool:
+        horiontal_pos = get_sun_pos_in_horizontal_coordinates(time, utc_plus, geo_pos, sun_ecliptic_longitude_time_diff_for_eot)
         if horiontal_pos.elevation.as_float() >=0:
             return True
         else:
             return False
 
-    def is_the_sun_east(time: time_format, utc_plus: float, geo_pos: geological_pos) -> bool:
-        horiontal_pos = get_sun_pos_in_horizontal_coordinates(time, utc_plus, geo_pos)
+    def is_the_sun_east(time: time_format, 
+                        utc_plus: float, 
+                        geo_pos: geological_pos,
+                        sun_ecliptic_longitude_time_diff_for_eot:time_format=time_format()
+                        ) -> bool:
+        horiontal_pos = get_sun_pos_in_horizontal_coordinates(time, utc_plus, geo_pos, sun_ecliptic_longitude_time_diff_for_eot)
         if horiontal_pos.azimuth.as_float() <=180:
             return True
         else:
@@ -657,7 +753,7 @@ if __name__:
         horiz_list_elev=[]
         horiz_list_azim=[]
         for d in range(365):
-            sun = get_sun_pos_in_horizontal_coordinates(time_format(d,12,00,00),time_format(),polar_pos,eot=True)
+            sun = get_sun_pos_in_horizontal_coordinates(time_format(d,12,00,00),time_format(),polar_pos)
             horiz_list_azim.append(sun.azimuth.as_float())
             horiz_list_elev.append(sun.elevation.as_float())
         plt.scatter(horiz_list_azim,horiz_list_elev)
@@ -688,7 +784,7 @@ if __name__:
 
         plt.show()
 
-    if 1:
+    if 0:
         simulated_noon_diff_list = []
         eot_diff_list = []
         time_samples = range(0,365,5)
@@ -704,12 +800,23 @@ if __name__:
         # plt.plot(time_samples,np.array(eot_diff_list)-np.array(simulated_noon_diff_list))
         # plt.show()
 
+    calculate_ecliptic_longitude_from_eot_table_flag=False
+    if calculate_ecliptic_longitude_from_eot_table_flag:
+        calculate_ecliptic_longitude_from_eot_table(day_step=1,verbose=True)
+        out = np.load("sun_ecliptic_time_corr.npy",allow_pickle=True)
+        print(out)
 
+    if 1:
+        raw: np.ndarray[EclipticCorrectorTime] = np.load("sun_ecliptic_time_corr.npy",allow_pickle=True)
+        out: list[EclipticCorrectorTime] = list(raw)
 
+        dates=[]
+        values=[]
+        for i in out:
+            dates.append(i.time_of_year.get_sec_from_date())
+            values.append(i.time_difference.get_sec_from_date())
 
-
-
-
-
+        plt.plot(dates,np.array(values)/3600)
+        plt.show()
 
 
