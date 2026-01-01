@@ -7,6 +7,7 @@ sys.path.append(home_directory+"/Desktop/Python/math/matrices/Rodrigues_rot")
 
 import banc_vectorManip as vMp
 import matplotlib.pyplot as plt
+import csv_read
 
 
 
@@ -258,15 +259,24 @@ class horizontal_coord:
     def __str__(self):
         return (f"azmt:\t{self.azimuth},\telev:\t{self.elevation}")
 
+def get_eot_from_date(date: time_format)->time_format:
+    EOT_TABLE0=csv_read.getEOT_csv()
+    EOT_TABLE=np.concatenate((EOT_TABLE0[80::],EOT_TABLE0[:80:]))
+
+    idx=int(date.date)%365
+    out = time_format.get_date_from_sec(EOT_TABLE[idx])
+    return out
 
 
+def get_sun_pos_in_ecliptic_coordinates(time: time_format, eot:bool=False)->EclipticCoord:
 
-def get_sun_pos_in_ecliptic_coordinates(time: time_format)->EclipticCoord:
+    if eot:
+        time=time+get_eot_from_date(time)
 
     deg_from_time = 360*time.process_of_year()
-    latitude_deg = (deg_from_time)%360
+    longitude_deg = (deg_from_time)%360
 
-    longitude = AngleDegree.from_float(latitude_deg)
+    longitude = AngleDegree.from_float(longitude_deg)
     
     coord = EclipticCoord(AngleDegree(0),AngleDegree(0))
     coord.longitude = longitude
@@ -370,8 +380,8 @@ def rotate_vector(vector: descates_vector, axis: descates_vector, alpha_deg: flo
     out = descates_vector(rotated_vector[0], rotated_vector[1], rotated_vector[2])
     return out
 
-def get_sun_pos_in_equatorial_coordinates(time: time_format)->equatorial_coord:
-    sun_ecliptic_coord = get_sun_pos_in_ecliptic_coordinates(time= time)   
+def get_sun_pos_in_equatorial_coordinates(time: time_format, eot:bool=False)->equatorial_coord:
+    sun_ecliptic_coord = get_sun_pos_in_ecliptic_coordinates(time= time, eot=eot)   
     sun_vector_ecliptic = get_vector_form_ecliptic_coordinates(sun_ecliptic_coord)
 
     equinox_ecliptic_coord = EclipticCoord(AngleDegree(), AngleDegree())
@@ -429,11 +439,11 @@ def equat_2_horiz(equatorial_coordinates: equatorial_coord, time: time_format, u
 
     return out
 
-def find_sun_set_time(date: time_format, pos: geological_pos, time_resolution: float=60, sunset: bool = True):
+def find_sun_set_time(date: time_format, utc_plus: time_format, pos: geological_pos, time_resolution: float=60, sunset: bool = True)->time_format:
     time_step = time_format(0,12,0,0)
     test_time = date + time_step
     if not is_the_sun_up(test_time,utc_plus,pos):
-        return None
+        raise Exception("sun is not over the horizont")
     
     if sunset:
         set_or_rise_multiplier = 1
@@ -451,6 +461,28 @@ def find_sun_set_time(date: time_format, pos: geological_pos, time_resolution: f
         time_step = time_format.get_date_from_sec(time_step.get_sec_from_date()/2)
 
         new_time_sec = test_time.get_sec_from_date() + set_or_rise_multiplier*horizont_multiplier*time_step.get_sec_from_date()
+        test_time = time_format.get_date_from_sec(new_time_sec)
+
+    return(test_time)
+
+
+def find_sun_noon_time(date: time_format, utc_plus:time_format, pos: geological_pos, time_resolution: float=60)->time_format:
+    time_step:time_format = time_format(0,12,0,0)
+    test_time = date + time_step
+    if not is_the_sun_up(test_time,utc_plus,pos):
+        raise Exception("sun is not over the horizont")
+    
+        
+    while time_step.get_sec_from_date() >= time_resolution:
+
+        if (is_the_sun_east(test_time,utc_plus,pos)):
+            horizont_multiplier = 1
+        else:
+            horizont_multiplier = -1
+
+        time_step = time_format.get_date_from_sec(time_step.get_sec_from_date()/2)
+
+        new_time_sec = test_time.get_sec_from_date() + horizont_multiplier*time_step.get_sec_from_date()
         test_time = time_format.get_date_from_sec(new_time_sec)
 
     return(test_time)
@@ -477,7 +509,11 @@ if __name__:
     budapest_pos.latitude = AngleDegree(degree=47,minute=29,second=54)
     budapest_pos.longitude = AngleDegree(degree=19,minute=2,second=27)
 
-    utc_plus = time_format(hour=1)
+    polar_pos = geological_pos()
+    polar_pos.latitude = AngleDegree(degree=90,minute=0,second=0)
+    polar_pos.longitude = AngleDegree(degree=0,minute=0,second=0)
+
+    utc_plus = time_format(hour=0)
     pos = budapest_pos
 
     if 0:
@@ -525,8 +561,8 @@ if __name__:
         plt.show()
 
 
-    def get_sun_pos_in_horizontal_coordinates(time: time_format, utc_plus: float, geo_pos: geological_pos)->horizontal_coord:
-        A = get_sun_pos_in_equatorial_coordinates(time)
+    def get_sun_pos_in_horizontal_coordinates(time: time_format, utc_plus: float, geo_pos: geological_pos,eot:bool=False)->horizontal_coord:
+        A = get_sun_pos_in_equatorial_coordinates(time,eot)
         B = equat_2_horiz(A,time,utc_plus, geo_pos=geo_pos)
         return B
     
@@ -537,13 +573,19 @@ if __name__:
         else:
             return False
 
+    def is_the_sun_east(time: time_format, utc_plus: float, geo_pos: geological_pos) -> bool:
+        horiontal_pos = get_sun_pos_in_horizontal_coordinates(time, utc_plus, geo_pos)
+        if horiontal_pos.azimuth.as_float() <=180:
+            return True
+        else:
+            return False
 
           
 
 
 
 
-    if 1:
+    if 0:
 
         plt.figure(figsize=[10,7])
         rise_time_list=[]
@@ -592,6 +634,82 @@ if __name__:
         plt.tight_layout()
         plt.savefig("out.png")
         plt.show()
+
+    if 0:
+        eot_diff_list=[]
+        for d in range(365):
+            eot_diff_list.append(get_eot_from_date(time_format(d)).get_sec_from_date())
+
+        plt.plot(eot_diff_list)
+        plt.show()
+
+    get_analemma = False
+    if get_analemma:
+
+        horiz_list_elev=[]
+        horiz_list_azim=[]
+        for d in range(365):
+            sun = get_sun_pos_in_horizontal_coordinates(time_format(d,12,00,00),time_format(),polar_pos)
+            horiz_list_azim.append(sun.azimuth.as_float())
+            horiz_list_elev.append(sun.elevation.as_float())
+        plt.scatter(horiz_list_azim,horiz_list_elev)
+
+        horiz_list_elev=[]
+        horiz_list_azim=[]
+        for d in range(365):
+            sun = get_sun_pos_in_horizontal_coordinates(time_format(d,12,00,00),time_format(),polar_pos,eot=True)
+            horiz_list_azim.append(sun.azimuth.as_float())
+            horiz_list_elev.append(sun.elevation.as_float())
+        plt.scatter(horiz_list_azim,horiz_list_elev)
+
+        plt.axis("equal")
+        plt.grid()
+        plt.ylabel("elevation [deg]")
+        plt.xlabel("azimuth [deg]")
+        plt.title("Sun position on the nort pole at every noon")
+
+        plt.show()
+    
+    test_eot = False
+    if test_eot:
+        plt.figure(figsize=[10,7])
+
+        simulated_noon_diff_list = []
+        list2 = []
+
+        for d in range(365):
+            date=time_format(d)
+            simulated_noon_diff_list.append(get_sun_pos_in_ecliptic_coordinates(date).longitude.as_float())
+            list2.append(get_sun_pos_in_ecliptic_coordinates(date,eot=True).longitude.as_float())
+
+
+        plt.plot(simulated_noon_diff_list,'o-')
+        plt.plot(list2,'o-')
+
+        plt.show()
+
+    if 1:
+        simulated_noon_diff_list = []
+        eot_diff_list = []
+        time_samples = range(0,365,5)
+        for d in time_samples:
+            simulated_noon_diff_list.append(find_sun_noon_time(time_format(d),utc_plus=utc_plus, pos=greenwich_pos,time_resolution=1).get_day_from_time().get_sec_from_date()-time_format(0,12).get_sec_from_date())
+            eot_diff_list.append(get_eot_from_date(time_format(d)).get_sec_from_date())
+
+        plt.plot(time_samples,simulated_noon_diff_list,"o-")
+        plt.plot(time_samples,eot_diff_list,"o-")
+
+        plt.show()
+
+        # plt.plot(time_samples,np.array(eot_diff_list)-np.array(simulated_noon_diff_list))
+        # plt.show()
+
+
+
+
+
+
+
 
 
 
