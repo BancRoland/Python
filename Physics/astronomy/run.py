@@ -30,6 +30,10 @@ class AngleDegree:
         rad=deg/180*np.pi
         return rad
     
+    def modulo(self) -> "AngleDegree":
+        temp = AngleDegree.from_float(self.as_float())
+        temp.degree = temp.degree%360
+        return temp
 
     @classmethod
     def from_float(cls, angle_deg: float) -> "AngleDegree":
@@ -49,6 +53,11 @@ class AngleDegree:
             return AngleDegree.from_float(self.as_float() + other.as_float())
         elif isinstance(other, (int, float)):
             return AngleDegree.from_float(self.as_float() + other)
+        return NotImplemented
+    
+    def __mul__(self, other):
+        if isinstance(other, (int, float)):
+            return AngleDegree.from_float(self.as_float() * other)
         return NotImplemented
 
 
@@ -128,7 +137,10 @@ class time_format:
     def __add__(self, other: "time_format")->"time_format":
         return_time = time_format.get_date_from_sec(self.get_sec_from_date() + other.get_sec_from_date())
         return return_time
-
+    
+    def __sub__(self, other: "time_format")->"time_format":
+        return_time = time_format.get_date_from_sec(self.get_sec_from_date() - other.get_sec_from_date())
+        return return_time
     
 
 
@@ -158,7 +170,10 @@ class EclipticCorrectorTime:
     time_difference: time_format
 
     def __str__(self):
-        print(f"\n\ntime_of_year =\t{self.time_of_year}\ntime_difference =\t{self.time_difference}")
+        return(f"\n\ntime_of_year =\t{self.time_of_year}\ntime_difference =\t{self.time_difference}\n")
+    
+    def copy(self) -> "EclipticCorrectorTime":
+        return EclipticCorrectorTime(time_of_year= self.time_of_year, time_difference=self.time_difference)
 
 
 def deg_2_time(angle :AngleDegree)->time_format:
@@ -279,15 +294,18 @@ sun_latitude_lookup:list[EclipticCorrectorTime] = None
 
 def ecliptic_longitude_time_diff_interpolator(time: time_format)->time_format:
     sun_latitude_lookup0 = sun_latitude_lookup.copy()
-    sun_latitude_lookup0.append(sun_latitude_lookup[0])
+    sun_latitude_lookup0.append(sun_latitude_lookup0[0].copy())
+
+    time_step = sun_latitude_lookup0[1].time_of_year-sun_latitude_lookup0[0].time_of_year
+    sun_latitude_lookup0[-1].time_of_year = sun_latitude_lookup0[-2].time_of_year + time_step
 
     for i in range(len(sun_latitude_lookup0)-1):
-        check_date = sun_latitude_lookup[i].time_of_year.get_sec_from_date()
-        check_date_next = sun_latitude_lookup[i+1].time_of_year.get_sec_from_date()
+        check_date = sun_latitude_lookup0[i].time_of_year.get_sec_from_date()
+        check_date_next = sun_latitude_lookup0[i+1].time_of_year.get_sec_from_date()
 
         if time.get_sec_from_date()>=check_date and time.get_sec_from_date()<check_date_next:
-            check_val = sun_latitude_lookup[i].time_difference.get_sec_from_date()
-            check_val_next = sun_latitude_lookup[i+1].time_difference.get_sec_from_date()
+            check_val = sun_latitude_lookup0[i].time_difference.get_sec_from_date()
+            check_val_next = sun_latitude_lookup0[i+1].time_difference.get_sec_from_date()
 
             time_sec = time.get_sec_from_date()
 
@@ -305,6 +323,28 @@ def get_sun_pos_in_ecliptic_coordinates(time: time_format,
     #     sun_ecliptic_longitude_time_diff_for_eot == time_format()
 
     time = time + sun_ecliptic_longitude_time_diff_for_eot
+
+    deg_from_time = 360*time.process_of_year()
+    longitude_deg = (deg_from_time)%360
+
+    longitude = AngleDegree.from_float(longitude_deg)
+    
+    coord = EclipticCoord(AngleDegree(0),AngleDegree(0))
+    coord.longitude = longitude
+    coord.latitude = AngleDegree(0)
+
+    return coord
+
+def get_sun_pos_in_ecliptic_coordinates_with_interpolated_eot_table(time: time_format)->EclipticCoord:
+
+    # sun_ecliptic_longitude_time_diff_for_eot=get_ecliptic_longitude(time)
+
+    # if sun_latitude_lookup == None:
+    #     sun_ecliptic_longitude_time_diff_for_eot == time_format()
+
+
+
+    time = time + ecliptic_longitude_time_diff_interpolator(time)
 
     deg_from_time = 360*time.process_of_year()
     longitude_deg = (deg_from_time)%360
@@ -846,17 +886,63 @@ if __name__:
         plt.plot(dates,np.array(values)/3600)
         plt.show()
 
-    if 1:
+    if 0:
         raw: np.ndarray[EclipticCorrectorTime] = np.load("sun_ecliptic_time_corr.npy",allow_pickle=True)
         sun_latitude_lookup: list[EclipticCorrectorTime] = list(raw)
-        list = []
+        list0 = []
         x = []
         for i in range(0,365,30):
             for j in range(0,24,4):
                 time = time_format(date=i,hour=j)
-                list.append(ecliptic_longitude_time_diff_interpolator(time).get_sec_from_date())
+                list0.append(ecliptic_longitude_time_diff_interpolator(time).get_sec_from_date())
                 x.append(time.get_sec_from_date())
 
         plt.plot(x,list,"o-")
+        plt.show()
+
+
+    def get_sun_pos_in_ecliptic_coordinates_from_wiki(date: time_format) -> EclipticCoord:
+        # def get_julian_date():
+
+        # JD = get_julian_date()
+
+        # days since 2000.01.01.
+        # n = JD - 2451545.0
+
+        n=time_format(date=80,hour=17) + date
+        
+        # mean longitude
+        L = AngleDegree(degree=280.460) + AngleDegree(degree=0.9856474*n.get_sec_from_date()/86400)
+        #mean anomaly
+        g = AngleDegree(degree=357.528) + AngleDegree(degree=0.9856003*n.get_sec_from_date()/86400)
+
+        # ecliptic_longitude
+        lmbd = L + AngleDegree(degree=1.915*sind(g)) + AngleDegree(degree=0.020*sind(g*2))
+        coord = EclipticCoord(latitude=AngleDegree(),longitude=lmbd.modulo())
+
+        return coord
+
+    comparing_multiple_eot_eclipticlal_longitudes = True
+    if comparing_multiple_eot_eclipticlal_longitudes:
+        raw: np.ndarray[EclipticCorrectorTime] = np.load("sun_ecliptic_time_corr.npy",allow_pickle=True)
+        sun_latitude_lookup: list[EclipticCorrectorTime] = list(raw)
+        list_from_table = []
+        naive_list = []
+        wiki_method_list = []
+
+        for d in range(0,365,1):
+            date = time_format(d)
+            list_from_table.append(get_sun_pos_in_ecliptic_coordinates_with_interpolated_eot_table(date).longitude.as_float())
+            naive_list.append(get_sun_pos_in_ecliptic_coordinates(date).longitude.as_float())
+
+            wiki_method_list.append(get_sun_pos_in_ecliptic_coordinates_from_wiki(date).longitude.as_float())
+        # plt.plot(lon_list)
+        # plt.plot(lon_list2)
+        # plt.plot(lon_list3)
+        # plt.plot(np.array(naive_list)-np.array(list_from_table))
+        # plt.plot(np.array(naive_list)-np.array(wiki_method_list))
+        plt.plot(np.array(list_from_table)-np.array(wiki_method_list))
+
+        plt.grid()
         plt.show()
 
