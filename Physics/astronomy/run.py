@@ -152,6 +152,13 @@ class geological_pos:
     def longitude(self, value: AngleDegree):
         self._coord.azimuth_like = value
 
+@dataclass
+class EclipticCorrectorTime:
+    time_of_year: time_format
+    time_difference: time_format
+
+    def __str__(self):
+        print(f"\n\ntime_of_year =\t{self.time_of_year}\ntime_difference =\t{self.time_difference}")
 
 
 def deg_2_time(angle :AngleDegree)->time_format:
@@ -268,8 +275,34 @@ def get_eot_from_date(date: time_format)->time_format:
     return out
 
 
+sun_latitude_lookup:list[EclipticCorrectorTime] = None
+
+def ecliptic_longitude_time_diff_interpolator(time: time_format)->time_format:
+    sun_latitude_lookup0 = sun_latitude_lookup.copy()
+    sun_latitude_lookup0.append(sun_latitude_lookup[0])
+
+    for i in range(len(sun_latitude_lookup0)-1):
+        check_date = sun_latitude_lookup[i].time_of_year.get_sec_from_date()
+        check_date_next = sun_latitude_lookup[i+1].time_of_year.get_sec_from_date()
+
+        if time.get_sec_from_date()>=check_date and time.get_sec_from_date()<check_date_next:
+            check_val = sun_latitude_lookup[i].time_difference.get_sec_from_date()
+            check_val_next = sun_latitude_lookup[i+1].time_difference.get_sec_from_date()
+
+            time_sec = time.get_sec_from_date()
+
+            out = (check_val_next-check_val)/(check_date_next-check_date)*(time_sec-check_date)+check_val
+            return time_format.get_date_from_sec(out)
+    else:
+        raise Exception(f"no interpolatabel values found for: {time} in list: {sun_latitude_lookup0}")
+
 def get_sun_pos_in_ecliptic_coordinates(time: time_format, 
                                         sun_ecliptic_longitude_time_diff_for_eot:time_format=time_format())->EclipticCoord:
+
+    # sun_ecliptic_longitude_time_diff_for_eot=get_ecliptic_longitude(time)
+
+    # if sun_latitude_lookup == None:
+    #     sun_ecliptic_longitude_time_diff_for_eot == time_format()
 
     time = time + sun_ecliptic_longitude_time_diff_for_eot
 
@@ -507,13 +540,7 @@ def find_sun_noon_time(date: time_format,
 #     out = equat_2_horiz(V, geological_pos)
 #     return out
 
-@dataclass
-class EclipticCorrectorTime:
-    time_of_year: time_format
-    time_difference: time_format
 
-    def __str__(self):
-        print(f"\n\ntime_of_year =\t{self.time_of_year}\ntime_difference =\t{self.time_difference}")
 
 def calculate_ecliptic_longitude_from_eot_table(day_step=10, time_accuracy: time_format = time_format(0,0,0,10.0), verbose = False):
     diff_from_noon_list = []
@@ -806,7 +833,7 @@ if __name__:
         out = np.load("sun_ecliptic_time_corr.npy",allow_pickle=True)
         print(out)
 
-    if 1:
+    if 0:
         raw: np.ndarray[EclipticCorrectorTime] = np.load("sun_ecliptic_time_corr.npy",allow_pickle=True)
         out: list[EclipticCorrectorTime] = list(raw)
 
@@ -819,4 +846,17 @@ if __name__:
         plt.plot(dates,np.array(values)/3600)
         plt.show()
 
+    if 1:
+        raw: np.ndarray[EclipticCorrectorTime] = np.load("sun_ecliptic_time_corr.npy",allow_pickle=True)
+        sun_latitude_lookup: list[EclipticCorrectorTime] = list(raw)
+        list = []
+        x = []
+        for i in range(0,365,30):
+            for j in range(0,24,4):
+                time = time_format(date=i,hour=j)
+                list.append(ecliptic_longitude_time_diff_interpolator(time).get_sec_from_date())
+                x.append(time.get_sec_from_date())
+
+        plt.plot(x,list,"o-")
+        plt.show()
 
