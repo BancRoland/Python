@@ -8,278 +8,9 @@ sys.path.append(home_directory+"/Desktop/Python/math/matrices/Rodrigues_rot")
 import banc_vectorManip as vMp
 import matplotlib.pyplot as plt
 import csv_read
+from utils import *
 
 
-
-
-@dataclass
-class AngleDegree:
-    positive_sign: bool = True
-    degree: int = 0
-    minute: int = 0
-    second: float = 0.0
-
-    def as_float(self) -> float:
-        out = self.degree + self.minute/60 + self.second/60/60
-        if self.positive_sign == False:
-            out=-1*out
-        return out
-    
-    def as_radian(self) -> float:
-        deg = self.as_float()
-        rad=deg/180*np.pi
-        return rad
-    
-    def modulo(self) -> "AngleDegree":
-        temp = AngleDegree.from_float(self.as_float())
-        temp.degree = temp.degree%360
-        return temp
-
-    @classmethod
-    def from_float(cls, angle_deg: float) -> "AngleDegree":
-        positive_sign = False if angle_deg < 0 else True
-        angle_deg = abs(angle_deg)
-
-        degree = int(angle_deg)
-        remaining_minutes = (angle_deg - degree) * 60
-        minute = int(remaining_minutes)
-        second = (remaining_minutes - minute) * 60
-
-        return cls(positive_sign, degree, minute, second)
-
-
-    def __add__(self, other) -> "AngleDegree":
-        if isinstance(other, AngleDegree):
-            return AngleDegree.from_float(self.as_float() + other.as_float())
-        elif isinstance(other, (int, float)):
-            return AngleDegree.from_float(self.as_float() + other)
-        return NotImplemented
-    
-    def __mul__(self, other):
-        if isinstance(other, (int, float)):
-            return AngleDegree.from_float(self.as_float() * other)
-        return NotImplemented
-
-
-
-@dataclass
-class coordinates:
-    _azimuth_like: AngleDegree = field(default_factory=AngleDegree)
-    _elevation_like: AngleDegree = field(default_factory=AngleDegree)
-
-    @property
-    def azimuth_like(self) -> AngleDegree:
-        return self._azimuth_like
-
-    @azimuth_like.setter
-    def azimuth_like(self, value: AngleDegree):
-        azimuth_deg = value.as_float()
-        if azimuth_deg >= 0.0 and azimuth_deg <= 360.0:
-            self._azimuth_like = value
-        else:
-            raise ValueError("invalid azimuth")
-        
-    @property
-    def elevation_like(self)->AngleDegree:
-        return self._elevation_like
-    
-    @elevation_like.setter
-    def elevation_like(self, value : AngleDegree):
-        elevation_deg = value.as_float()
-        if elevation_deg >=-90 and elevation_deg <= 90:
-            self._elevation_like = value
-        else:
-            raise ValueError("invalid elevation")
-
-    def __str__(self):
-        return(f"_azimuth like: {self.azimuth_like}\nelevation_like: {self.elevation_like}")
-
-
-
-
-@dataclass
-class time_format:
-    date: int = 0
-    hour: int = 0
-    min: int = 0
-    sec: float = 0.0
-
-
-    def get_sec_from_date(self):
-        out = self.date*86400 + self.hour*3600 + self.min*60 + self.sec
-        return out
-    
-    def process_of_year(self):
-        return self.get_sec_from_date()/(365.25*86400)
-    
-    def get_date_from_sec(sec:float):
-        out = time_format()
-
-        out.date = int(sec/60/60/24)
-        remain_sec = sec-out.date*60*60*24
-
-        out.hour = int(remain_sec/60/60)
-        remain_sec = remain_sec - out.hour*60*60
-
-        out.min = int(remain_sec/60)
-        remain_sec = remain_sec - out.min*60
-
-        out.sec = remain_sec
-
-        return out
-
-    def get_day_from_time(self):
-        return time_format(date=0, hour=self.hour, min=self.min, sec=self.sec)
-    
-    def __str__(self):
-        return(f"{self.date:3} d {self.hour:2} h {self.min:2} min {self.sec:2.3f} sec")
-    
-    def __add__(self, other: "time_format")->"time_format":
-        return_time = time_format.get_date_from_sec(self.get_sec_from_date() + other.get_sec_from_date())
-        return return_time
-    
-    def __sub__(self, other: "time_format")->"time_format":
-        return_time = time_format.get_date_from_sec(self.get_sec_from_date() - other.get_sec_from_date())
-        return return_time
-    
-
-
-@dataclass
-class geological_pos:
-    _coord: coordinates = field(default_factory=coordinates)
-
-    @property
-    def latitude(self) -> AngleDegree:
-        return self._coord.elevation_like
-    
-    @property
-    def longitude(self) -> AngleDegree:
-        return self._coord.azimuth_like
-    
-    @latitude.setter
-    def latitude(self, value: AngleDegree):
-        self._coord.elevation_like = value
-
-    @longitude.setter
-    def longitude(self, value: AngleDegree):
-        self._coord.azimuth_like = value
-
-@dataclass
-class EclipticCorrectorTime:
-    time_of_year: time_format
-    time_difference: time_format
-
-    def __str__(self):
-        return(f"\n\ntime_of_year =\t{self.time_of_year}\ntime_difference =\t{self.time_difference}\n")
-    
-    def copy(self) -> "EclipticCorrectorTime":
-        return EclipticCorrectorTime(time_of_year= self.time_of_year, time_difference=self.time_difference)
-
-
-def deg_2_time(angle :AngleDegree)->time_format:
-    angle_deg = angle.as_float()
-    angle_in_hour  = angle_deg/360*24
-
-    hour = int(angle_in_hour)
-    min = int((angle_in_hour-hour)*60)
-    sec = (angle_in_hour-hour-min/60)*60*60
-    out = time_format(0,hour,min,sec)
-    return out
-
-
-class equatorial_coord:
-
-    def __init__(self,rectascense_deg: AngleDegree = AngleDegree(), declination_deg: AngleDegree = AngleDegree()):
-        self._coord = coordinates()
-        self.rectascense = rectascense_deg
-        self.declination = declination_deg
-
-
-    @property
-    def rectascense(self) -> AngleDegree:
-        return self._coord.azimuth_like
-
-    @rectascense.setter
-    def rectascense(self, value: AngleDegree):
-        self._coord.azimuth_like = value
-
-    @property
-    def rectascense_time(self) -> time_format:
-        return deg_2_time(self.rectascense)
-
-    @property
-    def declination(self) -> AngleDegree:
-        return self._coord.elevation_like
-
-    @declination.setter
-    def declination(self, value: AngleDegree):
-        self._coord.elevation_like = value
-
-
-    def __str__(self):
-        return(f"\nEQ rectascence_deg: {self.rectascense}\nEQ declination: {self.declination}\n")
-
-
-
-class EclipticCoord:
-    def __init__(self, latitude: AngleDegree, longitude: AngleDegree):
-        # Create the underlying coordinates object
-        self._coord = coordinates()
-        
-        # Use property setters to initialize values (ensures validation)
-        self.latitude = latitude
-        self.longitude = longitude
-
-    # ---------- Latitude property ----------
-    @property
-    def latitude(self) -> AngleDegree:
-        return self._coord.elevation_like
-
-    @latitude.setter
-    def latitude(self, value: AngleDegree):
-        # Use the Coordinates class setter (or property)
-        self._coord.elevation_like = value
-
-    # ---------- Longitude property ----------
-    @property
-    def longitude(self) -> AngleDegree:
-        return self._coord.azimuth_like
-
-    @longitude.setter
-    def longitude(self, value: AngleDegree):
-        # Use the Coordinates class setter (or property)
-        self._coord.azimuth_like = value
-
-    def __str__(self)->str:
-        return f"\nEC latitude = {self.latitude}\nEC longitude = {self.longitude}\n"
-
-
-
-
-
-@dataclass
-class horizontal_coord:
-    _coord: coordinates = field(default_factory=coordinates)
-
-    @property
-    def azimuth(self) -> AngleDegree:
-        return self._coord.azimuth_like
-    
-    @property
-    def elevation(self) -> AngleDegree:
-        return self._coord.elevation_like
-
-    @azimuth.setter
-    def azimuth(self, value: AngleDegree):
-        self._coord.azimuth_like = value
-
-    @elevation.setter
-    def elevation(self, value: AngleDegree):
-        self._coord.elevation_like = value
-        
-
-    def __str__(self):
-        return (f"azmt:\t{self.azimuth},\telev:\t{self.elevation}")
 
 def get_eot_from_date(date: time_format)->time_format:
     EOT_TABLE0=csv_read.getEOT_csv()
@@ -314,7 +45,7 @@ def ecliptic_longitude_time_diff_interpolator(time: time_format)->time_format:
     else:
         raise Exception(f"no interpolatabel values found for: {time} in list: {sun_latitude_lookup0}")
 
-def get_sun_pos_in_ecliptic_coordinates(time: time_format, 
+def get_sun_pos_in_ecliptic_coordinates__adjustable_ecliptic_lon(time: time_format, 
                                         sun_ecliptic_longitude_time_diff_for_eot:time_format=time_format())->EclipticCoord:
 
     # sun_ecliptic_longitude_time_diff_for_eot=get_ecliptic_longitude(time)
@@ -335,7 +66,31 @@ def get_sun_pos_in_ecliptic_coordinates(time: time_format,
 
     return coord
 
-def get_sun_pos_in_ecliptic_coordinates_with_interpolated_eot_table(time: time_format)->EclipticCoord:
+
+def get_sun_pos_in_ecliptic_coordinates__wiki(time: time_format) -> EclipticCoord:
+    # https://en.wikipedia.org/wiki/Position_of_the_Sun
+    # def get_julian_date():
+
+    # JD = get_julian_date()
+
+    # days since 2000.01.01.
+    # n = JD - 2451545.0
+
+    n=time_format(date=80,hour=17) + time
+    
+    # mean longitude
+    L = AngleDegree(degree=280.460) + AngleDegree(degree=0.9856474*n.get_sec_from_date()/86400)
+    #mean anomaly
+    g = AngleDegree(degree=357.528) + AngleDegree(degree=0.9856003*n.get_sec_from_date()/86400)
+
+    # ecliptic_longitude
+    lmbd = L + AngleDegree(degree=1.915*sind(g)) + AngleDegree(degree=0.020*sind(g*2))
+    coord = EclipticCoord(latitude=AngleDegree(),longitude=lmbd.modulo())
+
+    return coord
+
+
+def get_sun_pos_in_ecliptic_coordinates__interpolated_eot_table(time: time_format)->EclipticCoord:
 
     # sun_ecliptic_longitude_time_diff_for_eot=get_ecliptic_longitude(time)
 
@@ -357,23 +112,6 @@ def get_sun_pos_in_ecliptic_coordinates_with_interpolated_eot_table(time: time_f
 
     return coord
 
-@dataclass
-class descates_vector():
-    V = np.array([0,0,0])
-
-    x: float = 0
-    y: float = 0
-    z: float = 0
-
-    def setter(self, x,y,z):
-        self.x = x
-        self.y = y
-        self.z = z
-        self.V = np.array([x,y,z])
-
-
-    def __str__(self):
-        return (f"{self.x}, {self.y}, {self.z}")
 
 def cosd(alpha: AngleDegree):
     alpha_rad=alpha.as_radian()
@@ -453,10 +191,10 @@ def rotate_vector(vector: descates_vector, axis: descates_vector, alpha_deg: flo
     out = descates_vector(rotated_vector[0], rotated_vector[1], rotated_vector[2])
     return out
 
-def get_sun_pos_in_equatorial_coordinates(time: time_format, 
+def get_sun_pos_in_equatorial_coordinates__adjustable_ecliptic_lon(time: time_format, 
                                           sun_ecliptic_longitude_time_diff_for_eot:time_format=time_format()
                                           )->equatorial_coord:
-    sun_ecliptic_coord = get_sun_pos_in_ecliptic_coordinates(time= time, 
+    sun_ecliptic_coord = get_sun_pos_in_ecliptic_coordinates__adjustable_ecliptic_lon(time= time, 
                                                              sun_ecliptic_longitude_time_diff_for_eot = sun_ecliptic_longitude_time_diff_for_eot)   
     sun_vector_ecliptic = get_vector_form_ecliptic_coordinates(sun_ecliptic_coord)
 
@@ -467,7 +205,29 @@ def get_sun_pos_in_equatorial_coordinates(time: time_format,
     sun_equatorial = get_equatorial_from_vector(sun_vector_equatorial)
     return sun_equatorial
 
+def get_sun_pos_in_equatorial_coordinates__interpolated_eot_table(time: time_format)->equatorial_coord:
 
+    sun_ecliptic_coord = get_sun_pos_in_ecliptic_coordinates__interpolated_eot_table(time= time)   
+    sun_vector_ecliptic = get_vector_form_ecliptic_coordinates(sun_ecliptic_coord)
+
+    equinox_ecliptic_coord = EclipticCoord(AngleDegree(), AngleDegree())
+    equinox_vector_ecliptic = get_vector_form_ecliptic_coordinates(equinox_ecliptic_coord)
+    
+    sun_vector_equatorial = rotate_vector(sun_vector_ecliptic, equinox_vector_ecliptic, AXIAL_TILT)
+    sun_equatorial = get_equatorial_from_vector(sun_vector_equatorial)
+    return sun_equatorial
+
+def get_sun_pos_in_equatorial_coordinates__wiki(time: time_format
+                                          )->equatorial_coord:
+    sun_ecliptic_coord = get_sun_pos_in_ecliptic_coordinates__wiki(time= time)   
+    sun_vector_ecliptic = get_vector_form_ecliptic_coordinates(sun_ecliptic_coord)
+
+    equinox_ecliptic_coord = EclipticCoord(AngleDegree(), AngleDegree())
+    equinox_vector_ecliptic = get_vector_form_ecliptic_coordinates(equinox_ecliptic_coord)
+    
+    sun_vector_equatorial = rotate_vector(sun_vector_ecliptic, equinox_vector_ecliptic, AXIAL_TILT)
+    sun_equatorial = get_equatorial_from_vector(sun_vector_equatorial)
+    return sun_equatorial
 
 
 def get_vector_form_equatorial(equatorial_coordinates: equatorial_coord):
@@ -646,6 +406,9 @@ def calculate_ecliptic_longitude_from_eot_table(day_step=10, time_accuracy: time
     return out
 
 
+
+
+
 if __name__:
 
     fehervar_pos = geological_pos()
@@ -672,7 +435,7 @@ if __name__:
         decli_list = []
         for d in range(0,360,1):
             time = time_format(date=d)
-            A = get_sun_pos_in_equatorial_coordinates(time)
+            A = get_sun_pos_in_equatorial_coordinates__adjustable_ecliptic_lon(time)
             recta_list.append((A.rectascense.as_float()+360)%360)
             decli_list.append(A.declination.as_float())
 
@@ -692,7 +455,7 @@ if __name__:
                     time_of_day = time_format(hour=h, min=m)
                     time_of_day_list.append(time_of_day.get_sec_from_date()/3600)
                     # print(f"\n\nhour = {h}")
-                    A = get_sun_pos_in_equatorial_coordinates(time)
+                    A = get_sun_pos_in_equatorial_coordinates__adjustable_ecliptic_lon(time)
                     # A.print()
                     B = equat_2_horiz(A,time, utc_plus, geo_pos=pos)
                     # B.print()
@@ -712,12 +475,28 @@ if __name__:
         plt.show()
 
 
-    def get_sun_pos_in_horizontal_coordinates(time: time_format, 
+    def get_sun_pos_in_horizontal_coordinates__adjustable_ecliptic_lon(time: time_format, 
                                               utc_plus: float, 
                                               geo_pos: geological_pos,
                                               sun_ecliptic_longitude_time_diff_for_eot:time_format=time_format()
                                               )->horizontal_coord:
-        A = get_sun_pos_in_equatorial_coordinates(time, sun_ecliptic_longitude_time_diff_for_eot)
+        A = get_sun_pos_in_equatorial_coordinates__adjustable_ecliptic_lon(time, sun_ecliptic_longitude_time_diff_for_eot)
+        B = equat_2_horiz(A,time,utc_plus, geo_pos=geo_pos)
+        return B
+    
+    def get_sun_pos_in_horizontal_coordinates__interpolated_eot_table(time: time_format, 
+                                              utc_plus: float, 
+                                              geo_pos: geological_pos
+                                              )->horizontal_coord:
+        A = get_sun_pos_in_equatorial_coordinates__interpolated_eot_table(time)
+        B = equat_2_horiz(A,time,utc_plus, geo_pos=geo_pos)
+        return B
+    
+    def get_sun_pos_in_horizontal_coordinates__wiki(time: time_format, 
+                                              utc_plus: float, 
+                                              geo_pos: geological_pos
+                                              )->horizontal_coord:
+        A = get_sun_pos_in_equatorial_coordinates__wiki(time)
         B = equat_2_horiz(A,time,utc_plus, geo_pos=geo_pos)
         return B
     
@@ -726,7 +505,7 @@ if __name__:
                       geo_pos: geological_pos,
                       sun_ecliptic_longitude_time_diff_for_eot:time_format=time_format()
                       ) -> bool:
-        horiontal_pos = get_sun_pos_in_horizontal_coordinates(time, utc_plus, geo_pos, sun_ecliptic_longitude_time_diff_for_eot)
+        horiontal_pos = get_sun_pos_in_horizontal_coordinates__adjustable_ecliptic_lon(time, utc_plus, geo_pos, sun_ecliptic_longitude_time_diff_for_eot)
         if horiontal_pos.elevation.as_float() >=0:
             return True
         else:
@@ -737,7 +516,7 @@ if __name__:
                         geo_pos: geological_pos,
                         sun_ecliptic_longitude_time_diff_for_eot:time_format=time_format()
                         ) -> bool:
-        horiontal_pos = get_sun_pos_in_horizontal_coordinates(time, utc_plus, geo_pos, sun_ecliptic_longitude_time_diff_for_eot)
+        horiontal_pos = get_sun_pos_in_horizontal_coordinates__adjustable_ecliptic_lon(time, utc_plus, geo_pos, sun_ecliptic_longitude_time_diff_for_eot)
         if horiontal_pos.azimuth.as_float() <=180:
             return True
         else:
@@ -812,7 +591,7 @@ if __name__:
         horiz_list_elev=[]
         horiz_list_azim=[]
         for d in range(365):
-            sun = get_sun_pos_in_horizontal_coordinates(time_format(d,12,00,00),time_format(),polar_pos)
+            sun = get_sun_pos_in_horizontal_coordinates__adjustable_ecliptic_lon(time_format(d,12,00,00),time_format(),polar_pos)
             horiz_list_azim.append(sun.azimuth.as_float())
             horiz_list_elev.append(sun.elevation.as_float())
         plt.scatter(horiz_list_azim,horiz_list_elev)
@@ -820,7 +599,7 @@ if __name__:
         horiz_list_elev=[]
         horiz_list_azim=[]
         for d in range(365):
-            sun = get_sun_pos_in_horizontal_coordinates(time_format(d,12,00,00),time_format(),polar_pos)
+            sun = get_sun_pos_in_horizontal_coordinates__adjustable_ecliptic_lon(time_format(d,12,00,00),time_format(),polar_pos)
             horiz_list_azim.append(sun.azimuth.as_float())
             horiz_list_elev.append(sun.elevation.as_float())
         plt.scatter(horiz_list_azim,horiz_list_elev)
@@ -842,8 +621,8 @@ if __name__:
 
         for d in range(365):
             date=time_format(d)
-            simulated_noon_diff_list.append(get_sun_pos_in_ecliptic_coordinates(date).longitude.as_float())
-            list2.append(get_sun_pos_in_ecliptic_coordinates(date,eot=True).longitude.as_float())
+            simulated_noon_diff_list.append(get_sun_pos_in_ecliptic_coordinates__adjustable_ecliptic_lon(date).longitude.as_float())
+            list2.append(get_sun_pos_in_ecliptic_coordinates__adjustable_ecliptic_lon(date,eot=True).longitude.as_float())
 
 
         plt.plot(simulated_noon_diff_list,'o-')
@@ -901,28 +680,9 @@ if __name__:
         plt.show()
 
 
-    def get_sun_pos_in_ecliptic_coordinates_from_wiki(date: time_format) -> EclipticCoord:
-        # def get_julian_date():
 
-        # JD = get_julian_date()
 
-        # days since 2000.01.01.
-        # n = JD - 2451545.0
-
-        n=time_format(date=80,hour=17) + date
-        
-        # mean longitude
-        L = AngleDegree(degree=280.460) + AngleDegree(degree=0.9856474*n.get_sec_from_date()/86400)
-        #mean anomaly
-        g = AngleDegree(degree=357.528) + AngleDegree(degree=0.9856003*n.get_sec_from_date()/86400)
-
-        # ecliptic_longitude
-        lmbd = L + AngleDegree(degree=1.915*sind(g)) + AngleDegree(degree=0.020*sind(g*2))
-        coord = EclipticCoord(latitude=AngleDegree(),longitude=lmbd.modulo())
-
-        return coord
-
-    comparing_multiple_eot_eclipticlal_longitudes = True
+    comparing_multiple_eot_eclipticlal_longitudes = False
     if comparing_multiple_eot_eclipticlal_longitudes:
         raw: np.ndarray[EclipticCorrectorTime] = np.load("sun_ecliptic_time_corr.npy",allow_pickle=True)
         sun_latitude_lookup: list[EclipticCorrectorTime] = list(raw)
@@ -932,10 +692,10 @@ if __name__:
 
         for d in range(0,365,1):
             date = time_format(d)
-            list_from_table.append(get_sun_pos_in_ecliptic_coordinates_with_interpolated_eot_table(date).longitude.as_float())
-            naive_list.append(get_sun_pos_in_ecliptic_coordinates(date).longitude.as_float())
+            list_from_table.append(get_sun_pos_in_ecliptic_coordinates__interpolated_eot_table(date).longitude.as_float())
+            naive_list.append(get_sun_pos_in_ecliptic_coordinates__adjustable_ecliptic_lon(date).longitude.as_float())
 
-            wiki_method_list.append(get_sun_pos_in_ecliptic_coordinates_from_wiki(date).longitude.as_float())
+            wiki_method_list.append(get_sun_pos_in_horizontal_coordinates__wiki(date).longitude.as_float())
         # plt.plot(lon_list)
         # plt.plot(lon_list2)
         # plt.plot(lon_list3)
@@ -946,3 +706,202 @@ if __name__:
         plt.grid()
         plt.show()
 
+    get_analemma_wiki = True
+    if get_analemma_wiki:
+        analemma_pos = greenwich_pos
+        plt.figure(figsize=[8,7])
+
+        horiz_list_elev__naive=[]
+        horiz_list_azim__naive=[]
+        for d in range(365):
+            sun = get_sun_pos_in_horizontal_coordinates__adjustable_ecliptic_lon(time_format(d,12,00,00),time_format(),analemma_pos)
+            horiz_list_azim__naive.append(sun.azimuth.as_float())
+            horiz_list_elev__naive.append(sun.elevation.as_float())
+        plt.plot(horiz_list_azim__naive,horiz_list_elev__naive,color="C0")
+
+        horiz_list_elev__wiki=[]
+        horiz_list_azim__wiki=[]
+        for d in range(365):
+            sun = get_sun_pos_in_horizontal_coordinates__wiki(time_format(d,12,00,00),time_format(),analemma_pos)
+            horiz_list_azim__wiki.append(sun.azimuth.as_float())
+            horiz_list_elev__wiki.append(sun.elevation.as_float())
+        plt.plot(horiz_list_azim__wiki,horiz_list_elev__wiki,color="red")
+
+        horiz_list_elev=[]
+        horiz_list_azim=[]
+        for d in range(0,365,10):
+            raw: np.ndarray[EclipticCorrectorTime] = np.load("sun_ecliptic_time_corr.npy",allow_pickle=True)
+            sun_latitude_lookup: list[EclipticCorrectorTime] = list(raw)
+            sun = get_sun_pos_in_horizontal_coordinates__interpolated_eot_table(time_format(d,12,00,00),time_format(),analemma_pos)
+            horiz_list_azim.append(sun.azimuth.as_float())
+            horiz_list_elev.append(sun.elevation.as_float())
+        plt.plot(horiz_list_azim,horiz_list_elev,".",color="red")
+
+        # plt.axis("equal")
+        plt.grid()
+        plt.ylabel("elevation [deg]")
+        plt.xlabel("azimuth [deg]")
+        plt.title("Sun position on the nort pole at every noon")
+        plt.axvline(180,color="black")
+
+        plt.axhline(90-analemma_pos.latitude.as_float(),color="black")
+        plt.axhline(90-analemma_pos.latitude.as_float()+AXIAL_TILT,color="black")
+        plt.axhline(90-analemma_pos.latitude.as_float()-AXIAL_TILT,color="black")
+
+        plt.xlim([176,185])
+        plt.ylim([0,70])
+
+        plt.savefig("analemma.png")
+        plt.show()
+
+    compare_summer_winter_length = False
+    if compare_summer_winter_length:
+        def find_zero_crossing_time( function,
+                                    test_time: time_format, 
+                                    time_span: time_format = time_format(date=90), 
+                                    time_resolution: time_format = time_format(min=1)
+                                   ) -> time_format:
+            diff_val: float = function(test_time)
+            time_step: time_format = time_format.get_date_from_sec(time_span.get_sec_from_date()*0.5)
+
+            left_end = function(test_time+time_step)
+            right_end = function(test_time-time_step)
+            if np.sign(left_end) == np.sign(right_end):
+                raise ValueError("given range has no, or multiple zero crossing")
+            if left_end == 0:
+                return test_time + time_step
+
+            sign_multiplier = 1 if left_end > 0 else -1
+
+            while time_step.get_sec_from_date() > time_resolution.get_sec_from_date():
+
+                if diff_val > 0:
+                    multiplier = -1
+                else:
+                    multiplier = 1
+                
+                test_time = test_time + (sign_multiplier*multiplier) * time_step
+                time_step = time_format.get_date_from_sec(time_step.get_sec_from_date()*0.5)
+                diff_val = function(test_time)
+            
+            return test_time
+        
+        def function__wiki(time: time_format)->float:
+            return get_sun_pos_in_equatorial_coordinates__wiki(time).declination.as_float()
+        
+        def function__naive(time: time_format)->float:
+            return get_sun_pos_in_equatorial_coordinates__adjustable_ecliptic_lon(time).declination.as_float()
+
+        fall_equinox__wiki = find_zero_crossing_time(function__wiki,test_time=time_format(date=180),time_span=time_format(date=90))
+        spring_equinox__wiki = find_zero_crossing_time(function__wiki,test_time=time_format(date=2*180),time_span=time_format(date=90))
+        next_fall_equinox__wiki = find_zero_crossing_time(function__wiki,test_time=time_format(date=3*180),time_span=time_format(date=90))
+        fall_equinox__naive = find_zero_crossing_time(function__naive,test_time=time_format(date=180),time_span=time_format(date=90))
+        spring_equinox__naive = find_zero_crossing_time(function__naive,test_time=time_format(date=2*180),time_span=time_format(date=90))
+        next_fall_equinox__naive = find_zero_crossing_time(function__naive,test_time=time_format(date=3*180),time_span=time_format(date=90))
+
+
+        naive_decli=[]
+        wiki_decli=[]
+        x = range(365*2)
+        for d in range(365*2):
+            naive_decli.append(function__naive(time_format(date=d)))
+            wiki_decli.append(function__wiki(time_format(date=d)))
+
+        plt.figure(figsize=[10,7])
+        plt.plot(x,naive_decli,label="evenly passing year",color = "C0")
+        plt.plot(x,wiki_decli,label="actually passing year", color = "C1")
+        plt.grid()
+
+        fall_equinox__wiki_day = fall_equinox__wiki.get_sec_from_date()/86400
+        spring_equinox__wiki_day = spring_equinox__wiki.get_sec_from_date()/86400
+        next_fall_equinox__wiki_day = next_fall_equinox__wiki.get_sec_from_date()/86400
+
+        fall_equinox__naive_day = fall_equinox__naive.get_sec_from_date()/86400
+        spring_equinox__naive_day = spring_equinox__naive.get_sec_from_date()/86400
+        next_fall_equinox__naive_day = next_fall_equinox__naive.get_sec_from_date()/86400
+
+        plt.axvline(fall_equinox__wiki_day,color="C1", linestyle="--")
+        plt.axvline(spring_equinox__wiki_day,color="C1", linestyle=":")
+        plt.axvline(next_fall_equinox__wiki_day,color="C1", linestyle="--")
+
+        plt.axvline(fall_equinox__naive_day,color="C0", linestyle = "--")
+        plt.axvline(spring_equinox__naive_day,color="C0", linestyle = ":")
+        plt.axvline(next_fall_equinox__naive_day,color="C0", linestyle = "--")
+
+        plt.xlabel("date [day]")
+        plt.ylabel("Sun ecliptic declination [deg]")
+
+        plt.xlim([100,650])
+        plt.ylim([-40,40])
+
+        def distance_arrows(beg_pos,end_pos,text,text_pos,color):
+            plt.text(
+                text_pos[0],
+                text_pos[1],
+                text,
+                va="center",
+                ha = "center",
+                color = color
+            )
+
+            # draw the arrow itself
+            plt.annotate(
+                "",
+                xy=(beg_pos[0], beg_pos[1]),
+                xytext=(end_pos[0], end_pos[1]),
+                arrowprops=dict(
+                    arrowstyle="<->",
+                    color=color
+                )
+            )
+
+        def distance_arrows2(beg_pos,end_pos,text,text_pos_vertical,color):
+            distance_arrows(beg_pos,
+                            end_pos,
+                            text,
+                            text_pos=[(beg_pos[0]+end_pos[0])/2,text_pos_vertical], 
+                            color=color
+                            )
+            
+        distance_arrows2(beg_pos=[fall_equinox__wiki_day,28],
+                        end_pos=[spring_equinox__wiki_day,28],
+                        text=f"Winter:\n{spring_equinox__wiki_day-fall_equinox__wiki_day:.2f} days",
+                        text_pos_vertical=31,
+                        color="C1")
+
+        distance_arrows2(beg_pos=[spring_equinox__wiki_day,28],
+                        end_pos=[next_fall_equinox__wiki_day,28],
+                        text=f"Summer:\n{next_fall_equinox__wiki_day-spring_equinox__wiki_day:.2f} days",
+                        text_pos_vertical=31,
+                        color="C1")
+        
+        distance_arrows2(beg_pos=[fall_equinox__wiki_day,35],
+                        end_pos=[next_fall_equinox__wiki_day,35],
+                        text=f"Year:\n{next_fall_equinox__wiki_day-fall_equinox__wiki_day:.2f} days",
+                        text_pos_vertical=38,
+                        color="C1")
+        
+
+
+        distance_arrows2(beg_pos=[fall_equinox__naive_day,-28],
+                        end_pos=[spring_equinox__naive_day,-28],
+                        text=f"Winter:\n{spring_equinox__naive_day-fall_equinox__naive_day:.2f} days",
+                        text_pos_vertical=-31,
+                        color="C0")
+
+        distance_arrows2(beg_pos=[spring_equinox__naive_day,-28],
+                        end_pos=[next_fall_equinox__naive_day,-28],
+                        text=f"Summer:\n{next_fall_equinox__naive_day-spring_equinox__naive_day:.2f} days",
+                        text_pos_vertical=-31,
+                        color="C0")
+        
+        
+        distance_arrows2(beg_pos=[fall_equinox__naive_day,-35],
+                        end_pos=[next_fall_equinox__naive_day,-35],
+                        text=f"Year:\n{next_fall_equinox__naive_day-fall_equinox__naive_day:.2f} days",
+                        text_pos_vertical=-38,
+                        color="C0")
+        
+        plt.legend()
+        plt.savefig("winter_summer_compare.png")
+        plt.show()
