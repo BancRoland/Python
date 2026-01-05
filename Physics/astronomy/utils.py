@@ -305,6 +305,38 @@ class descates_vector():
         return (f"{self.x}, {self.y}, {self.z}")
 
 
+@dataclass
+class observatory:
+    geo_pos: geological_pos = field(default_factory = geological_pos)
+    UTC_plus: time_format = field(default_factory = time_format)
+
+
+
+fehervar_pos = geological_pos()
+fehervar_pos.latitude = AngleDegree(degree=47,minute=11,second=28)
+fehervar_pos.longitude = AngleDegree(degree=18,minute=24,second=39)
+fehervar_obs = observatory(geo_pos=fehervar_pos, UTC_plus=time_format(hour=1)) 
+
+greenwich_pos = geological_pos()
+greenwich_pos.latitude = AngleDegree(degree=51,minute=28,second=48)
+greenwich_pos.longitude = AngleDegree(degree=0,minute=0,second=0)
+greenwich_obs = observatory(geo_pos=greenwich_pos,UTC_plus=time_format())
+
+budapest_pos = geological_pos()
+budapest_pos.latitude = AngleDegree(degree=47,minute=29,second=54)
+budapest_pos.longitude = AngleDegree(degree=19,minute=2,second=27)
+budapest_obs = observatory(geo_pos=budapest_pos, UTC_plus=time_format(hour=1))
+
+polar_pos = geological_pos()
+polar_pos.latitude = AngleDegree(degree=90,minute=0,second=0)
+polar_pos.longitude = AngleDegree(degree=0,minute=0,second=0)
+polar_obs = observatory(geo_pos=polar_pos, UTC_plus=time_format())
+
+madrid_pos = geological_pos()
+madrid_pos.latitude = AngleDegree(degree=40,minute=30,second=0)
+madrid_pos.longitude = AngleDegree(positive_sign=False,degree=3,minute=40,second=0)
+madrid_obs = observatory(geo_pos=madrid_pos, UTC_plus=time_format(hour=1))
+
 
 
 def find_zero_crossing_time( function,
@@ -608,7 +640,10 @@ def get_horizontal_from_vector(V:descates_vector):
     out.azimuth = AngleDegree(degree=((np.arctan2(-V.y,V.x)/np.pi*180)+360)%360)
     return out
 
-def equat_2_horiz(equatorial_coordinates: equatorial_coord, time: time_format, utc_plus:time_format, geo_pos: geological_pos)->horizontal_coord:
+def equat_2_horiz(equatorial_coordinates: equatorial_coord, 
+                  time: time_format, 
+                  observ: observatory
+                  )->horizontal_coord:
     rotational_axis     = descates_vector(0,0,1)
     solar_day           = time_format(0,hour = 24)
     siderical_year      = time_format(date=365,hour=6,min=9,sec=10)
@@ -619,9 +654,9 @@ def equat_2_horiz(equatorial_coordinates: equatorial_coord, time: time_format, u
     siderical_day:time_format = time_format.get_date_from_sec(replus(solar_day.get_sec_from_date(),siderical_year.get_sec_from_date()))
 
     rotations_by_date = time.get_sec_from_date()/siderical_day.get_sec_from_date()
-    longitude_deg = geo_pos.longitude.as_float()
+    longitude_deg = observ.geo_pos.longitude.as_float()
 
-    utc_plus_sec = utc_plus.get_sec_from_date()
+    utc_plus_sec = observ.UTC_plus.get_sec_from_date()
     utc_plus_sec_deg = utc_plus_sec/siderical_day.get_sec_from_date()*360.0
 
     rotations_deg = rotations_by_date*360 - longitude_deg + utc_plus_sec_deg
@@ -631,7 +666,7 @@ def equat_2_horiz(equatorial_coordinates: equatorial_coord, time: time_format, u
     W = rotate_vector(V,rotational_axis,-rotations_deg)
 
     latitude_axis = descates_vector(0,1,0)
-    latitude_deg = geo_pos.latitude.as_float()
+    latitude_deg = observ.geo_pos.latitude.as_float()
 
     WW = rotate_vector(W,latitude_axis,90-latitude_deg)
 
@@ -640,13 +675,12 @@ def equat_2_horiz(equatorial_coordinates: equatorial_coord, time: time_format, u
     return out
 
 def find_sun_set_time(date: time_format, 
-                      utc_plus: time_format, 
-                      pos: geological_pos, 
+                      observ: observatory,
                       time_resolution: float=60, 
                       sunset: bool = True)->time_format:
     time_step = time_format(0,12,0,0)
     test_time = date + time_step
-    if not is_the_sun_up(test_time,utc_plus,pos):
+    if not is_the_sun_up(test_time,observ):
         raise Exception(f"sun is not over the horizont at {test_time}")
     
     if sunset:
@@ -654,10 +688,10 @@ def find_sun_set_time(date: time_format,
     else:
         set_or_rise_multiplier = -1
 
-        
+    time_step: time_format
     while time_step.get_sec_from_date() >= time_resolution:
 
-        if (is_the_sun_up(test_time,utc_plus,pos)):
+        if (is_the_sun_up(test_time,observ)):
             horizont_multiplier = 1
         else:
             horizont_multiplier = -1
@@ -671,20 +705,19 @@ def find_sun_set_time(date: time_format,
 
 
 def find_sun_noon_time(date: time_format, 
-                       utc_plus:time_format, 
-                       pos: geological_pos, 
+                       observ: observatory,
                        time_resolution: float=60,
                        sun_ecliptic_longitude_time_diff_for_eot:time_format=time_format()
                        )->time_format:
     time_step:time_format = time_format(0,12,0,0)
     test_time = date + time_step
-    if not is_the_sun_up(test_time,utc_plus,pos, sun_ecliptic_longitude_time_diff_for_eot):
-        raise Exception(f"sun is not over the horizont at {test_time}, utc plu: {utc_plus}, sun cliptical lon diff: {sun_ecliptic_longitude_time_diff_for_eot}")
+    if not is_the_sun_up(test_time, observ, sun_ecliptic_longitude_time_diff_for_eot):
+        raise Exception(f"sun is not over the horizont at {test_time}, utc plu: {observ.UTC_plus}, sun cliptical lon diff: {sun_ecliptic_longitude_time_diff_for_eot}")
     
         
     while time_step.get_sec_from_date() >= time_resolution:
 
-        if (is_the_sun_east(test_time,utc_plus,pos,sun_ecliptic_longitude_time_diff_for_eot)):
+        if (is_the_sun_east(test_time,observ,sun_ecliptic_longitude_time_diff_for_eot)):
             horizont_multiplier = 1
         else:
             horizont_multiplier = -1
@@ -696,13 +729,6 @@ def find_sun_noon_time(date: time_format,
 
     return(test_time)
 
-# def equat_2_horiz(V: equatorial_coord, geological_pos: geological_pos, time: time_format):
-#     equat_2_horiz_on_north_pole(V,time)
-
-# def get_sun_pos_in_horizontal_coordinates(time_sec: float, geological_pos: geological_pos)->horizontal_coord:
-#     V = get_sun_pos_in_equatorial_coordinates(time_sec)
-#     out = equat_2_horiz(V, geological_pos)
-#     return out
 
 
 
@@ -719,10 +745,10 @@ def calculate_ecliptic_longitude_from_eot_table(day_step=10, time_accuracy: time
         time_step:time_format = time_format(date=2)
         test_time_diff = time_format()
 
+
         while time_step.get_sec_from_date() >= time_accuracy.get_sec_from_date():
-            sun_culmination_time_in_sec = find_sun_noon_time(date,
-                                                            utc_plus = utc_plus, 
-                                                            pos = greenwich_pos,
+            sun_culmination_time_in_sec = find_sun_noon_time(date=date,
+                                                            observ=greenwich_obs,
                                                             time_resolution = 1,
                                                             sun_ecliptic_longitude_time_diff_for_eot = test_time_diff).get_day_from_time().get_sec_from_date()
             noon_time_in_sec = time_format(date=0,hour=12).get_sec_from_date()
@@ -770,48 +796,43 @@ def calculate_ecliptic_longitude_from_eot_table(day_step=10, time_accuracy: time
     return out
 
 
-def get_sun_pos_in_horizontal_coordinates__adjustable_ecliptic_lon(time: time_format, 
-                                            utc_plus: float, 
-                                            geo_pos: geological_pos,
-                                            sun_ecliptic_longitude_time_diff_for_eot:time_format=time_format()
-                                            )->horizontal_coord:
+def get_sun_pos_in_horizontal_coordinates__adjustable_ecliptic_lon( time: time_format, 
+                                                                    observ: observatory,
+                                                                    sun_ecliptic_longitude_time_diff_for_eot: time_format=time_format()
+                                                                    )->horizontal_coord:
     A = get_sun_pos_in_equatorial_coordinates__adjustable_ecliptic_lon(time, sun_ecliptic_longitude_time_diff_for_eot)
-    B = equat_2_horiz(A,time,utc_plus, geo_pos=geo_pos)
+    B = equat_2_horiz(A,time,observ)
     return B
 
-def get_sun_pos_in_horizontal_coordinates__interpolated_eot_table(time: time_format, 
-                                            utc_plus: float, 
-                                            geo_pos: geological_pos
-                                            )->horizontal_coord:
+def get_sun_pos_in_horizontal_coordinates__interpolated_eot_table(  time: time_format, 
+                                                                    observ: observatory,
+                                                                    )->horizontal_coord:
     A = get_sun_pos_in_equatorial_coordinates__interpolated_eot_table(time)
-    B = equat_2_horiz(A,time,utc_plus, geo_pos=geo_pos)
+    B = equat_2_horiz(A,time,observ)
     return B
 
-def get_sun_pos_in_horizontal_coordinates__wiki(time: time_format, 
-                                            utc_plus: float, 
-                                            geo_pos: geological_pos
-                                            )->horizontal_coord:
+def get_sun_pos_in_horizontal_coordinates__wiki(    time: time_format, 
+                                                    observ: observatory,
+                                                    )->horizontal_coord:
     A = get_sun_pos_in_equatorial_coordinates__wiki(time)
-    B = equat_2_horiz(A,time,utc_plus, geo_pos=geo_pos)
+    B = equat_2_horiz(A,time,observ)
     return B
 
 def is_the_sun_up(time: time_format, 
-                    utc_plus: float, 
-                    geo_pos: geological_pos,
+                    observ: observatory,
                     sun_ecliptic_longitude_time_diff_for_eot:time_format=time_format()
                     ) -> bool:
-    horiontal_pos = get_sun_pos_in_horizontal_coordinates__adjustable_ecliptic_lon(time, utc_plus, geo_pos, sun_ecliptic_longitude_time_diff_for_eot)
+    horiontal_pos = get_sun_pos_in_horizontal_coordinates__adjustable_ecliptic_lon(time, observ, sun_ecliptic_longitude_time_diff_for_eot)
     if horiontal_pos.elevation.as_float() >=0:
         return True
     else:
         return False
 
 def is_the_sun_east(time: time_format, 
-                    utc_plus: float, 
-                    geo_pos: geological_pos,
+                    observ: observatory,
                     sun_ecliptic_longitude_time_diff_for_eot:time_format=time_format()
                     ) -> bool:
-    horiontal_pos = get_sun_pos_in_horizontal_coordinates__adjustable_ecliptic_lon(time, utc_plus, geo_pos, sun_ecliptic_longitude_time_diff_for_eot)
+    horiontal_pos = get_sun_pos_in_horizontal_coordinates__adjustable_ecliptic_lon(time, observ, sun_ecliptic_longitude_time_diff_for_eot)
     if horiontal_pos.azimuth.as_float() <=180:
         return True
     else:

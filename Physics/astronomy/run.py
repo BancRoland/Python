@@ -11,26 +11,13 @@ import csv_read
 from utils import *
 
 
+
+
 if __name__:
 
-    fehervar_pos = geological_pos()
-    fehervar_pos.latitude = AngleDegree(degree=47,minute=11,second=28)
-    fehervar_pos.longitude = AngleDegree(degree=18,minute=24,second=39)
 
-    greenwich_pos = geological_pos()
-    greenwich_pos.latitude = AngleDegree(degree=51,minute=28,second=48)
-    greenwich_pos.longitude = AngleDegree(degree=0,minute=0,second=0)
+    observ = budapest_obs
 
-    budapest_pos = geological_pos()
-    budapest_pos.latitude = AngleDegree(degree=47,minute=29,second=54)
-    budapest_pos.longitude = AngleDegree(degree=19,minute=2,second=27)
-
-    polar_pos = geological_pos()
-    polar_pos.latitude = AngleDegree(degree=90,minute=0,second=0)
-    polar_pos.longitude = AngleDegree(degree=0,minute=0,second=0)
-
-    utc_plus = time_format(hour=0)
-    pos = budapest_pos
 
     if 0:
         recta_list = []
@@ -59,7 +46,7 @@ if __name__:
                     # print(f"\n\nhour = {h}")
                     A = get_sun_pos_in_equatorial_coordinates__adjustable_ecliptic_lon(time)
                     # A.print()
-                    B = equat_2_horiz(A,time, utc_plus, geo_pos=pos)
+                    B = equat_2_horiz(A,time, observ)
                     # B.print()
                     # plt.scatter(A.rectascense_deg, A.declination_deg)
                     azim_list.append((B.azimuth.as_float()+360)%360)
@@ -93,8 +80,6 @@ if __name__:
         spring_equinox__naive = find_zero_crossing_time(function_equatorial__naive,test_time=time_format(date=180),time_span=time_format(date=90))
 
 
-        geo_pos = budapest_pos
-        utc_plus = time_format(hour=1)
 
         plt.figure(figsize=[10,7])
         rise_time_list=[]
@@ -106,10 +91,10 @@ if __name__:
 
 
         def function_horizontal__wiki(time: time_format) -> float:
-            return get_sun_pos_in_horizontal_coordinates__wiki(time, utc_plus, geo_pos).elevation.as_float()
+            return get_sun_pos_in_horizontal_coordinates__wiki(time, observ).elevation.as_float()
 
         def function_equatorial__naive(time: time_format)->float:
-            return get_sun_pos_in_horizontal_coordinates__adjustable_ecliptic_lon(time, utc_plus, geo_pos).elevation.as_float()
+            return get_sun_pos_in_horizontal_coordinates__adjustable_ecliptic_lon(time, observ).elevation.as_float()
 
         function = function_horizontal__wiki
         title = f"Rise and set times of the Sun from Budapest"
