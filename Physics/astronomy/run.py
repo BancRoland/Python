@@ -16,7 +16,52 @@ from utils import *
 if __name__:
 
 
+    observ = madrid_obs
     observ = budapest_obs
+    observ = madrid_obs
+    observ = oslo_obs
+    observ = quito_obs
+    observ_list = [madrid_obs,
+                   budapest_obs,
+                   madrid_obs,
+                   oslo_obs,
+                   quito_obs]
+    
+    time_list = [time_format(date=0),
+                 time_format(date=90),
+                 time_format(date=180),
+                 time_format(date=270)]
+
+    get_simple_azimuth_elevation = False
+    if get_simple_azimuth_elevation:
+        for obs in observ_list:
+            for date in time_list:
+
+                azim_list=[]
+                elev_list=[]
+                time_x = np.arange(0,86400,60)
+                for s in time_x:
+                    time = date + time_format.get_date_from_sec(s)
+                    azel = get_sun_pos_in_horizontal_coordinates__wiki(time,obs)
+                    azim_list.append(azel.azimuth.as_float())
+                    elev_list.append(azel.elevation.as_float())
+                plt.xticks(range(0,25,1))
+                plt.yticks(range(-90,360,30))
+
+                plt.plot(time_x/3600,azim_list,label="azimuth")
+                plt.plot(time_x/3600,elev_list,label="elevation")
+                plt.legend()
+                plt.grid()
+                plt.axvline(12,linestyle = "--",alpha=0.5, color = "black")
+                plt.axhline(0,linestyle = "--",alpha=0.5, color = "black")
+                plt.title(f"Sun azimuth and elevation from {obs.name} at {date}")
+                plt.xlabel("time [hour]")
+                plt.ylabel("angle [degree]")
+                plt.ylim([-90,360])
+                plt.savefig(f"sun_pos_day_{obs.name}_at_{date}.png")
+                plt.close()
+                # plt.show()
+
 
 
     if 0:
@@ -64,6 +109,28 @@ if __name__:
         plt.show()
 
 
+    observ = budapest_obs
+
+    def function_horizontal__wiki(time: time_format) -> float:
+        return get_sun_pos_in_horizontal_coordinates__wiki(time, observ).elevation.as_float()
+    
+    def function_horizontal__naive(time: time_format) -> float:
+        return get_sun_pos_in_horizontal_coordinates__adjustable_ecliptic_lon(time, observ).elevation.as_float()
+    
+    def function_equatorial__wiki(time: time_format)->float:
+        return get_sun_pos_in_equatorial_coordinates__wiki(time).declination.as_float()
+
+    def function_equatorial__naive(time: time_format)->float:
+        return get_sun_pos_in_equatorial_coordinates__adjustable_ecliptic_lon(time).declination.as_float()
+
+
+
+    # test_time_sunrise = time_format(date=-80, hour=6).get_day_from_time()
+    # time_span = time_format(hour=6)
+    # time_resolution = time_format(min=1)
+    # function = function_horizontal__wiki
+
+    # sunrise_time_hour = find_zero_crossing_time(function, test_time_sunrise, time_span, time_resolution).get_day_from_time()
 
 
           
@@ -73,11 +140,24 @@ if __name__:
     rise_and_set_times = True
     if rise_and_set_times:
 
-        fall_equinox__wiki = find_zero_crossing_time(function_equatorial__wiki,test_time=time_format(date=0),time_span=time_format(date=90))
-        print(fall_equinox__wiki.get_sec_from_date()/86400)
+        fall_equinox__wiki = find_zero_crossing_time(function_equatorial__wiki,test_time=time_format(date=2*180),time_span=time_format(date=90))
         spring_equinox__wiki = find_zero_crossing_time(function_equatorial__wiki,test_time=time_format(date=180),time_span=time_format(date=90))
-        fall_equinox__naive = find_zero_crossing_time(function_equatorial__naive,test_time=time_format(date=0),time_span=time_format(date=90))
+        prev_spring_equinox__wiki = find_zero_crossing_time(function_equatorial__wiki,test_time=time_format(date=0),time_span=time_format(date=90))
+        
+        fall_equinox__naive = find_zero_crossing_time(function_equatorial__naive,test_time=time_format(date=2*180),time_span=time_format(date=90))
         spring_equinox__naive = find_zero_crossing_time(function_equatorial__naive,test_time=time_format(date=180),time_span=time_format(date=90))
+        prev_spring_equinox__naive = find_zero_crossing_time(function_equatorial__naive,test_time=time_format(date=0*180),time_span=time_format(date=90))
+
+
+        print("summer_solstice__wiki")
+        summer_solstice__wiki = find_extreme_value_time(function_equatorial__wiki,test_time=time_format(date=90),time_span=time_format(date=45),type="max")
+        print("winter_solstice__wiki")
+        winter_solstice__wiki = find_extreme_value_time(function_equatorial__wiki,test_time=time_format(date=270),time_span=time_format(date=45),type="min")
+
+        print("summer_solstice__naive")
+        summer_solstice__naive = find_extreme_value_time(function_equatorial__naive, test_time=time_format(date=90),time_span=time_format(date=45),type="max")
+        print("winter_solstice__naive")
+        winter_solstice__naive = find_extreme_value_time(function_equatorial__naive, test_time=time_format(date=270),time_span=time_format(date=45),type="min")
 
 
 
@@ -87,19 +167,25 @@ if __name__:
 
         
 
-        x_axis = range(0,365,1)
+        x_axis = range(-50,365+50,5)
 
 
-        def function_horizontal__wiki(time: time_format) -> float:
-            return get_sun_pos_in_horizontal_coordinates__wiki(time, observ).elevation.as_float()
 
-        def function_equatorial__naive(time: time_format)->float:
-            return get_sun_pos_in_horizontal_coordinates__adjustable_ecliptic_lon(time, observ).elevation.as_float()
+        # class experiment_setup:
+        #     function = None
+        #     title: str = "None"
+        #     spring_equinox:time_format = field(default_factory = time_format)
+        #     fall_equinox: time_format = field(default_factory = time_format)
+        #     next_spring_equinox: time_format = field(default_factory= time_format)
+        #     filename: str = "None"
+
+        # experiment_setup()
 
         function = function_horizontal__wiki
         title = f"Rise and set times of the Sun from Budapest"
         spring_equinox = spring_equinox__wiki
         fall_equinox = fall_equinox__wiki
+        next_spring_equinox = prev_spring_equinox__wiki
         filename = f"sun_set_rise_real.png"
 
         # function = function_equatorial__naive
@@ -111,7 +197,7 @@ if __name__:
         for d in x_axis:
             test_time_sunrise = time_format(date=d, hour=6)
             test_time_sunset = time_format(date=d, hour=18)
-            time_span = time_format(hour=6)
+            time_span = time_format(hour=10)
             time_resolution = time_format(sec=1)
 
                 
@@ -134,37 +220,64 @@ if __name__:
             min_date = x_axis[min_idx]
             return min_date
 
-        max_rise = find_max(rise_time_list)
-        min_rise = find_min(rise_time_list)
+        max_rise = find_max(rise_time_list[0:365])
+        min_rise = find_min(rise_time_list[0:365])
 
-        max_fall = find_max(fall_time_list)
-        min_fall = find_min(fall_time_list)
+        max_fall = find_max(fall_time_list[0:365])
+        min_fall = find_min(fall_time_list[0:365])
 
-        plt.plot(x_axis,np.array(rise_time_list)/3600,"-")
-        plt.plot(x_axis,np.array(fall_time_list)/3600,"-")
+        plt.plot(x_axis,np.array(rise_time_list)/3600,"-",label="sunrise time")
+        plt.plot(x_axis,np.array(fall_time_list)/3600,"-", label="sunset time")
+        plt.plot(x_axis,np.array(fall_time_list)/3600-np.array(rise_time_list)/3600,":",color="C2", label = "length of the daylight")
+
 
         plt.axvline(max_rise,color="C0",linestyle="--",label="latest rise")
         plt.axvline(min_rise,color="C0",linestyle=":",label="earliest rise")
         plt.axvline(max_fall,color="C1",linestyle="--",label="latest set")
         plt.axvline(min_fall,color="C1",linestyle=":",label="earliest set")
 
-        distance_arrows2([min_rise,12],[max_fall,12],f"distance\n{abs(min_rise-max_fall)} day",14,"black")
-        distance_arrows2([max_rise,12],[min_fall,12],f"distance\n{abs(max_rise-min_fall)} day",14,"black")
+
+
+        distance_arrows2([max_rise,12],[min_fall,12],f"",14,"black")
+
+        plt.text(max_fall+10, 12.5, f"distance:\n{abs(min_rise-max_fall)} day", ha="left", va="bottom")
+        plt.text(max_rise+10, 12.5, f"distance:\n{abs(max_rise-min_fall)} day", ha="left", va="bottom")
+
         
 
         # plt.title(f"Rise and set times of the Sun from Budapest\nearliest rise date= {min_rise}\nlatest set date= {max_fall}\nlatest rise date = {max_rise}\nearliest set date {min_fall}")
         plt.title(title)
         plt.grid()
-        plt.legend()
+        plt.legend(loc='lower left')
         plt.xlabel("Time passed since spring equinox [day]")
         plt.ylabel("time of day [hour]")
         # plt.tight_layout()
         plt.yticks(range(0,24,1))
-        plt.ylim([2,22])
-        plt.xlim([0,365])
-        plt.axhline(12, color="gray", linestyle="--")
-        plt.axvline(fall_equinox__wiki.get_sec_from_date()/86400, color="gray", linestyle="--")
-        plt.axvline(spring_equinox__wiki.get_sec_from_date()/86400, color="gray", linestyle="--")
+        plt.ylim([0,24])
+        plt.xlim([min(x_axis),max(x_axis)])
+        alpha = 0.2
+        plt.axhline(12, color="black", linestyle="--",alpha=alpha)
+        plt.axvline(fall_equinox__wiki.get_sec_from_date()/86400, color="black", linestyle="--",alpha=alpha)
+        plt.axvline(spring_equinox__wiki.get_sec_from_date()/86400, color="black", linestyle="--",alpha=alpha)
+        plt.axvline(prev_spring_equinox__wiki.get_sec_from_date()/86400, color="black", linestyle="--",alpha=alpha)
+        plt.axvline(summer_solstice__wiki.get_sec_from_date()/86400, color="black", linestyle="--",alpha=alpha)
+        plt.axvline(winter_solstice__wiki.get_sec_from_date()/86400, color="black", linestyle="--",alpha=alpha)
+        plt.axvline(summer_solstice__naive.get_sec_from_date()/86400, color="black", linestyle=":",alpha=alpha)
+        plt.axvline(winter_solstice__naive.get_sec_from_date()/86400, color="black", linestyle=":",alpha=alpha)
+
+        plt.axvline(fall_equinox__naive.get_sec_from_date()/86400, color="gray", linestyle=":")
+        plt.axvline(spring_equinox__naive.get_sec_from_date()/86400, color="gray", linestyle=":")
+        plt.axvline(prev_spring_equinox__naive.get_sec_from_date()/86400, color="gray", linestyle=":")
+
+        plt.xticks([0,365.25])
+
+
+        distance_arrows2([min_rise,12],[max_fall,12],f"",14,"black")
+        plt.scatter(min_rise,12, marker ="+", color="black",zorder = 10)
+        plt.scatter(max_fall,12, marker ="+", color="black",zorder = 10)
+        
+        
+        
 
 
         plt.savefig(filename)

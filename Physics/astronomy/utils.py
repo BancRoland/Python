@@ -70,11 +70,13 @@ class coordinates:
 
     @azimuth_like.setter
     def azimuth_like(self, value: AngleDegree):
-        azimuth_deg = value.as_float()
-        if azimuth_deg >= 0.0 and azimuth_deg <= 360.0:
-            self._azimuth_like = value
-        else:
-            raise ValueError("invalid azimuth")
+        self._azimuth_like = value
+
+        # azimuth_deg = value.as_float()
+        # if azimuth_deg >= 0.0 and azimuth_deg <= 360.0:
+        #     self._azimuth_like = value
+        # else:
+        #     raise ValueError("invalid azimuth")
         
     @property
     def elevation_like(self)->AngleDegree:
@@ -96,6 +98,7 @@ class coordinates:
 
 @dataclass
 class time_format:
+    positive: bool = True
     date: int = 0
     hour: int = 0
     min: int = 0
@@ -103,7 +106,12 @@ class time_format:
 
 
     def get_sec_from_date(self):
-        out = self.date*86400 + self.hour*3600 + self.min*60 + self.sec
+        if self.positive:
+            mul = 1
+        else:
+            mul = -1
+
+        out = mul*(self.date*86400) + self.hour*3600 + self.min*60 + self.sec
         return out
     
     def process_of_year(self):
@@ -112,8 +120,18 @@ class time_format:
     def get_date_from_sec(sec:float):
         out = time_format()
 
-        out.date = int(sec/60/60/24)
-        remain_sec = sec-out.date*60*60*24
+        if sec >= 0:
+            out.positive = True
+            out.date = int(sec/60/60/24)
+            remain_sec = sec-out.date*60*60*24
+
+
+        else:
+            sec=-sec
+            out.positive = False
+            out.date = int(sec/60/60/24)+1
+            remain_sec = out.date*60*60*24-sec
+        
 
         out.hour = int(remain_sec/60/60)
         remain_sec = remain_sec - out.hour*60*60
@@ -129,7 +147,7 @@ class time_format:
         return time_format(date=0, hour=self.hour, min=self.min, sec=self.sec)
     
     def __str__(self):
-        return(f"{self.date:3} d {self.hour:2} h {self.min:2} min {self.sec:2.3f} sec")
+        return(f"{np.sign(self.get_sec_from_date())}{self.date:3} d {self.hour:2} h {self.min:2} min {self.sec:2.3f} sec")
     
     def __add__(self, other: "time_format")->"time_format":
         return_time = time_format.get_date_from_sec(self.get_sec_from_date() + other.get_sec_from_date())
@@ -307,6 +325,7 @@ class descates_vector():
 
 @dataclass
 class observatory:
+    name: str = "no name"
     geo_pos: geological_pos = field(default_factory = geological_pos)
     UTC_plus: time_format = field(default_factory = time_format)
 
@@ -316,26 +335,55 @@ fehervar_pos = geological_pos()
 fehervar_pos.latitude = AngleDegree(degree=47,minute=11,second=28)
 fehervar_pos.longitude = AngleDegree(degree=18,minute=24,second=39)
 fehervar_obs = observatory(geo_pos=fehervar_pos, UTC_plus=time_format(hour=1)) 
+fehervar_obs.name = "Székesfehérvár"
 
 greenwich_pos = geological_pos()
 greenwich_pos.latitude = AngleDegree(degree=51,minute=28,second=48)
 greenwich_pos.longitude = AngleDegree(degree=0,minute=0,second=0)
 greenwich_obs = observatory(geo_pos=greenwich_pos,UTC_plus=time_format())
+greenwich_obs.name = "Greenwich"
 
 budapest_pos = geological_pos()
 budapest_pos.latitude = AngleDegree(degree=47,minute=29,second=54)
 budapest_pos.longitude = AngleDegree(degree=19,minute=2,second=27)
 budapest_obs = observatory(geo_pos=budapest_pos, UTC_plus=time_format(hour=1))
+budapest_obs.name = "Budapest"
 
 polar_pos = geological_pos()
 polar_pos.latitude = AngleDegree(degree=90,minute=0,second=0)
 polar_pos.longitude = AngleDegree(degree=0,minute=0,second=0)
 polar_obs = observatory(geo_pos=polar_pos, UTC_plus=time_format())
+polar_obs.name = "North Pole"
 
 madrid_pos = geological_pos()
 madrid_pos.latitude = AngleDegree(degree=40,minute=30,second=0)
 madrid_pos.longitude = AngleDegree(positive_sign=False,degree=3,minute=40,second=0)
 madrid_obs = observatory(geo_pos=madrid_pos, UTC_plus=time_format(hour=1))
+madrid_obs.name = "Madrid"
+
+moscow_pos = geological_pos()
+moscow_pos.latitude = AngleDegree(degree=55,minute=45,second=0)
+moscow_pos.longitude = AngleDegree(positive_sign=True,degree=37,minute=37,second=0)
+moscow_obs = observatory(geo_pos=moscow_pos, UTC_plus=time_format(hour=3))
+moscow_obs = "Moscow"
+
+mexico_pos = geological_pos()
+mexico_pos.latitude = AngleDegree(degree=19,minute=15,second=0)
+mexico_pos.longitude = AngleDegree(positive_sign=False,degree=99,minute=8,second=0)
+mexico_obs = observatory(geo_pos=mexico_pos, UTC_plus=time_format(hour=-6))
+mexico_obs.name = "Mexico"
+
+quito_pos = geological_pos()
+quito_pos.latitude = AngleDegree(degree=0,minute=13,second=0)
+quito_pos.longitude = AngleDegree(positive_sign=False,degree=78,minute=31,second=0)
+quito_obs = observatory(geo_pos=quito_pos, UTC_plus=time_format(hour=-5))
+quito_obs.name = "Quito"
+
+oslo_pos = geological_pos()
+oslo_pos.latitude = AngleDegree(degree=59,minute=55,second=0)
+oslo_pos.longitude = AngleDegree(positive_sign=True,degree=10,minute=44,second=0)
+oslo_obs = observatory(geo_pos=oslo_pos, UTC_plus=time_format(hour=1))
+oslo_obs.name = 'Oslo'
 
 
 
@@ -349,8 +397,8 @@ def find_zero_crossing_time( function,
 
     left_end = function(test_time+time_step)
     right_end = function(test_time-time_step)
-    if np.sign(left_end) == np.sign(right_end):
-        raise ValueError("given range has no, or multiple zero crossing")
+    # if np.sign(left_end) == np.sign(right_end):
+    #     raise ValueError(f"given range has no, or multiple zero crossing\nleft end: {test_time+time_step}\t{left_end}\nrigt end: {test_time-time_step}\t{right_end}")
     if left_end == 0:
         return test_time + time_step
 
@@ -368,6 +416,52 @@ def find_zero_crossing_time( function,
         diff_val = function(test_time)
     
     return test_time
+
+def find_extreme_value_time( function,
+                            test_time: time_format, 
+                            time_span: time_format = time_format(date=90), 
+                            time_resolution: time_format = time_format(min=1),
+                            type: str = "max"
+                            ) -> time_format:
+    # diff_val: float = function(test_time)
+
+    if type == "max":
+        mul = 1
+    elif type == "min":
+        mul = -1
+    else:
+        raise
+    time_step: time_format = time_format.get_date_from_sec(time_span.get_sec_from_date()*0.5)
+
+    while time_step.get_sec_from_date() > time_resolution.get_sec_from_date():
+        # print(test_time)
+
+        test_time_left = test_time-time_step
+        test_time_right = test_time+time_step
+
+        left_val = function(test_time_left)
+        right_val = function(test_time_right)
+        # print(f"{test_time_left} = {left_val:.2f} \t {test_time_right} = {right_val:.2f}")
+
+        time_step = time_format.get_date_from_sec(time_step.get_sec_from_date()*0.5)
+
+        if left_val > right_val:
+            if type == "max":
+                test_time = test_time_left + time_step
+            elif type == "min":
+                test_time = test_time_right - time_step
+
+        else:
+            if type == "max":
+                test_time = test_time_right - time_step
+            elif type == "min":
+                test_time = test_time_left + time_step
+            
+        
+    return test_time
+
+
+
 
 
 def distance_arrows(beg_pos,end_pos,text,text_pos,color):
@@ -659,7 +753,7 @@ def equat_2_horiz(equatorial_coordinates: equatorial_coord,
     utc_plus_sec = observ.UTC_plus.get_sec_from_date()
     utc_plus_sec_deg = utc_plus_sec/siderical_day.get_sec_from_date()*360.0
 
-    rotations_deg = rotations_by_date*360 - longitude_deg + utc_plus_sec_deg
+    rotations_deg = rotations_by_date*360 + longitude_deg - utc_plus_sec_deg
 
     V = get_vector_form_equatorial(equatorial_coordinates)
 
@@ -837,3 +931,5 @@ def is_the_sun_east(time: time_format,
         return True
     else:
         return False
+    
+
