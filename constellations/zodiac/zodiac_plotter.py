@@ -234,7 +234,9 @@ if CYLINDRICAL:
     plt.axis('off')
     plt.margins(0)
     
-    plt.savefig("cylindrical.pdf", dpi=DPI)
+    # plt.savefig("cylindrical.pdf", dpi=DPI)
+    plt.savefig("cylindrical.pdf", dpi=DPI, bbox_inches='tight', pad_inches=0)
+
     # plt.show()
 
 print("cylindrical DONE")

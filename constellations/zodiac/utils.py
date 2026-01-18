@@ -604,6 +604,7 @@ def plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg,*,Break_l
     segmentation_flag = False
     lines_to_print_list=[]
     # alpha_list=[]
+    width_list=[]
     for idx,line in enumerate(lines):
         if idx%10 == 0:
             print(f"cylindrical lines:\t{idx/len(lines)*100:.2f}%")
@@ -614,8 +615,8 @@ def plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg,*,Break_l
         dec2 = line['Declination (deg)2']/180*np.pi
         linestyle = line['linestyle']
         color = line['color']
-        # width = line['width']
-        width = 0.5
+        width = line['width']
+        # width = 0.5
         alpha = line['alpha']
 
         v1 = get_transformed_vector(ra1,dec1,center_Dec_deg, center_ra_deg, zrot_deg)
@@ -635,10 +636,11 @@ def plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg,*,Break_l
             print("FLAG!!!")
 
         lines_to_print_list.append([[x1,x2],[y1,y2]])
+        width_list.append(width)
         # alpha_list.append(alpha)
 
 
-    for lines_to_print in lines_to_print_list:
+    for idx,lines_to_print in enumerate(lines_to_print_list):
 
         x1 = lines_to_print[0][0]       
         x2 = lines_to_print[0][1]
@@ -652,6 +654,13 @@ def plot_cylindrical_lines(lines,center_Dec_deg,center_ra_deg,zrot_deg,*,Break_l
                 x2=x2+2*np.pi
 
         teasing_lines = False
+
+        width=width_list[idx]
+        if width == "1":
+            width=0.6  
+        else:
+            width = 0.4
+
         if teasing_lines:
             # R=0.02
             R=0.0

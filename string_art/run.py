@@ -11,18 +11,29 @@ folder=f"result/res{timestamp}"
 os.makedirs(folder, exist_ok=True)
 
 NUMBER_OF_POINTS = 240
-RADIUS = 600
 NUMBER_OF_SAMPLING_POINTS=100
 
 # Open an image file
-image_path = 'zebra.png'
+# image_path = 'zebra.png'
+image_path = 'lena.png'
+
 img = Image.open(image_path)
 img_array = np.array(img)
 img_arraySum=np.sum(img_array, axis=2)
+
+height,width=np.shape(img_arraySum)
+if height<width:
+    critical=height
+else:
+    critical=width
+radius=np.floor(critical/2)
 img = utils.Image(img_arraySum)
 
+RADIUS = radius-1
 
-A = utils.point(1177,703)
+
+
+A = utils.point(radius,radius)
 
 # plt.figure()
 

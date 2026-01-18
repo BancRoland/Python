@@ -2,8 +2,9 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 import utils
+import math
 
-timestamp="2025_12_12__18_44_48"
+timestamp="2025_12_14__00_18_33"
 
 folder=f"result/res{timestamp}"
 out=np.load(f"./result/res{timestamp}/out.npy")
@@ -18,7 +19,9 @@ print(sorted_data)
 # print(sorted_data)
 
 
-image_path = 'zebra.png'
+# image_path = 'zebra.png'
+image_path = 'lena.png'
+
 img = Image.open(image_path)
 img_array = np.array(img)
 img_arraySum=np.sum(img_array, axis=2)
@@ -42,5 +45,10 @@ for idx,data in enumerate(sorted_data):
     sampling_string = utils.string(ring[int(data[1])],ring[int(data[2])])
     # img.plot()
     sampling_string.plot()
+    # print(f"{idx}\t{data}")
+    if math.isnan(data[0]):
+        print(data)
+    import time
+    # time.sleep(1)
     if not idx%100:
         plt.savefig(f"{folder}/fig_{idx}.png")

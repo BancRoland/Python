@@ -94,7 +94,7 @@ class string:
         step_vec = diff/len*d
 
         out=[]
-        for i in range(points_in_len):
+        for i in range(points_in_len+1):
             out.append(self.start+i*step_vec)
         return out
     
@@ -124,8 +124,8 @@ class Image:
         self.img = img
 
     def plot(self):
-        # plt.imshow(self.img,cmap="gray",alpha=0.0)
-        plt.gca().invert_yaxis()   # Flip the y-axis
+        plt.imshow(self.img,cmap="gray",alpha=0.0)
+        # plt.gca().invert_yaxis()   # Flip the y-axis
         plt.gca().set_aspect('equal', adjustable='box')
 
 
