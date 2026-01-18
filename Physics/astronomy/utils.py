@@ -417,6 +417,16 @@ def find_zero_crossing_time( function,
     
     return test_time
 
+def find_max(x_axis,time_list):
+    max_idx = time_list.index(max(time_list))
+    max_date = x_axis[max_idx]
+    return max_date
+
+def find_min(x_axis,time_list):
+    min_idx = time_list.index(min(time_list))
+    min_date = x_axis[min_idx]
+    return min_date
+
 def find_extreme_value_time( function,
                             test_time: time_format, 
                             time_span: time_format = time_format(date=90), 

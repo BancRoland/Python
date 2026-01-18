@@ -111,7 +111,7 @@ if __name__:
 
     observ = budapest_obs
 
-    def function_horizontal__wiki(time: time_format) -> float:
+    def function_horizontal_elevation__wiki(time: time_format) -> float:
         return get_sun_pos_in_horizontal_coordinates__wiki(time, observ).elevation.as_float()
     
     def function_horizontal__naive(time: time_format) -> float:
@@ -137,7 +137,7 @@ if __name__:
 
 
 
-    rise_and_set_times = True
+    rise_and_set_times = False
     if rise_and_set_times:
 
         fall_equinox__wiki = find_zero_crossing_time(function_equatorial__wiki,test_time=time_format(date=2*180),time_span=time_format(date=90))
@@ -161,13 +161,13 @@ if __name__:
 
 
 
-        plt.figure(figsize=[10,7])
+        plt.figure(figsize=[15,12])
         rise_time_list=[]
         fall_time_list=[]
 
         
 
-        x_axis = range(-50,365+50,5)
+        x_axis = range(-50,365+50,1)
 
 
 
@@ -181,7 +181,9 @@ if __name__:
 
         # experiment_setup()
 
-        function = function_horizontal__wiki
+        # function = function_horizontal__wiki
+        function = function_horizontal__naive
+
         title = f"Rise and set times of the Sun from Budapest"
         spring_equinox = spring_equinox__wiki
         fall_equinox = fall_equinox__wiki
@@ -210,38 +212,30 @@ if __name__:
 
 
 
-        def find_max(time_list):
-            max_idx = time_list.index(max(time_list))
-            max_date = x_axis[max_idx]
-            return max_date
-        
-        def find_min(time_list):
-            min_idx = time_list.index(min(time_list))
-            min_date = x_axis[min_idx]
-            return min_date
 
-        max_rise = find_max(rise_time_list[0:365])
-        min_rise = find_min(rise_time_list[0:365])
 
-        max_fall = find_max(fall_time_list[0:365])
-        min_fall = find_min(fall_time_list[0:365])
+        winter_rise_date = find_max(rise_time_list[0:365])
+        summer_rise_date = find_min(rise_time_list[0:365])
+
+        summer_set = find_max(fall_time_list[0:365])
+        winter_set_date = find_min(fall_time_list[0:365])
 
         plt.plot(x_axis,np.array(rise_time_list)/3600,"-",label="sunrise time")
         plt.plot(x_axis,np.array(fall_time_list)/3600,"-", label="sunset time")
         plt.plot(x_axis,np.array(fall_time_list)/3600-np.array(rise_time_list)/3600,":",color="C2", label = "length of the daylight")
 
 
-        plt.axvline(max_rise,color="C0",linestyle="--",label="latest rise")
-        plt.axvline(min_rise,color="C0",linestyle=":",label="earliest rise")
-        plt.axvline(max_fall,color="C1",linestyle="--",label="latest set")
-        plt.axvline(min_fall,color="C1",linestyle=":",label="earliest set")
+        plt.axvline(winter_rise_date,color="C0",linestyle="--",label="latest rise")
+        plt.axvline(summer_rise_date,color="C0",linestyle=":",label="earliest rise")
+        plt.axvline(summer_set,color="C1",linestyle="--",label="latest set")
+        plt.axvline(winter_set_date,color="C1",linestyle=":",label="earliest set")
 
 
 
-        distance_arrows2([max_rise,12],[min_fall,12],f"",14,"black")
+        distance_arrows2([winter_rise_date,12],[winter_set_date,12],f"",14,"black")
 
-        plt.text(max_fall+10, 12.5, f"distance:\n{abs(min_rise-max_fall)} day", ha="left", va="bottom")
-        plt.text(max_rise+10, 12.5, f"distance:\n{abs(max_rise-min_fall)} day", ha="left", va="bottom")
+        plt.text(summer_set+10, 12.5, f"distance:\n{abs(summer_rise_date-summer_set)} day", ha="left", va="bottom")
+        plt.text(winter_rise_date+10, 12.5, f"distance:\n{abs(winter_rise_date-winter_set_date)} day", ha="left", va="bottom")
 
         
 
@@ -272,9 +266,9 @@ if __name__:
         plt.xticks([0,365.25])
 
 
-        distance_arrows2([min_rise,12],[max_fall,12],f"",14,"black")
-        plt.scatter(min_rise,12, marker ="+", color="black",zorder = 10)
-        plt.scatter(max_fall,12, marker ="+", color="black",zorder = 10)
+        distance_arrows2([summer_rise_date,12],[summer_set,12],f"",14,"black")
+        plt.scatter(summer_rise_date,12, marker ="+", color="black",zorder = 10)
+        plt.scatter(summer_set,12, marker ="+", color="black",zorder = 10)
         
         
         
@@ -282,6 +276,272 @@ if __name__:
 
         plt.savefig(filename)
         plt.show()
+
+    sunset_getting_later_flag = True
+    sunrise_getting_later_flag = False
+
+    def plot_watch(day, 
+                   rise: time_format, noon: time_format, set: time_format, 
+                   summer_earlies_rise_date: time_format, 
+                   summmer_latest_set_date: time_format,
+                   winter_latest_rise_date: time_format, 
+                   winter_earliest_set_date: time_format):
+        fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
+        global sunset_getting_later_flag
+        global sunrise_getting_later_flag
+
+
+        # Put 12 at the top and go clockwise
+        ax.set_theta_zero_location('N')   # North = top
+        ax.set_theta_direction(-1)        # clockwise
+        
+
+
+        def h2rad(h):
+            return h / 24 * 2 * np.pi
+        
+        def time2rad(time: time_format):
+            return h2rad(time.get_day_from_time().get_sec_from_date()/3600)+np.pi
+        
+        def set_hand(time: time_format,color="black"):
+            # Draw arrow from center to hour 15 (3 PM)
+            ax.annotate(
+                '',
+                xy=(time2rad(time), 1.0),   # arrow tip (theta, r)
+                xytext=(0, 0), # arrow start (center)
+                arrowprops=dict(
+                    arrowstyle='->',
+                    linewidth=2,
+                    color=color
+                )
+            )
+
+        # rise = time_format(hour=7)
+        # noon = time_format(hour=12)
+        # set = time_format(hour=17)
+
+        set_hand(rise)
+        set_hand(noon)
+        set_hand(set)
+
+        def set_day_night(noon: time_format, rise: time_format, set: time_format):
+            set_hand(rise)
+            set_hand(noon)
+            set_hand(set)
+
+            theta = np.linspace(time2rad(rise), time2rad(set), 100)
+            r = np.ones_like(theta)
+            ax.fill_between(theta, 0, r, color='yellow', alpha=0.6)
+
+            theta = np.linspace(time2rad(set), time2rad(time_format(hour=24)), 100)
+            ax.fill_between(theta, 0, r, color='blue', alpha=0.6)
+            theta = np.linspace(time2rad(time_format(hour=0)), time2rad(rise), 100)
+            ax.fill_between(theta, 0, r, color='blue', alpha=0.6)
+
+        set_day_night(noon, rise, set)
+
+        if (day == summer_earlies_rise_date.date):
+            set_hand(rise,"red")
+            sunrise_getting_later_flag = True
+            
+        if (day == summmer_latest_set_date.date):
+            set_hand(set,"red")
+            sunset_getting_later_flag = False
+
+        if (day == winter_latest_rise_date.date):
+            set_hand(rise,"red")
+            sunrise_getting_later_flag=False
+
+        if (day == winter_earliest_set_date.date):
+            set_hand(set,"red")
+            sunset_getting_later_flag=True
+
+        if sunrise_getting_later_flag:
+            earliest_rise_alpha = 1
+            latest_rise_alpha = 0.3
+            earliest_rise_width = 3
+            latest_rise_width = 2
+            
+        else:
+            earliest_rise_alpha = 0.3
+            latest_rise_alpha = 1
+            earliest_rise_width = 2
+            latest_rise_width = 3
+
+        if sunset_getting_later_flag:
+            earliest_set_alpha = 1
+            latest_set_alpha = 0.3
+            earliest_set_width = 3
+            latest_set_width = 2
+        else:
+            earliest_set_alpha = 0.3
+            latest_set_alpha = 1
+            earliest_set_width = 2
+            latest_set_width = 3
+
+        earliest_rise_time = summer_earlies_rise_date.get_day_from_time()
+        latest_rise_time = winter_latest_rise_date.get_day_from_time()
+        earliest_set_time = winter_earliest_set_date.get_day_from_time()
+        latest_set_time = summmer_latest_set_date.get_day_from_time()
+
+
+
+        theta=time2rad(earliest_rise_time)
+        ax.annotate(
+        '',
+        xy=(theta, 1.0),   # arrow tip (theta, r)
+        xytext=(theta, 1.2), # arrow start (center)
+        arrowprops=dict(
+            arrowstyle='->',
+            linewidth=earliest_rise_width,
+            color="red",
+            alpha=earliest_rise_alpha
+            )
+        )
+
+        theta=time2rad(latest_rise_time)
+        ax.annotate(
+        '',
+        xy=(theta, 1.0),   # arrow tip (theta, r)
+        xytext=(theta, 1.2), # arrow start (center)
+        arrowprops=dict(
+            arrowstyle='->',
+            linewidth=latest_rise_width,
+            color="red",
+            alpha=latest_rise_alpha
+            )
+        )
+
+        theta=time2rad(earliest_set_time)
+        ax.annotate(
+        '',
+        xy=(theta, 1.0),   # arrow tip (theta, r)
+        xytext=(theta, 1.2), # arrow start (center)
+        arrowprops=dict(
+            arrowstyle='->',
+            linewidth=earliest_set_width,
+            color="red",
+            alpha=earliest_set_alpha
+            )
+        )
+
+        theta=time2rad(latest_set_time)
+        ax.annotate(
+        '',
+        xy=(theta, 1.0),   # arrow tip (theta, r)
+        xytext=(theta, 1.2), # arrow start (center)
+        arrowprops=dict(
+            arrowstyle='->',
+            linewidth=latest_set_width,
+            color="red",
+            alpha=latest_set_alpha
+            )
+        )
+
+        # Hour ticks
+        hours = np.arange(0, 25, 3)
+        angles = hours / 24 * 2 * np.pi
+
+        # Hide radius completely
+        ax.set_yticks([])
+        # ax.set_ylim(0.9, 1.1)
+
+        # Shift labels so 12 appears at the top instead of 0
+        labels = [(h + 12) % 24 for h in hours]
+
+        ax.set_xticks(angles)
+        ax.set_xticklabels(labels)
+
+        # plt.show()
+        plt.title(f"location: {observ.name}\ndays since spring equinox {day}")
+        plt.tight_layout()
+        plt.savefig(f"watch/watchface_{day}_{observ.name}.png")
+        plt.close()
+
+
+
+    eot_explanation = True
+
+    if eot_explanation:
+        noon_time_list = []
+        sunset_time_list = []
+        sunrise_time_list = []
+
+        noon_hour_list = []
+        sunset_hour_list = []
+        sunrise_hour_list = []
+
+        x_axis = range(0,365,1)
+
+        for d in x_axis:
+            test_time = time_format(date=d)
+
+            # print(function_horizontal_elevation__wiki(test_time))
+            noon_time = find_extreme_value_time(function_horizontal_elevation__wiki,
+                                                test_time = test_time + time_format(hour=12),
+                                                time_span = time_format(hour=3),
+                                                time_resolution = time_format(sec=1),
+                                                type = "max"
+                                                )
+            sunset_time = find_zero_crossing_time(function_horizontal_elevation__wiki,
+                                                test_time = test_time + time_format(hour=18),
+                                                time_span = time_format(hour=6),
+                                                time_resolution = time_format(sec=1)
+                                                )
+            sunrise_time = find_zero_crossing_time(function_horizontal_elevation__wiki,
+                                                test_time = test_time + time_format(hour=6),
+                                                time_span = time_format(hour=6),
+                                                time_resolution = time_format(sec=1)
+                                                )
+            
+            noon_hour_list.append(noon_time.get_day_from_time().get_sec_from_date()/3600)
+            sunset_hour_list.append(sunset_time.get_day_from_time().get_sec_from_date()/3600)
+            sunrise_hour_list.append(sunrise_time.get_day_from_time().get_sec_from_date()/3600)
+
+            noon_time_list.append(noon_time)
+            sunset_time_list.append(sunset_time)
+            sunrise_time_list.append(sunrise_time)
+
+            print(d)
+            # print(noon_time)
+
+        winter_rise_date = find_max(sunrise_time_list, sunrise_hour_list)
+        summer_rise_date = find_min(sunrise_time_list, sunrise_hour_list)
+
+        summmer_set_date = find_max(sunset_time_list, sunset_hour_list)
+        winter_set_date = find_min(sunset_time_list, sunset_hour_list)
+        
+
+        for i in range(len(x_axis)):
+            plot_watch(x_axis[i], sunrise_time_list[i], noon_time_list[i], sunset_time_list[i], summer_rise_date, summmer_set_date, winter_rise_date, winter_set_date)
+
+
+        noon_hour_list = np.array(noon_hour_list)
+        sunset_hour_list = np.array(sunset_hour_list)
+        sunrise_hour_list = np.array(sunrise_hour_list)
+
+        plt.plot(x_axis, noon_hour_list-noon_hour_list)
+        plt.plot(x_axis, sunset_hour_list-noon_hour_list)
+        plt.plot(x_axis, sunrise_hour_list-noon_hour_list)
+        plt.grid()
+        plt.savefig(f"calibrated_to_noon_{observ.name}.png")
+        plt.close()
+
+
+        plt.plot(x_axis, noon_hour_list, color= "C0")
+
+
+        plt.plot(x_axis, sunset_hour_list, color= "C0")
+        plt.plot(x_axis, sunset_hour_list-(noon_hour_list-12), color= "C0", linestyle="--")
+
+        plt.plot(x_axis, sunrise_hour_list, color="C1")
+        plt.plot(x_axis, sunrise_hour_list-(noon_hour_list-12), color="C1", linestyle = "--")
+        
+        plt.grid()
+        plt.savefig(f"offset_for_time_{observ.name}.png")
+        plt.close()
+
+
 
 
 
@@ -482,8 +742,8 @@ if __name__:
         wiki_decli=[]
         x = range(365*2)
         for d in range(365*2):
-            naive_decli.append(function__naive(time_format(date=d)))
-            wiki_decli.append(function__wiki(time_format(date=d)))
+            naive_decli.append(function_equatorial__naive(time_format(date=d)))
+            wiki_decli.append(function_equatorial__wiki(time_format(date=d)))
 
         plt.figure(figsize=[10,7])
         plt.plot(x,naive_decli,label="evenly passing year",color = "C0")
