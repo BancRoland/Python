@@ -7,7 +7,7 @@ from patterns import *
 
 
 
-pattern = phone_case
+pattern = microscope_slides
 
 
 
