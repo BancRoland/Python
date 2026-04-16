@@ -1,0 +1,6 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Alpha Trianguli Australis,16h 48m 39.87s,-69° 01′ 39.5″,1.91,Triangulum Australe,Beta Trianguli Australis,15h 55m 08.81s,-63° 25′ 47.1″,2.83,Triangulum Australe,-,grey,1,0.5
+Beta Trianguli Australis,15h 55m 08.81s,-63° 25′ 47.1″,2.83,Triangulum Australe,Epsilon Trianguli Australis,15h 36m 43.19s,-66° 19′ 00.9″,4.11,Triangulum Australe,-,grey,1,0.5
+Epsilon Trianguli Australis,15h 36m 43.19s,-66° 19′ 00.9″,4.11,Triangulum Australe,Gamma Trianguli Australis,15h 18m 54.69s,-68° 40′ 46.1″,2.87,Triangulum Australe,-,grey,1,0.5
+Gamma Trianguli Australis,15h 18m 54.69s,-68° 40′ 46.1″,2.87,Triangulum Australe,Alpha Trianguli Australis,16h 48m 39.87s,-69° 01′ 39.5″,1.91,Triangulum Australe,-,grey,1,0.5

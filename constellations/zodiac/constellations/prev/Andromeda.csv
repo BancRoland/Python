@@ -1,4 +1,4 @@
-Name,Right Ascension,Declination,Apparent Magnitude,Constellation > constellations_test.csv
+Name,Right Ascension,Declination,Apparent Magnitude,Constellation
 Alpha Andromedae,00h 08m 23.17s,+29° 05′ 27.0″,2.07,Andromeda
 Delta Andromedae,00h 39m 19.60s,+30° 51′ 40.4″,3.27,Andromeda
 Beta Andromedae,01h 09m 43.80s,+35° 37′ 15.0″,2.07,Andromeda

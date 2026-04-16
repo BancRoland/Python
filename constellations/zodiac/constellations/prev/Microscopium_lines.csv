@@ -1,0 +1,6 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+
+Epsilon Microscopii,21h 17m 56.25s,-32° 10′ 20.9″,4.71,Microscopium,2 Piscis Austrini,21h 06m 24.68s,-32° 20′ 29.9″,5.2,Microscopium,-,grey,1,0.5
+2 Piscis Austrini,21h 06m 24.68s,-32° 20′ 29.9″,5.2,Microscopium,Gamma Microscopii,21h 01m 17.46s,-32° 15′ 28.0″,4.67,Microscopium,-,grey,1,0.5
+Gamma Microscopii,21h 01m 17.46s,-32° 15′ 28.0″,4.67,Microscopium,Alpha Microscopii,20h 49m 58.08s,-33° 46′ 46.8″,4.89,Microscopium,-,grey,1,0.5

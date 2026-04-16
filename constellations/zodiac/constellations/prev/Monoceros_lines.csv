@@ -1,0 +1,9 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+13 Monocerotis,06h 32m 54.23s,+07° 19′ 58.7″,4.47,Monoceros,Epsilon Monocerotis,06h 23m 46.10s,+04° 35′ 34.2″,4.39,Monoceros,-,grey,1,0.5
+Epsilon Monocerotis,06h 23m 46.10s,+04° 35′ 34.2″,4.39,Monoceros,18 Monocerotis,06h 47m 51.66s,+02° 24′ 43.9″,4.48,Monoceros,-,grey,1,0.5
+18 Monocerotis,06h 47m 51.66s,+02° 24′ 43.9″,4.48,Monoceros,Delta Monocerotis,07h 11m 51.86s,-00° 29′ 34.0″,4.15,Monoceros,-,grey,1,0.5
+Delta Monocerotis,07h 11m 51.86s,-00° 29′ 34.0″,4.15,Monoceros,Zeta Monocerotis,08h 08m 35.66s,-02° 59′ 01.6″,4.36,Monoceros,-,grey,1,0.5
+Zeta Monocerotis,08h 08m 35.66s,-02° 59′ 01.6″,4.36,Monoceros,Alpha Monocerotis,07h 41m 14.88s,-09° 33′ 03.9″,3.94,Monoceros,-,grey,1,0.5
+Delta Monocerotis,07h 11m 51.86s,-00° 29′ 34.0″,4.15,Monoceros,Beta Monocerotis,06h 28m 49.07s,-07° 01′ 59.0″,4.6,Monoceros,-,grey,1,0.5
+Beta Monocerotis,06h 28m 49.07s,-07° 01′ 59.0″,4.6,Monoceros,Gamma Monocerotis,06h 14m 51.34s,-06° 16′ 29.0″,3.99,Monoceros,-,grey,1,0.5

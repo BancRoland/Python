@@ -6,8 +6,8 @@ import sys
 sys.path.append('/home/roland/Desktop/Python/DSP')
 import dsp
 
-Nz=5      #kitöltőnullák
-sr=10    #samprate
+Nz=0      #kitöltőnullák
+sr=20    #samprate
 fs=44100    
 f=1024      #modFrq
 rep=1      #repeat
@@ -112,7 +112,8 @@ codes=[]
 # frq_list=[1000, 1050, 1100, 1150, 1200, 1250]
 # text_list=["NOAA ", "MANT ", "URTABOR ", "MISKOLC", "K NORBI", "K TIBOR", "KOROLJOV", "TUCSOK","KALIMBA","NEWTON"]
 # text_list=["ANTAL", "BELA", "CECIL", "DENS", "ENDRE"]
-text_list=["       CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ"]
+# text_list=["       CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ CQ"]
+text_list=["FIN"]
 
 # text_list=["HA4RBA"]
 

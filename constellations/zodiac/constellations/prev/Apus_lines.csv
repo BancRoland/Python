@@ -1,0 +1,5 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+
+Beta Apodis,16h 43m 05.42s,-77° 30′ 59.7″,4.23,Apus,Gamma Apodis,16h 33m 27.46s,-78° 53′ 49.1″,3.86,Apus,-,grey,1,0.5
+Gamma Apodis,16h 33m 27.46s,-78° 53′ 49.1″,3.86,Apus,Alpha Apodis,14h 47m 51.73s,-79° 02′ 41.0″,3.83,Apus,-,grey,1,0.5

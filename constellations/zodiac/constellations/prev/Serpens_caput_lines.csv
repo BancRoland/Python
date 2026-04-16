@@ -1,0 +1,12 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Mu Serpentis,15h 49m 37.27s,-03° 25′ 48.5″,3.54,Serpens,Omega Serpentis,15h 50m 17.53s,+02° 11′ 47.8″,5.21,Serpens,-,grey,1,0.5
+Omega Serpentis,15h 50m 17.53s,+02° 11′ 47.8″,5.21,Serpens,Epsilon Serpentis,15h 50m 48.89s,+04° 28′ 39.3″,3.71,Serpens,-,grey,1,0.5
+Epsilon Serpentis,15h 50m 48.89s,+04° 28′ 39.3″,3.71,Serpens,Alpha Serpentis,15h 44m 16.00s,+06° 25′ 31.9″,2.63,Serpens,-,grey,1,0.5
+Alpha Serpentis,15h 44m 16.00s,+06° 25′ 31.9″,2.63,Serpens,Lambda Serpentis,15h 46m 26.75s,+07° 21′ 11.7″,4.42,Serpens,-,grey,1,0.5
+Lambda Serpentis,15h 46m 26.75s,+07° 21′ 11.7″,4.42,Serpens,Delta Serpentis,15h 34m 48.10s,+10° 32′ 21.0″,3.8,Serpens,-,grey,1,0.5
+Delta Serpentis,15h 34m 48.10s,+10° 32′ 21.0″,3.8,Serpens,Beta Serpentis,15h 46m 11.21s,+15° 25′ 18.9″,3.65,Serpens,-,grey,1,0.5
+Beta Serpentis,15h 46m 11.21s,+15° 25′ 18.9″,3.65,Serpens,Kappa Serpentis,15h 48m 44.41s,+18° 08′ 30.4″,4.09,Serpens,-,grey,1,0.5
+Kappa Serpentis,15h 48m 44.41s,+18° 08′ 30.4″,4.09,Serpens,Gamma Serpentis,15h 56m 26.99s,+15° 39′ 53.0″,3.85,Serpens,-,grey,1,0.5
+Gamma Serpentis,15h 56m 26.99s,+15° 39′ 53.0″,3.85,Serpens,Beta Serpentis,15h 46m 11.21s,+15° 25′ 18.9″,3.65,Serpens,-,grey,1,0.5
+

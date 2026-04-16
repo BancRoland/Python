@@ -1,0 +1,7 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Beta Cassiopeiae,00h 09m 10.09s,+59° 09′ 00.8″,2.28,Cassiopeia,Alpha Cassiopeiae,00h 40m 30.39s,+56° 32′ 14.7″,2.24,Cassiopeia,-,grey,1,0.5
+Alpha Cassiopeiae,00h 40m 30.39s,+56° 32′ 14.7″,2.24,Cassiopeia,Eta Cassiopeiae,00h 49m 05.10s,+57° 48′ 59.6″,3.46,Cassiopeia,-,grey,1,0.5
+Eta Cassiopeiae,00h 49m 05.10s,+57° 48′ 59.6″,3.46,Cassiopeia,Gamma Cassiopeiae,00h 56m 42.50s,+60° 43′ 00.3″,2.15,Cassiopeia,-,grey,1,0.5
+Gamma Cassiopeiae,00h 56m 42.50s,+60° 43′ 00.3″,2.15,Cassiopeia,Delta Cassiopeiae,01h 25m 48.60s,+60° 14′ 07.5″,2.68,Cassiopeia,-,grey,1,0.5
+Delta Cassiopeiae,01h 25m 48.60s,+60° 14′ 07.5″,2.68,Cassiopeia,Epsilon Cassiopeiae,01h 54m 23.68s,+63° 40′ 12.5″,3.35,Cassiopeia,-,grey,1,0.5

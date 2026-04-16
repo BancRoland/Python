@@ -1,0 +1,4 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Beta Caeli,04h 42m 03.45s,-37° 08′ 41.2″,5.04,Caelum,Alpha Caeli,04h 40m 33.82s,-41° 51′ 48.9″,4.44,Caelum,-,grey,1,0.5
+Alpha Caeli,04h 40m 33.82s,-41° 51′ 48.9″,4.44,Caelum,Delta Caeli,04h 30m 50.10s,-44° 57′ 13.5″,5.07,Caelum,-,grey,1,0.5

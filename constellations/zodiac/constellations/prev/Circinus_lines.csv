@@ -1,0 +1,4 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Beta Circini,15h 17m 30.96s,-58° 48′ 03.2″,4.07,Circinus,Alpha Circini,14h 42m 30.69s,-64° 58′ 28.5″,3.18,Circinus,-,grey,1,0.5
+Alpha Circini,14h 42m 30.69s,-64° 58′ 28.5″,3.18,Circinus,Gamma Circini,15h 23m 22.66s,-59° 19′ 14.5″,4.48,Circinus,-,grey,1,0.5

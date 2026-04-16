@@ -1,0 +1,4 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Beta Pyxidis,08h 40m 06.14s,-35° 18′ 29.9″,3.97,Pyxis,Alpha Pyxidis,08h 43m 35.55s,-33° 11′ 11.1″,3.68,Pyxis,-,grey,1,0.5
+Alpha Pyxidis,08h 43m 35.55s,-33° 11′ 11.1″,3.68,Pyxis,Gamma Pyxidis,08h 50m 32.01s,-27° 42′ 36.2″,4.02,Pyxis,-,grey,1,0.5

@@ -1,0 +1,10 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+51 Ophiuchi,17h 31m 24.95s,-23° 57′ 45.3″,4.78,Ophiuchus,Eta Ophiuchi,17h 10m 22.66s,-15° 43′ 30.5″,2.43,Ophiuchus,-,grey,1,0.5
+Eta Ophiuchi,17h 10m 22.66s,-15° 43′ 30.5″,2.43,Ophiuchus,Zeta Ophiuchi,16h 37m 09.53s,-10° 34′ 01.7″,2.54,Ophiuchus,-,grey,1,0.5
+Zeta Ophiuchi,16h 37m 09.53s,-10° 34′ 01.7″,2.54,Ophiuchus,Epsilon Ophiuchi,16h 18m 19.24s,-04° 41′ 33.4″,3.23,Ophiuchus,-,grey,1,0.5
+Epsilon Ophiuchi,16h 18m 19.24s,-04° 41′ 33.4″,3.23,Ophiuchus,Kappa Ophiuchi,16h 57m 40.27s,+09° 22′ 30.2″,3.19,Ophiuchus,-,grey,1,0.5
+Kappa Ophiuchi,16h 57m 40.27s,+09° 22′ 30.2″,3.19,Ophiuchus,Alpha Ophiuchi,17h 34m 56.00s,+12° 33′ 38.1″,2.08,Ophiuchus,-,grey,1,0.5
+Alpha Ophiuchi,17h 34m 56.00s,+12° 33′ 38.1″,2.08,Ophiuchus,Beta Ophiuchi,17h 43m 28.38s,+04° 34′ 00.9″,2.76,Ophiuchus,-,grey,1,0.5
+Beta Ophiuchi,17h 43m 28.38s,+04° 34′ 00.9″,2.76,Ophiuchus,Eta Ophiuchi,17h 10m 22.66s,-15° 43′ 30.5″,2.43,Ophiuchus,-,grey,1,0.5
+

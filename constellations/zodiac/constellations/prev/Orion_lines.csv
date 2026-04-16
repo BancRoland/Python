@@ -1,0 +1,11 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+Betelgeuse,05h 55m 10.29s,+07° 24′ 25.3″,0.42,Orion,Meissa,05h 35m 08.28s,+09° 56′ 03.0″,3.47,Orion,-,grey,1,0.5
+Meissa,05h 35m 08.28s,+09° 56′ 03.0″,3.47,Orion,Bellatrix,05h 25m 07.87s,+06° 20′ 59.0″,1.64,Orion,-,grey,1,0.5
+Bellatrix,05h 25m 07.87s,+06° 20′ 59.0″,1.64,Orion,Mintaka,05h 32m 00.40s,-00° 17′ 56.7″,2.2,Orion,-,grey,1,0.5
+Mintaka,05h 32m 00.40s,-00° 17′ 56.7″,2.2,Orion,Rigel,05h 14m 32.27s,-08° 12′ 05.9″,0.18,Orion,-,grey,1,0.5
+Rigel,05h 14m 32.27s,-08° 12′ 05.9″,0.18,Orion,Saiph,05h 47m 45.39s,-09° 40′ 10.6″,2.07,Orion,-,grey,1,0.5
+Saiph,05h 47m 45.39s,-09° 40′ 10.6″,2.07,Orion,Alnitak,05h 40m 45.52s,-01° 56′ 33.3″,1.88,Orion,-,grey,1,0.5
+Alnitak,05h 40m 45.52s,-01° 56′ 33.3″,1.88,Orion,Betelgeuse,05h 55m 10.29s,+07° 24′ 25.3″,0.42,Orion,-,grey,1,0.5
+
+Mintaka,05h 32m 00.40s,-00° 17′ 56.7″,2.2,Orion,Alnilam,05h 36m 12.81s,-01° 12′ 06.9″,1.69,Orion,-,grey,1,0.5
+Alnitak,05h 40m 45.52s,-01° 56′ 33.3″,1.88,Orion,Alnilam,05h 36m 12.81s,-01° 12′ 06.9″,1.69,Orion,-,grey,1,0.5

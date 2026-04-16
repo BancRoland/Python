@@ -1,0 +1,29 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+53 Eridani,04h 38m 10.87s,-14° 18′ 12.9″,3.86,Eridanus,Lambda Eridani,05h 09m 08.78s,-08° 45′ 14.7″,4.25,Eridanus,-,grey,1,0.5
+Lambda Eridani,05h 09m 08.78s,-08° 45′ 14.7″,4.25,Eridanus,Beta Eridani,05h 07m 51.03s,-05° 05′ 10.5″,2.78,Eridanus,-,grey,1,0.5
+Beta Eridani,05h 07m 51.03s,-05° 05′ 10.5″,2.78,Eridanus,Omega Eridani,04h 52m 53.68s,-05° 27′ 09.9″,4.36,Eridanus,-,grey,1,0.5
+Omega Eridani,04h 52m 53.68s,-05° 27′ 09.9″,4.36,Eridanus,Mu Eridani,04h 45m 30.14s,-03° 15′ 16.6″,4.01,Eridanus,-,grey,1,0.5
+Mu Eridani,04h 45m 30.14s,-03° 15′ 16.6″,4.01,Eridanus,Nu Eridani,04h 36m 19.14s,-03° 21′ 08.8″,3.93,Eridanus,-,grey,1,0.5
+Nu Eridani,04h 36m 19.14s,-03° 21′ 08.8″,3.93,Eridanus,Delta Eridani,03h 43m 14.96s,-09° 45′ 54.7″,3.52,Eridanus,-,grey,1,0.5
+Delta Eridani,03h 43m 14.96s,-09° 45′ 54.7″,3.52,Eridanus,Epsilon Eridani,03h 32m 56.42s,-09° 27′ 29.9″,3.72,Eridanus,-,grey,1,0.5
+Epsilon Eridani,03h 32m 56.42s,-09° 27′ 29.9″,3.72,Eridanus,Zeta Eridani,03h 15m 50.03s,-08° 49′ 11.4″,4.8,Eridanus,-,grey,1,0.5
+Zeta Eridani,03h 15m 50.03s,-08° 49′ 11.4″,4.8,Eridanus,Eta Eridani,02h 56m 25.60s,-08° 53′ 51.4″,3.89,Eridanus,-,grey,1,0.5
+Eta Eridani,02h 56m 25.60s,-08° 53′ 51.4″,3.89,Eridanus,Tau1 Eridani,02h 45m 05.98s,-18° 34′ 21.5″,4.47,Eridanus,-,grey,1,0.5
+Tau1 Eridani,02h 45m 05.98s,-18° 34′ 21.5″,4.47,Eridanus,Tau3 Eridani,03h 02m 23.59s,-23° 37′ 27.6″,4.08,Eridanus,-,grey,1,0.5
+Tau3 Eridani,03h 02m 23.59s,-23° 37′ 27.6″,4.08,Eridanus,Tau4 Eridani,03h 19m 30.97s,-21° 45′ 28.6″,3.7,Eridanus,-,grey,1,0.5
+Tau4 Eridani,03h 19m 30.97s,-21° 45′ 28.6″,3.7,Eridanus,Tau5 Eridani,03h 33m 47.25s,-21° 37′ 58.1″,4.26,Eridanus,-,grey,1,0.5
+Tau5 Eridani,03h 33m 47.25s,-21° 37′ 58.1″,4.26,Eridanus,Tau6 Eridani,03h 46m 50.99s,-23° 14′ 54.4″,4.22,Eridanus,-,grey,1,0.5
+Tau6 Eridani,03h 46m 50.99s,-23° 14′ 54.4″,4.22,Eridanus,Upsilon2 Eridani,04h 35m 33.07s,-30° 33′ 44.3″,3.81,Eridanus,-,grey,1,0.5
+Upsilon2 Eridani,04h 35m 33.07s,-30° 33′ 44.3″,3.81,Eridanus,Upsilon3 Eridani,04h 24m 02.17s,-34° 01′ 01.2″,3.97,Eridanus,-,grey,1,0.5
+Upsilon3 Eridani,04h 24m 02.17s,-34° 01′ 01.2″,3.97,Eridanus,Upsilon4 Eridani,04h 17m 53.62s,-33° 47′ 54.0″,3.55,Eridanus,-,grey,1,0.5
+Upsilon4 Eridani,04h 17m 53.62s,-33° 47′ 54.0″,3.55,Eridanus,HD 24160,03h 49m 27.28s,-36° 12′ 00.4″,4.17,Eridanus,-,grey,1,0.5
+HD 24160,03h 49m 27.28s,-36° 12′ 00.4″,4.17,Eridanus,HD 24071,03h 48m 35.82s,-37° 37′ 12.5″,4.3,Eridanus,-,grey,1,0.5
+HD 24071,03h 48m 35.82s,-37° 37′ 12.5″,4.3,Eridanus,82 Eridani,03h 19m 53.22s,-43° 04′ 17.6″,4.26,Eridanus,-,grey,1,0.5
+82 Eridani,03h 19m 53.22s,-43° 04′ 17.6″,4.26,Eridanus,Theta Eridani,02h 58m 15.72s,-40° 18′ 17.0″,2.88,Eridanus,-,grey,1,0.5
+Theta Eridani,02h 58m 15.72s,-40° 18′ 17.0″,2.88,Eridanus,Iota Eridani,02h 40m 39.93s,-39° 51′ 19.1″,4.11,Eridanus,-,grey,1,0.5
+Iota Eridani,02h 40m 39.93s,-39° 51′ 19.1″,4.11,Eridanus,HD 16754,02h 39m 47.92s,-42° 53′ 29.9″,4.74,Eridanus,-,grey,1,0.5
+HD 16754,02h 39m 47.92s,-42° 53′ 29.9″,4.74,Eridanus,Kappa Eridani,02h 26m 59.10s,-47° 42′ 13.8″,4.24,Eridanus,-,grey,1,0.5
+Kappa Eridani,02h 26m 59.10s,-47° 42′ 13.8″,4.24,Eridanus,Phi Eridani,02h 16m 30.50s,-51° 30′ 43.6″,3.56,Eridanus,-,grey,1,0.5
+Phi Eridani,02h 16m 30.50s,-51° 30′ 43.6″,3.56,Eridanus,Chi Eridani,01h 55m 56.83s,-51° 36′ 34.5″,3.69,Eridanus,-,grey,1,0.5
+Chi Eridani,01h 55m 56.83s,-51° 36′ 34.5″,3.69,Eridanus,Achernar,01h 37m 42.75s,-57° 14′ 12.0″,0.45,Eridanus,-,grey,1,0.5

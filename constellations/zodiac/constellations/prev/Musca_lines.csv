@@ -1,0 +1,8 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+
+
+Beta Muscae,12h 46m 16.87s,-68° 06′ 29.1″,3.04,Musca,Alpha Muscae,12h 37m 11.08s,-69° 08′ 07.9″,2.69,Musca,-,grey,1,0.5
+Alpha Muscae,12h 37m 11.08s,-69° 08′ 07.9″,2.69,Musca,Gamma Muscae,12h 32m 28.11s,-72° 07′ 58.7″,3.84,Musca,-,grey,1,0.5
+Gamma Muscae,12h 32m 28.11s,-72° 07′ 58.7″,3.84,Musca,Lambda Muscae,11h 45m 36.57s,-66° 43′ 43.8″,3.68,Musca,-,grey,1,0.5
+Lambda Muscae,11h 45m 36.57s,-66° 43′ 43.8″,3.68,Musca,Beta Muscae,12h 46m 16.87s,-68° 06′ 29.1″,3.04,Musca,-,grey,1,0.5

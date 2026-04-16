@@ -1,0 +1,12 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+Arcturus,14h 15m 40.35s,+19° 11′ 14.2″,-0.05,Boötes,Zeta Boötis,14h 41m 08.92s,+13° 43′ 42.0″,3.78,Boötes,-,grey,1,0.5
+
+Arcturus,14h 15m 40.35s,+19° 11′ 14.2″,-0.05,Boötes,Eta Boötis,13h 54m 41.12s,+18° 23′ 54.9″,2.68,Boötes,-,grey,1,0.5
+Eta Boötis,13h 54m 41.12s,+18° 23′ 54.9″,2.68,Boötes,Upsilon Boötis,13h 49m 28.70s,+15° 47′ 52.1″,4.05,Boötes,-,grey,1,0.5
+
+Arcturus,14h 15m 40.35s,+19° 11′ 14.2″,-0.05,Boötes,Epsilon Boötis,14h 44m 59.25s,+27° 04′ 27.0″,2.35,Boötes,-,grey,1,0.5
+Epsilon Boötis,14h 44m 59.20s,+27° 04′ 27.0″,2.7,Boötes,Delta Boötis,15h 15m 30.10s,+33° 18′ 54.4″,3.46,Boötes,-,grey,1,0.5
+Delta Boötis,15h 15m 30.10s,+33° 18′ 54.4″,3.46,Boötes,Beta Boötis,15h 01m 56.79s,+40° 23′ 26.3″,3.49,Boötes,-,grey,1,0.5
+Beta Boötis,15h 01m 56.79s,+40° 23′ 26.3″,3.49,Boötes,Gamma Boötis,14h 32m 04.76s,+38° 18′ 28.4″,3.04,Boötes,-,grey,1,0.5
+Gamma Boötis,14h 32m 04.76s,+38° 18′ 28.4″,3.04,Boötes,Rho Boötis,14h 31m 49.86s,+30° 22′ 16.1″,3.57,Boötes,-,grey,1,0.5
+Rho Boötis,14h 31m 49.86s,+30° 22′ 16.1″,3.57,Boötes,Arcturus,14h 15m 40.35s,+19° 11′ 14.2″,-0.05,Boötes,-,grey,1,0.5

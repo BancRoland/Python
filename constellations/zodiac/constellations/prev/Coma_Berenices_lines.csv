@@ -1,0 +1,4 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Alpha Comae Berenices,13h 09m 59.55s,+17° 31′ 44.8″,4.32,Coma Berenices,Beta Comae Berenices,13h 11m 52.92s,+27° 52′ 33.7″,4.26,Coma Berenices,-,grey,1,0.5
+Beta Comae Berenices,13h 11m 52.92s,+27° 52′ 33.7″,4.26,Coma Berenices,Gamma Comae Berenices,12h 26m 56.33s,+28° 16′ 07.0″,4.35,Coma Berenices,-,grey,1,0.5

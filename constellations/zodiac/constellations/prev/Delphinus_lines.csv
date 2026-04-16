@@ -1,0 +1,8 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Epsilon Delphini,20h 33m 12.76s,+11° 18′ 12.0″,4.03,Delphinus,Beta Delphini,20h 37m 32.87s,+14° 35′ 42.7″,3.64,Delphinus,-,grey,1,0.5
+Beta Delphini,20h 37m 32.87s,+14° 35′ 42.7″,3.64,Delphinus,Alpha Delphini,20h 39m 38.25s,+15° 54′ 43.4″,3.77,Delphinus,-,grey,1,0.5
+Alpha Delphini,20h 39m 38.25s,+15° 54′ 43.4″,3.77,Delphinus,Gamma Delphini,20h 46m 39.52s,+16° 07′ 29.2″,4.27,Delphinus,-,grey,1,0.5
+Gamma Delphini,20h 46m 39.52s,+16° 07′ 29.2″,4.27,Delphinus,Delta Delphini,20h 43m 27.55s,+15° 04′ 28.9″,4.43,Delphinus,-,grey,1,0.5
+Delta Delphini,20h 43m 27.55s,+15° 04′ 28.9″,4.43,Delphinus,Beta Delphini,20h 37m 32.87s,+14° 35′ 42.7″,3.64,Delphinus,-,grey,1,0.5
+

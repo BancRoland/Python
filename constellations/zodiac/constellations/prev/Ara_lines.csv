@@ -1,0 +1,10 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+
+Alpha Arae,17h 31m 50.52s,-49° 52′ 33.5″,2.84,Ara,Theta Arae,18h 06m 37.88s,-50° 05′ 29.2″,3.65,Ara,-,grey,1,0.5
+Theta Arae,18h 06m 37.88s,-50° 05′ 29.2″,3.65,Ara,Beta Arae,17h 25m 18.00s,-55° 31′ 47.4″,2.84,Ara,-,grey,1,0.5
+Beta Arae,17h 25m 18.00s,-55° 31′ 47.4″,2.84,Ara,Gamma Arae,17h 25m 23.66s,-56° 22′ 39.7″,3.31,Ara,-,grey,1,0.5
+Gamma Arae,17h 25m 23.66s,-56° 22′ 39.7″,3.31,Ara,Delta Arae,17h 31m 05.98s,-60° 41′ 01.0″,3.6,Ara,-,grey,1,0.5
+Delta Arae,17h 31m 05.98s,-60° 41′ 01.0″,3.6,Ara,Eta Arae,16h 49m 47.11s,-59° 02′ 28.7″,3.77,Ara,-,grey,1,0.5
+Eta Arae,16h 49m 47.11s,-59° 02′ 28.7″,3.77,Ara,Zeta Arae,16h 58m 37.23s,-55° 59′ 24.2″,3.12,Ara,-,grey,1,0.5
+Zeta Arae,16h 58m 37.23s,-55° 59′ 24.2″,3.12,Ara,Alpha Arae,17h 31m 50.52s,-49° 52′ 33.5″,2.84,Ara,-,grey,1,0.5

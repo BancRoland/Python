@@ -1,0 +1,5 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+21 Leonis Minoris,10h 07m 25.73s,+35° 14′ 40.9″,4.49,Leo Minor,46 Leonis Minoris,10h 53m 18.64s,+34° 12′ 56.0″,3.79,Leo Minor,-,grey,1,0.5
+46 Leonis Minoris,10h 53m 18.64s,+34° 12′ 56.0″,3.79,Leo Minor,Beta Leonis Minoris,10h 27m 53.09s,+36° 42′ 26.9″,4.2,Leo Minor,-,grey,1,0.5
+Beta Leonis Minoris,10h 27m 53.09s,+36° 42′ 26.9″,4.2,Leo Minor,21 Leonis Minoris,10h 07m 25.73s,+35° 14′ 40.9″,4.49,Leo Minor,-,grey,1,0.5
+21 Leonis Minoris,10h 07m 25.73s,+35° 14′ 40.9″,4.49,Leo Minor,10 Leonis Minoris,09h 34m 13.38s,+36° 23′ 51.4″,4.54,Leo Minor,-,grey,1,0.5

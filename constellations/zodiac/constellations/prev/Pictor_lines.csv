@@ -1,0 +1,5 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Alpha Pictoris,06h 48m 11.54s,-61° 56′ 31.1″,3.3,Pictor,Gamma Pictoris,05h 49m 49.58s,-56° 09′ 59.4″,4.5,Pictor,-,grey,1,0.5
+Gamma Pictoris,05h 49m 49.58s,-56° 09′ 59.4″,4.5,Pictor,Beta Pictoris,05h 47m 17.08s,-51° 04′ 00.2″,3.85,Pictor,-,grey,1,0.5
+

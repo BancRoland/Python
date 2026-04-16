@@ -1,0 +1,8 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Theta1 Serpentis,18h 56m 13.16s,+04° 12′ 12.7″,4.62,Serpens,Theta2 Serpentis,18h 56m 14.61s,+04° 12′ 07.4″,4.98,Serpens,-,grey,1,0.5
+Theta2 Serpentis,18h 56m 14.61s,+04° 12′ 07.4″,4.98,Serpens,Eta Serpentis,18h 21m 18.92s,-02° 53′ 49.6″,3.23,Serpens,-,grey,1,0.5
+Eta Serpentis,18h 21m 18.92s,-02° 53′ 49.6″,3.23,Serpens,Omicron Serpentis,17h 41m 24.92s,-12° 52′ 30.6″,4.24,Serpens,-,grey,1,0.5
+Omicron Serpentis,17h 41m 24.92s,-12° 52′ 30.6″,4.24,Serpens,Xi Serpentis,17h 37m 35.23s,-15° 23′ 54.3″,3.54,Serpens,-,grey,1,0.5
+Xi Serpentis,17h 37m 35.23s,-15° 23′ 54.3″,3.54,Serpens,Nu Serpentis,17h 20m 49.64s,-12° 50′ 48.8″,4.32,Serpens,-,grey,1,0.5
+

@@ -1,0 +1,9 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Alpha Tucanae,22h 18m 30.18s,-60° 15′ 34.2″,2.87,Tucana,Gamma Tucanae,23h 17m 25.81s,-58° 14′ 09.3″,3.99,Tucana,-,grey,1,0.5
+
+Gamma Tucanae,23h 17m 25.81s,-58° 14′ 09.3″,3.99,Tucana,Epsilon Tucanae,23h 59m 54.91s,-65° 34′ 37.5″,4.49,Tucana,-,grey,1,0.5
+Epsilon Tucanae,23h 59m 54.91s,-65° 34′ 37.5″,4.49,Tucana,Zeta Tucanae,00h 20m 01.91s,-64° 52′ 39.4″,4.23,Tucana,-,grey,1,0.5
+Zeta Tucanae,00h 20m 01.91s,-64° 52′ 39.4″,4.23,Tucana,Beta Tucanae,00h 31m 32.56s,-62° 57′ 29.1″,4.34,Tucana,-,grey,1,0.5
+Beta Tucanae,00h 31m 32.56s,-62° 57′ 29.1″,4.34,Tucana,Gamma Tucanae,23h 17m 25.81s,-58° 14′ 09.3″,3.99,Tucana,-,grey,1,0.5
+

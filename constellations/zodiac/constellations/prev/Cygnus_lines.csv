@@ -1,0 +1,11 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Deneb,20h 41m 25.91s,+45° 16′ 49.2″,1.25,Cygnus,Gamma Cygni,20h 22m 13.70s,+40° 15′ 24.1″,2.23,Cygnus,-,grey,1,0.5
+Gamma Cygni,20h 22m 13.70s,+40° 15′ 24.1″,2.23,Cygnus,Eta Cygni,19h 56m 18.40s,+35° 05′ 00.6″,3.89,Cygnus,-,grey,1,0.5
+Eta Cygni,19h 56m 18.40s,+35° 05′ 00.6″,3.89,Cygnus,Albireo,19h 30m 43.29s,+27° 57′ 34.9″,3.05,Cygnus,-,grey,1,0.5
+Gamma Cygni,20h 22m 13.70s,+40° 15′ 24.1″,2.23,Cygnus,Delta Cygni,19h 44m 58.44s,+45° 07′ 50.5″,2.86,Cygnus,-,grey,1,0.5
+Delta Cygni,19h 44m 58.44s,+45° 07′ 50.5″,2.86,Cygnus,Iota Cygni,19h 29m 42.34s,+51° 43′ 46.1″,3.76,Cygnus,-,grey,1,0.5
+Gamma Cygni,20h 22m 13.70s,+40° 15′ 24.1″,2.23,Cygnus,Epsilon Cygni,20h 46m 12.43s,+33° 58′ 10.0″,2.48,Cygnus,-,grey,1,0.5
+Epsilon Cygni,20h 46m 12.43s,+33° 58′ 10.0″,2.48,Cygnus,Zeta Cygni,21h 12m 56.18s,+30° 13′ 37.5″,3.21,Cygnus,-,grey,1,0.5
+
+

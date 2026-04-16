@@ -1,0 +1,9 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Fomalhaut,22h 57m 38.83s,-29° 37′ 18.6″,1.17,Piscis Austrinus,Epsilon Piscis Austrini,22h 40m 39.33s,-27° 02′ 37.0″,4.18,Piscis Austrinus,-,grey,1,0.5
+Epsilon Piscis Austrini,22h 40m 39.33s,-27° 02′ 37.0″,4.18,Piscis Austrinus,Eta Piscis Austrini,22h 00m 50.22s,-28° 27′ 13.5″,5.43,Piscis Austrinus,-,grey,1,0.5
+Eta Piscis Austrini,22h 00m 50.22s,-28° 27′ 13.5″,5.43,Piscis Austrinus,Theta Piscis Austrini,21h 47m 44.17s,-30° 53′ 53.9″,5.02,Piscis Austrinus,-,grey,1,0.5
+Theta Piscis Austrini,21h 47m 44.17s,-30° 53′ 53.9″,5.02,Piscis Austrinus,Tau Piscis Austrini,22h 10m 08.48s,-32° 32′ 54.4″,4.94,Piscis Austrinus,-,grey,1,0.5
+Tau Piscis Austrini,22h 10m 08.48s,-32° 32′ 54.4″,4.94,Piscis Austrinus,Beta Piscis Austrini,22h 31m 30.29s,-32° 20′ 45.7″,4.29,Piscis Austrinus,-,grey,1,0.5
+Beta Piscis Austrini,22h 31m 30.29s,-32° 20′ 45.7″,4.29,Piscis Austrinus,Delta Piscis Austrini,22h 55m 56.89s,-32° 32′ 22.9″,4.2,Piscis Austrinus,-,grey,1,0.5
+Delta Piscis Austrini,22h 55m 56.89s,-32° 32′ 22.9″,4.2,Piscis Austrinus,Gamma Piscis Austrini,22h 52m 31.56s,-32° 52′ 31.6″,4.46,Piscis Austrinus,-,grey,1,0.5

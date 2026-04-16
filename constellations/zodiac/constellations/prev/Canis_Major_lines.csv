@@ -1,0 +1,28 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+
+Iota Canis Majoris,06h 56m 08.23s,-17° 03′ 15.3″,4.36,Canis Major,Gamma Canis Majoris,07h 03m 45.49s,-15° 37′ 59.7″,4.12,Canis Major,-,grey,1,0.5
+Gamma Canis Majoris,07h 03m 45.49s,-15° 37′ 59.7″,4.12,Canis Major,Theta Canis Majoris,06h 54m 11.48s,-12° 02′ 18.9″,4.08,Canis Major,-,grey,1,0.5
+Theta Canis Majoris,06h 54m 11.48s,-12° 02′ 18.9″,4.08,Canis Major,Iota Canis Majoris,06h 56m 08.23s,-17° 03′ 15.3″,4.36,Canis Major,-,grey,1,0.5
+
+Iota Canis Majoris,06h 56m 08.23s,-17° 03′ 15.3″,4.36,Canis Major,Sirius,06h 45m 09.25s,-16° 42′ 47.3″,-1.46,Canis Major,-,grey,1,0.5
+
+Sirius,06h 45m 09.25s,-16° 42′ 47.3″,-1.46,Canis Major,Omicron2 Canis Majoris,07h 03m 01.47s,-23° 49′ 59.9″,3.02,Canis Major,-,grey,1,0.5
+Omicron2 Canis Majoris,07h 03m 01.47s,-23° 49′ 59.9″,3.02,Canis Major,Delta Canis Majoris,07h 08m 23.49s,-26° 23′ 35.5″,1.83,Canis Major,-,grey,1,0.5
+Delta Canis Majoris,07h 08m 23.49s,-26° 23′ 35.5″,1.83,Canis Major,Sigma Canis Majoris,07h 01m 43.15s,-27° 56′ 05.4″,3.49,Canis Major,-,grey,1,0.5
+Sigma Canis Majoris,07h 01m 43.15s,-27° 56′ 05.4″,3.49,Canis Major,EZ Canis Majoris,06h 54m 13.04s,-23° 55′ 42.0″,6.91,Canis Major,-,grey,1,0.5
+EZ Canis Majoris,06h 54m 13.04s,-23° 55′ 42.0″,6.91,Canis Major,Nu2 Canis Majoris,06h 36m 41.00s,-19° 15′ 20.6″,3.95,Canis Major,-,grey,1,0.5
+Nu2 Canis Majoris,06h 36m 41.00s,-19° 15′ 20.6″,3.95,Canis Major,Sirius,06h 45m 09.25s,-16° 42′ 47.3″,-1.46,Canis Major,-,grey,1,0.5
+
+Nu2 Canis Majoris,06h 36m 41.00s,-19° 15′ 20.6″,3.95,Canis Major,Beta Canis Majoris,06h 22m 41.99s,-17° 57′ 21.3″,1.98,Canis Major,-,grey,1,0.5
+
+Nu2 Canis Majoris,06h 36m 41.00s,-19° 15′ 20.6″,3.95,Canis Major,Xi2 Canis Majoris,06h 35m 03.38s,-22° 57′ 53.4″,4.54,Canis Major,-,grey,1,0.5
+
+Eta Canis Majoris,07h 24m 05.71s,-29° 18′ 11.2″,2.45,Canis Major,Omega Canis Majoris,07h 14m 48.66s,-26° 46′ 21.7″,4.01,Canis Major,-,grey,1,0.5
+Omega Canis Majoris,07h 14m 48.66s,-26° 46′ 21.7″,4.01,Canis Major,Delta Canis Majoris,07h 08m 23.49s,-26° 23′ 35.5″,1.83,Canis Major,-,grey,1,0.5
+
+Sigma Canis Majoris,07h 01m 43.15s,-27° 56′ 05.4″,3.49,Canis Major,Epsilon Canis Majoris,06h 58m 37.55s,-28° 58′ 19.5″,1.5,Canis Major,-,grey,1,0.5
+
+Epsilon Canis Majoris,06h 58m 37.55s,-28° 58′ 19.5″,1.5,Canis Major,Kappa Canis Majoris,06h 49m 50.47s,-32° 30′ 30.6″,3.5,Canis Major,-,grey,1,0.5
+
+Epsilon Canis Majoris,06h 58m 37.55s,-28° 58′ 19.5″,1.5,Canis Major,Zeta Canis Majoris,06h 20m 18.79s,-30° 03′ 48.2″,3.02,Canis Major,-,grey,1,0.5

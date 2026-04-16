@@ -1,0 +1,11 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+
+Alpha Corvi,12h 08m 24.75s,-24° 43′ 43.6″,4.02,Corvus,Epsilon Corvi,12h 10m 07.53s,-22° 37′ 11.3″,3.02,Corvus,-,grey,1,0.5
+
+Epsilon Corvi,12h 10m 07.53s,-22° 37′ 11.3″,3.02,Corvus,Gamma Corvi,12h 15m 48.47s,-17° 32′ 31.1″,2.58,Corvus,-,grey,1,0.5
+Gamma Corvi,12h 15m 48.47s,-17° 32′ 31.1″,2.58,Corvus,Delta Corvi,12h 29m 51.98s,-16° 30′ 54.3″,2.94,Corvus,-,grey,1,0.5
+Delta Corvi,12h 29m 51.98s,-16° 30′ 54.3″,2.94,Corvus,Beta Corvi,12h 34m 23.23s,-23° 23′ 47.8″,2.65,Corvus,-,grey,1,0.5
+Beta Corvi,12h 34m 23.23s,-23° 23′ 47.8″,2.65,Corvus,Epsilon Corvi,12h 10m 07.53s,-22° 37′ 11.3″,3.02,Corvus,-,grey,1,0.5
+
+Delta Corvi,12h 29m 51.98s,-16° 30′ 54.3″,2.94,Corvus,Eta Corvi,12h 32m 04.48s,-16° 11′ 45.1″,4.3,Corvus,-,grey,1,0.5

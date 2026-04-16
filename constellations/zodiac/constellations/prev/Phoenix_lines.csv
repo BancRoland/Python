@@ -1,0 +1,17 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+
+Alpha Phoenicis,00h 26m 16.87s,-42° 18′ 18.4″,2.4,Phoenix,Kappa Phoenicis,00h 26m 12.12s,-43° 40′ 47.7″,3.93,Phoenix,-,grey,1,0.5
+Kappa Phoenicis,00h 26m 12.12s,-43° 40′ 47.7″,3.93,Phoenix,Epsilon Phoenicis,00h 09m 24.54s,-45° 44′ 49.2″,3.88,Phoenix,-,grey,1,0.5
+Epsilon Phoenicis,00h 09m 24.54s,-45° 44′ 49.2″,3.88,Phoenix,Alpha Phoenicis,00h 26m 16.87s,-42° 18′ 18.4″,2.4,Phoenix,-,grey,1,0.5
+
+Kappa Phoenicis,00h 26m 12.12s,-43° 40′ 47.7″,3.93,Phoenix,Gamma Phoenicis,01h 28m 21.94s,-43° 19′ 03.8″,3.41,Phoenix,-,grey,1,0.5
+Gamma Phoenicis,01h 28m 21.94s,-43° 19′ 03.8″,3.41,Phoenix,Beta Phoenicis,01h 06m 05.11s,-46° 43′ 06.6″,3.32,Phoenix,-,grey,1,0.5
+Beta Phoenicis,01h 06m 05.11s,-46° 43′ 06.6″,3.32,Phoenix,Kappa Phoenicis,00h 26m 12.12s,-43° 40′ 47.7″,3.93,Phoenix,-,grey,1,0.5
+
+Kappa Phoenicis,00h 26m 12.12s,-43° 40′ 47.7″,3.93,Phoenix,Zeta Phoenicis,01h 08m 23.06s,-55° 14′ 45.0″,3.94,Phoenix,-,grey,1,0.5
+Zeta Phoenicis,01h 08m 23.06s,-55° 14′ 45.0″,3.94,Phoenix,Beta Phoenicis,01h 06m 05.11s,-46° 43′ 06.6″,3.32,Phoenix,-,grey,1,0.5
+
+Beta Phoenicis,01h 06m 05.11s,-46° 43′ 06.6″,3.32,Phoenix,Psi Phoenicis,01h 53m 38.82s,-46° 18′ 08.8″,4.39,Phoenix,-,grey,1,0.5
+Psi Phoenicis,01h 53m 38.82s,-46° 18′ 08.8″,4.39,Phoenix,Delta Phoenicis,01h 31m 14.98s,-49° 04′ 23.1″,3.93,Phoenix,-,grey,1,0.5
+Delta Phoenicis,01h 31m 14.98s,-49° 04′ 23.1″,3.93,Phoenix,Beta Phoenicis,01h 06m 05.11s,-46° 43′ 06.6″,3.32,Phoenix,-,grey,1,0.5

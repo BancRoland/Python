@@ -1,0 +1,18 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Iota Herculis,17h 39m 27.89s,+46° 00′ 22.8″,3.82,Hercules,Theta Herculis,17h 56m 15.18s,+37° 15′ 01.9″,3.86,Hercules,-,grey,1,0.5
+Theta Herculis,17h 56m 15.18s,+37° 15′ 01.9″,3.86,Hercules,Pi Herculis,17h 15m 02.85s,+36° 48′ 33.0″,3.16,Hercules,-,grey,1,0.5
+
+Tau Herculis,16h 19m 44.45s,+46° 18′ 47.8″,3.91,Hercules,Sigma Herculis,16h 34m 06.19s,+42° 26′ 12.8″,4.2,Hercules,-,grey,1,0.5
+Sigma Herculis,16h 34m 06.19s,+42° 26′ 12.8″,4.2,Hercules,Eta Herculis,16h 42m 53.74s,+38° 55′ 20.9″,3.48,Hercules,-,grey,1,0.5
+
+Beta Herculis,16h 30m 13.26s,+21° 29′ 22.7″,2.78,Hercules,Zeta Herculis,16h 41m 17.48s,+31° 36′ 06.8″,2.81,Hercules,-,grey,1,0.5
+
+Epsilon Herculis,17h 00m 17.41s,+30° 55′ 34.8″,3.92,Hercules,Delta Herculis,17h 15m 01.92s,+24° 50′ 22.5″,3.12,Hercules,-,grey,1,0.5
+Delta Herculis,17h 15m 01.92s,+24° 50′ 22.5″,3.12,Hercules,Xi Herculis,17h 57m 45.83s,+29° 14′ 52.5″,3.7,Hercules,-,grey,1,0.5
+
+Epsilon Herculis,17h 00m 17.41s,+30° 55′ 34.8″,3.92,Hercules,Zeta Herculis,16h 41m 17.48s,+31° 36′ 06.8″,2.81,Hercules,-,grey,1,0.5
+Zeta Herculis,16h 41m 17.48s,+31° 36′ 06.8″,2.81,Hercules,Eta Herculis,16h 42m 53.74s,+38° 55′ 20.9″,3.48,Hercules,-,grey,1,0.5
+Eta Herculis,16h 42m 53.74s,+38° 55′ 20.9″,3.48,Hercules,Pi Herculis,17h 15m 02.85s,+36° 48′ 33.0″,3.16,Hercules,-,grey,1,0.5
+Pi Herculis,17h 15m 02.85s,+36° 48′ 33.0″,3.16,Hercules,Epsilon Herculis,17h 00m 17.41s,+30° 55′ 34.8″,3.92,Hercules,-,grey,1,0.5
+

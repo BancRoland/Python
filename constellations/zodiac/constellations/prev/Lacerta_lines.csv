@@ -1,0 +1,9 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Beta Lacertae,22h 23m 33.64s,+52° 13′ 46.2″,4.42,Lacerta,Alpha Lacertae,22h 31m 17.38s,+50° 16′ 56.8″,3.76,Lacerta,-,grey,1,0.5
+Beta Lacertae,22h 23m 33.64s,+52° 13′ 46.2″,4.42,Lacerta,4 Lacertae,22h 24m 31.00s,+49° 28′ 35.0″,4.55,Lacerta,-,grey,1,0.5
+Alpha Lacertae,22h 31m 17.38s,+50° 16′ 56.8″,3.76,Lacerta,5 Lacertae,22h 29m 31.82s,+47° 42′ 24.8″,4.34,Lacerta,-,grey,1,0.5
+4 Lacertae,22h 24m 31.00s,+49° 28′ 35.0″,4.55,Lacerta,5 Lacertae,22h 29m 31.82s,+47° 42′ 24.8″,4.34,Lacerta,-,grey,1,0.5
+5 Lacertae,22h 29m 31.82s,+47° 42′ 24.8″,4.34,Lacerta,6 Lacertae,22h 30m 29.26s,+43° 07′ 24.2″,4.52,Lacerta,-,grey,1,0.5
+6 Lacertae,22h 30m 29.26s,+43° 07′ 24.2″,4.52,Lacerta,1 Lacertae,22h 15m 58.17s,+37° 44′ 55.4″,4.14,Lacerta,-,grey,1,0.5
+

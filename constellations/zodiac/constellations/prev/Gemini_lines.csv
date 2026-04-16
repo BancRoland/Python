@@ -1,0 +1,27 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Pollux (star),07h 45m 19.36s,+28° 01′ 34.7″,1.16,Gemini,Upsilon Geminorum,07h 35m 55.37s,+26° 53′ 45.6″,4.06,Gemini,-,grey,1,0.5
+Upsilon Geminorum,07h 35m 55.37s,+26° 53′ 45.6″,4.06,Gemini,Delta Geminorum,07h 20m 07.39s,+21° 58′ 56.4″,3.5,Gemini,-,grey,1,0.5
+
+Delta Geminorum,07h 20m 07.39s,+21° 58′ 56.4″,3.5,Gemini,Lambda Geminorum,07h 18m 05.61s,+16° 32′ 25.7″,3.58,Gemini,-,grey,1,0.5
+Lambda Geminorum,07h 18m 05.61s,+16° 32′ 25.7″,3.58,Gemini,Xi Geminorum,06h 45m 17.43s,+12° 53′ 45.8″,3.35,Gemini,-,grey,1,0.5
+
+Delta Geminorum,07h 20m 07.39s,+21° 58′ 56.4″,3.5,Gemini,Zeta Geminorum,07h 04m 06.54s,+20° 34′ 13.1″,4.01,Gemini,-,grey,1,0.5
+Gamma Geminorum,06h 37m 42.70s,+16° 23′ 57.9″,1.93,Gemini,Zeta Geminorum,07h 04m 06.54s,+20° 34′ 13.1″,4.01,Gemini,-,grey,1,0.5
+
+
+
+Castor (star),07h 34m 36.00s,+31° 53′ 19.1″,1.9,Gemini,Tau Geminorum,07h 11m 08.39s,+30° 14′ 43.0″,4.41,Gemini,-,grey,1,0.5
+Tau Geminorum,07h 11m 08.39s,+30° 14′ 43.0″,4.41,Gemini,Epsilon Geminorum,06h 43m 55.93s,+25° 07′ 52.2″,3.06,Gemini,-,grey,1,0.5
+
+Epsilon Geminorum,06h 43m 55.93s,+25° 07′ 52.2″,3.06,Gemini,Nu Geminorum,06h 28m 57.79s,+20° 12′ 43.8″,4.13,Gemini,-,grey,1,0.5
+Epsilon Geminorum,06h 43m 55.93s,+25° 07′ 52.2″,3.06,Gemini,Mu Geminorum,06h 22m 57.59s,+22° 30′ 49.9″,2.87,Gemini,-,grey,1,0.5
+
+
+
+
+Kappa Geminorum,07h 44m 26.87s,+24° 23′ 53.3″,3.57,Gemini,Upsilon Geminorum,07h 35m 55.37s,+26° 53′ 45.6″,4.06,Gemini,-,grey,1,0.5
+Upsilon Geminorum,07h 35m 55.37s,+26° 53′ 45.6″,4.06,Gemini,Iota Geminorum,07h 25m 43.68s,+27° 47′ 53.8″,3.78,Gemini,-,grey,1,0.5
+Iota Geminorum,07h 25m 43.68s,+27° 47′ 53.8″,3.78,Gemini,Tau Geminorum,07h 11m 08.39s,+30° 14′ 43.0″,4.41,Gemini,-,grey,1,0.5
+Tau Geminorum,07h 11m 08.39s,+30° 14′ 43.0″,4.41,Gemini,Theta Geminorum,06h 52m 47.34s,+33° 57′ 40.9″,3.6,Gemini,-,grey,1,0.5
+
