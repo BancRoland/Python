@@ -141,7 +141,7 @@ def read_lines_csv(filename):
 #             })
 #     return data
 
-def __name__():
+if __name__ == "__main__":
     # Example usage
     filename_lines = 'zodiac_lines.csv'  # Replace 'stars.csv' with the path to your CSV file
     lines_data = read_lines_csv(filename_lines)
