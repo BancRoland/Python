@@ -8,6 +8,8 @@ import sys
 sys.path.append('/home/roland/Desktop/Python/DSP')
 import dsp
 
+# dsp.testme()
+
 def comp2cui8(v):
     code=np.zeros(len(v)*2)
     code[::2]=np.real(v)+128
@@ -15,9 +17,9 @@ def comp2cui8(v):
     out=code.astype('uint8')
     return out
 T   = 2     # [sec]
-sr  = 100000 # [Hz]
+sr  = 44100 # [Hz]
 LEN = sr*T
-f   = 25000
+f   = 300
 A   = 64
 
 signal=A*np.exp(1j*np.pi*2*np.arange(LEN)/LEN*f*T)

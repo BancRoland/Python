@@ -21,8 +21,10 @@ def read_from_file(root: str):
     return items
 
 # scenario = "orion"
-# scenario = "north_puzzle_inside"
-scenario = 'cylindrical_puzzle'
+scenario = "north_puzzle_inside"
+# scenario = 'cylindrical_puzzle'
+# scenario = 'urtabor_2026'
+
 # scenario = 'centaur'
 
 # scenario = 'orion'
@@ -54,8 +56,8 @@ constellations_for_stars_list = read_from_file(f"{scenario_folder}/list.sh")
 
 print("zodiac_plotter.py started")
 
-STR_GRPH_PROJ   =   False
-CYLINDRICAL     =   True
+STR_GRPH_PROJ   =   True
+CYLINDRICAL     =   False
 POLAR           =   False
 POLAR_LINES     =   False
 SPHERRICAL      =   False
@@ -157,175 +159,41 @@ if STR_GRPH_PROJ:
 
 if CYLINDRICAL:
 
-    x_realm = [-3.3, 4]
-    y_realm = [-1.8, 1.5]
-    x_span = abs(x_realm[0]-x_realm[1])
-    y_span = abs(y_realm[0]-y_realm[1])
-    x_y_scale=x_span/y_span
-    base_scale=5
-
-    plt.figure(figsize=(x_y_scale*base_scale, base_scale))
-
-    if 1:
-        # print()
-        # print(constellations_for_borders_list)
-        used_borders_list = []
-        for idx,constellation_for_borders in enumerate(constellations_for_borders_list):
-            print(f"Borders\t{idx} len: {len(constellations_for_borders_list)}\t{constellation_for_borders}")
-            data_file_path=f"{root}/constellations/prev/borders/{constellation_for_borders}.csv"
-
-            borders = csv_read_zodiac.read_lines_csv(data_file_path)
-            # print("B")
-            
-            utils.plot_cylindrical_borders(borders, center_Dec_deg,center_ra_deg,zrot_deg, used_borders_list)
-            # print(used_borders_list)
-            # print("A")
-
-    if 1:
-        for idx,constellation_for_line in enumerate(constellation_line_list):
-            print(f"lines\t{idx} len: {len(constellation_line_list)}")
-            data_file_path = f"{root}/constellations/prev/{constellation_for_line}.csv"
-
-            data = csv_read_zodiac.read_lines_csv(data_file_path)
-            utils.plot_cylindrical_lines(data,center_Dec_deg,center_ra_deg,zrot_deg, Break_line=0.1)
-
-
-    if 1:
-        DATA=[]
-        for idx, constellation_for_stars in enumerate(constellations_for_stars_list):
-            print(f"stars\t{idx} len: {len(constellations_for_stars_list)}")
-            data_file_path=f"{root}/constellations/prev/{constellation_for_stars}.csv"
-
-            data = csv_read_zodiac.read_csv(data_file_path)
-            DATA.append(data)
-        utils.plot_cylindrical_stars(DATA,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a)
-
-
-    if 1:
-        DATA=[]
-
-        data_file_path=f"{root}/constellations/prev/ecliptic.csv"
-        data = csv_read_zodiac.read_csv(data_file_path)
-        DATA.append(data)
-        utils.plot_cylindrical_ecliptic(DATA,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a)
-
-        DATA=[]
-
-        data_file_path=f"{root}/constellations/prev/eqinox.csv"
-        data = csv_read_zodiac.read_csv(data_file_path)
-        DATA.append(data)
-        utils.plot_cylindrical_equinox(DATA,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a)
-
-
-    # plt.xlim([0*np.pi,2.25*np.pi])
-
-    # plt.ylim([-np.pi/2,np.pi/2])
-
-    # for i in range(-6,6):
-    #     plt.axvline(i/6*np.pi,linestyle="--",color="gray",linewidth=0.5)
-    # for i in range(-3,3):
-    #     plt.axhline(i/6*np.pi,linestyle="--",color="gray",linewidth=0.5)
-
-    plt.gca().set_aspect('equal', adjustable='box')
- 
-    plt.xlim(x_realm)
-    plt.ylim(y_realm)
-    plt.tight_layout(pad=0)
-    plt.axis('off')
-    plt.margins(0)
-    
-    # plt.savefig("cylindrical.pdf", dpi=DPI)
-    plt.savefig("cylindrical.pdf", dpi=DPI, bbox_inches='tight', pad_inches=0)
-
-    # plt.show()
+    import cylindrial
+    cylindrial.print_cyl(constellations_for_borders_list, 
+              center_Dec_deg, 
+              root, 
+              center_ra_deg, 
+              zrot_deg, 
+              constellation_line_list,
+              constellations_for_stars_list,
+              hmg,
+              hmg2,
+              a,
+              DPI)
 
 print("cylindrical DONE")
 
 
 
 if POLAR:
-    plt.figure(figsize=(10, 8)) 
-    ax = plt.subplot(111, projection='polar')
 
-    if 1:
-        utils.plot_borders_polar(borders, center_Dec_deg,center_ra_deg,zrot_deg, ax)
+    import polar
+    polar.print_pol(constellations_for_borders_list, 
+              center_Dec_deg, 
+              root, 
+              center_ra_deg, 
+              zrot_deg, 
+              constellation_line_list,
+              constellations_for_stars_list,
+              hmg,
+              hmg2,
+              a,
+              DPI,
+              fov)
 
-        utils.plot_lines_polar(lines,center_Dec_deg,center_ra_deg, zrot_deg, ax)
-        utils.plot_stars_polar(const, center_Dec_deg,center_ra_deg,zrot_deg, ax, hmg, hmg2, a)
-
-        ax.set_ylim(0, np.tan(fov/4/180*np.pi))
-        ax.set_yticklabels([])
-        plt.gca().set_aspect('equal', adjustable='box')
-        plt.grid(False)
-
-        plt.savefig("all.pdf", dpi=DPI)
-
-
-
-
-    plt.figure(figsize=(10, 8)) 
-    ax = plt.subplot(111, projection='polar')
-
-    if 0:
-        utils.plot_borders_polar(borders, center_Dec_deg,center_ra_deg,zrot_deg, ax)
-
-        # utils.plot_lines_polar(lines,center_Dec_deg,center_ra_deg, zrot_deg, ax)
-        utils.plot_stars_polar(const, center_Dec_deg,center_ra_deg,zrot_deg, ax, hmg, hmg2, a)
-
-        ax.set_ylim(0, np.tan(fov/4/180*np.pi))
-        ax.set_yticklabels([])
-        plt.gca().set_aspect('equal', adjustable='box')
-        plt.grid(False)
-
-    plt.savefig("borders_&_stars.pdf", dpi=DPI)
+print("polar DONE")
     
-
-    plt.figure(figsize=(10, 8)) 
-    ax = plt.subplot(111, projection='polar')
-    if 0:
-        # utils.plot_borders_polar(borders, center_Dec_deg,center_ra_deg,zrot_deg, ax)
-
-        utils.plot_lines_polar(lines,center_Dec_deg,center_ra_deg, zrot_deg, ax)
-        utils.plot_stars_polar(const, center_Dec_deg,center_ra_deg,zrot_deg, ax, hmg, hmg2, a)
-
-        ax.set_ylim(0, np.tan(fov/4/180*np.pi))
-        ax.set_yticklabels([])
-        plt.gca().set_aspect('equal', adjustable='box')
-        plt.grid(False)
-
-    plt.savefig("stars_&_lines.pdf", dpi=DPI)
-
-
-    plt.figure(figsize=(10, 8)) 
-    ax = plt.subplot(111, projection='polar')
-    if 0:
-        utils.plot_borders_polar(borders, center_Dec_deg,center_ra_deg,zrot_deg, ax)
-
-        # utils.plot_lines_polar(lines,center_Dec_deg,center_ra_deg, zrot_deg, ax)
-        # utils.plot_stars_polar(const, center_Dec_deg,center_ra_deg,zrot_deg, ax, hmg, hmg2, a)
-
-        ax.set_ylim(0, np.tan(fov/4/180*np.pi))
-        ax.set_yticklabels([])
-        plt.gca().set_aspect('equal', adjustable='box')
-        plt.grid(False)
-
-    plt.savefig("borders.pdf", dpi=DPI)
-
-
-    plt.figure(figsize=(10, 8)) 
-    ax = plt.subplot(111, projection='polar')
-    if 0:
-        # utils.plot_borders_polar(borders, center_Dec_deg,center_ra_deg,zrot_deg, ax)
-
-        # utils.plot_lines_polar(lines,center_Dec_deg,center_ra_deg, zrot_deg, ax)
-        utils.plot_stars_polar(const, center_Dec_deg,center_ra_deg,zrot_deg, ax, hmg, hmg2, a)
-
-        ax.set_ylim(0, np.tan(fov/4/180*np.pi))
-        ax.set_yticklabels([])
-        plt.gca().set_aspect('equal', adjustable='box')
-        plt.grid(False)
-
-    plt.savefig("stars.pdf", dpi=DPI)
 
 
 
@@ -350,37 +218,9 @@ if SPHERRICAL:
     # plt.show()
 
 
-import shutil
-import os
 
-dest = os.path.join("scenarios", scenario)
 
-# Ensure destination directory exists
-os.makedirs(dest, exist_ok=True)
 
-files = [
-    "cylindrical.pdf",
-    "polar_lines.pdf",
-    "polar.pdf",
-    "sphereical.pdf",
-    "str_grph_proj.pdf",
-    "all.pdf",
-    "stars_&_lines.pdf",
-    "borders_&_stars.pdf",
-    "borders.pdf",
-    "stars.pdf",
-]
+import move_files
 
-for f in files:
-    target = os.path.join(dest, f)
-
-    try:
-        # If file exists at destination, remove it so move can overwrite
-        if os.path.exists(target):
-            os.remove(target)
-
-        shutil.move(f, target)
-        print(f"Moved {f} → {target}")
-
-    except FileNotFoundError:
-        print(f"Skipped (missing): {f}")
+move_files.main(scenario)

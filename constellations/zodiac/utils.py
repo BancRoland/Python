@@ -473,20 +473,73 @@ def plot_borders_str_grph(borders, center_Dec_deg,center_ra_deg,zrot_deg, ax):
         #     print("ALREADY FOUND BORDER!")
 
 
-def plot_stars_polar(const, center_Dec_deg,center_ra_deg,zrot_deg, ax, hmg, hmg2, a):
-    x=[]
-    y=[]
-    for idx,star in enumerate(const):
-        if idx%100 == 0:
-            print(f"polar stars:\t{idx/len(const)*100:.2f}%")
-        ra  = star['Right Ascension (deg)']/180*pi
-        dec = star['Declination (deg)']/180*np.pi
-        v = get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
-        theta_R = polar_upproject(v)
-        S,marker,alpha = condition_magnitudes(star,hmg,hmg2)
-        ax.scatter(theta_R[0], theta_R[1], c="black", marker=marker, s=a*(1+hmg-S), alpha=alpha, zorder=ORDER_OF_STARS_MINOR)
-        x.append(theta_R[1])
-        y.append(theta_R[0])
+# def plot_stars_polar(const, center_Dec_deg,center_ra_deg,zrot_deg, ax, hmg, hmg2, a):
+#     x=[]
+#     y=[]
+#     for idx,star in enumerate(const):
+#         if idx%100 == 0:
+#             print(f"polar stars:\t{idx/len(const)*100:.2f}%")
+#         ra  = star['Right Ascension (deg)']/180*pi
+#         dec = star['Declination (deg)']/180*np.pi
+#         v = get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
+#         theta_R = polar_upproject(v)
+#         S,marker,alpha = condition_magnitudes(star,hmg,hmg2)
+#         ax.scatter(theta_R[0], theta_R[1], c="black", marker=marker, s=a*(1+hmg-S), alpha=alpha, zorder=ORDER_OF_STARS_MINOR)
+#         x.append(theta_R[1])
+#         y.append(theta_R[0])
+
+
+
+def plot_stars_polar(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a):
+    x_list=[]
+    y_list=[]
+    S_list=[]
+    alpha_list=[]
+
+    # star_color="orange"
+    star_color2="black"
+    star_color="black"
+    for list_elem in const_list:
+        for i,star in enumerate(list_elem):
+            ra  = star['Right Ascension (deg)']/180*np.pi
+            dec = star['Declination (deg)']/180*np.pi
+            v = get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
+            theta_R = polar_upproject(v)
+            S,marker,alpha = condition_magnitudes(star,hmg,hmg2)
+            plt.scatter(theta_R[0], theta_R[1], c="black", marker=marker, s=a*(1+hmg-S), alpha=alpha, zorder=ORDER_OF_STARS_MINOR)
+    # #         x.append(theta_R[1])
+    # #         y.append(theta_R[0])
+
+    #         x_y_z = cylindrical_project(v)
+
+    # #         S,marker,alpha = condition_magnitudes(star,hmg,hmg2)
+    # #         s=a*(1+hmg-S)
+    #         x=x_y_z[0]
+    #         y=x_y_z[1]
+
+    # #         if x<0:
+    # #             x=x+2*np.pi
+            
+    #         if marker == ".":
+    #             S_list.append(s)
+
+    #             x_list.append(x)
+    #             y_list.append(y)
+    #             alpha_list.append(alpha)
+    #         else:
+    #             plt.scatter(x, y, color=star_color,  s=s, marker=marker, alpha=alpha, zorder=ORDER_OF_STARS_MAJOR)  
+    #             plt.scatter(x-2*pi, y, color=star_color,  s=s, marker=marker, alpha=alpha, zorder=ORDER_OF_STARS_MAJOR) 
+
+
+    # plt.scatter(x_list, y_list, color=star_color2,  s=S_list, marker=".", alpha=alpha_list, zorder=ORDER_OF_STARS_MINOR)
+    # # plt.scatter(x_y_z[0]+2*pi, x_y_z[1], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha, zorder=3)
+    # plt.scatter(x_list-2*pi*np.ones(len(x_list)), y_list, color=star_color2,  s=a*(1+hmg-S), marker=marker, alpha=alpha_list, zorder=ORDER_OF_STARS_MINOR)
+    # # y.append(x_y_z[1])
+    # # x.append(x_y_z[0])
+
+
+
+
 
 
 def plot_cylindrical_stars(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a):

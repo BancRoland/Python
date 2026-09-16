@@ -7,6 +7,9 @@ import matplotlib.pyplot as plt
 # sys.path.append('/home/roland/Desktop/Python/DSP')
 # import dsp
 
+def testme():
+    print("DSP modul working")
+
 def get_FIR_taps(fc,fs,LEN):
     f=fc/fs
     x=np.arange(-LEN//2,LEN//2)+0.5
@@ -274,3 +277,5 @@ def resa(v,fs,b):
     w=dec(inc(v,fs),b)
     return(w)
 
+if __name__=="__main__":
+    testme()

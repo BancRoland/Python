@@ -98,3 +98,4 @@ constellations/zodiac/stars_test.npy
 *.npz
 *.npy
 Physics/astronomy/watch/video*
+*.stl

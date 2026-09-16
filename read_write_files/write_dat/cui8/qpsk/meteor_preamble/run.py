@@ -8,6 +8,11 @@ import sys
 sys.path.append('/home/roland/Desktop/Python/DSP')
 import dsp
 
+def hex_to_binary(hex_string):
+    return ' '.join(f'{int(c, 16):04b}' for c in hex_string)
+
+
+
 def comp2cui8(v):
     code=np.zeros(len(v)*2)
     code[::2]=np.real(v)+127
