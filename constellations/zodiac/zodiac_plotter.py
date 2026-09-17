@@ -56,13 +56,13 @@ constellations_for_stars_list = read_from_file(f"{scenario_folder}/list.sh")
 
 print("zodiac_plotter.py started")
 
-STR_GRPH_PROJ   =   True
-# STR_GRPH_PROJ_3D   =   False
+STR_GRPH_PROJ   =   False
+STR_GRPH_PROJ_3D=   True
 
-CYLINDRICAL     =   True
-POLAR           =   True
-POLAR_LINES     =   True
-SPHERRICAL      =   True
+CYLINDRICAL     =   False
+POLAR           =   False
+POLAR_LINES     =   False
+SPHERRICAL      =   False
 
 DPI = 500
 # DPI=50
@@ -121,9 +121,17 @@ hmg     = args.hmg
 hmg2    = args.hmg2
 
 const=np.load("stars_test.npy", allow_pickle=True)
-lines=np.load("lines_data.npy", allow_pickle=True)
-borders=np.load("borders_data.npy", allow_pickle=True)
+# lines=np.load("lines_data.npy", allow_pickle=True)
+# borders=np.load("borders_data.npy", allow_pickle=True)
 
+
+import pickle
+
+with open("lines_data.pkl", "rb") as f:
+    lines = pickle.load(f)
+
+with open("borders_data.pkl", "rb") as f:
+    borders = pickle.load(f)
 
 # if True:
 #     ax=plt.figure(figsize=(10, 8)) 
@@ -164,36 +172,39 @@ if STR_GRPH_PROJ:
     # plt.show()
 
 
-# if STR_GRPH_PROJ_3D:
-#     ax=plt.figure(figsize=(10, 10)) 
-#     x=[]
-#     y=[]
-#     for star in const:
-#         ra_dec_coord = utils.RaDecDegCoord_deg(
-#             right_ascension_deg=star['Right Ascension (deg)'],
-#             declination_deg=star['Declination (deg)']
-#         )
+if STR_GRPH_PROJ_3D:
+    ax=plt.figure(figsize=(10, 10)) 
+    x=[]
+    y=[]
+    for star in const:
 
-#         v = utils.get_transformed_vector(ra_dec_coord,center_Dec_deg, center_ra_deg, zrot_deg)
-#         x_y_z = utils.upproject(v)
-#         S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
-#         plt.scatter(x_y_z[1], x_y_z[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha, zorder=3)
-#         x.append(x_y_z[1])
-#         y.append(x_y_z[0])
-        
-#     utils.plot_borders_str_grph(borders, center_Dec_deg,center_ra_deg,zrot_deg, ax)
-#     utils.plot_lines_str_grph(lines,center_Dec_deg,center_ra_deg, zrot_deg, ax)
+        ra_dec_coord = utils.RaDecDegCoord_deg(
+            right_ascension_deg=star['Right Ascension (deg)'],
+            declination_deg=star['Declination (deg)']
+        )
 
-#     # plt.grid()
-#     plt.gca().set_aspect('equal', adjustable='box')
-#     plt.xlim([-1,1])
-#     plt.ylim([-1,1])
-#     plt.tight_layout(pad=0)
-#     plt.axis('off')
-#     plt.margins(0)
-#     plt.savefig("str_grph_proj.pdf", dpi=DPI, pad_inches=0)
-#     # plt.savefig("str_grph_proj.png", dpi=DPI, pad_inches=0)
-#     # plt.show()
+        v = utils.get_transformed_vector(ra_dec_coord,center_Dec_deg, center_ra_deg, zrot_deg)
+        x_y_z = utils.upproject(v)
+        S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
+        # plt.scatter(x_y_z[1], x_y_z[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha, zorder=3)
+        x.append(x_y_z[1])
+        y.append(x_y_z[0])
+
+    
+    utils.plot_borders_str_grph_3D(borders, lines, center_Dec_deg,center_ra_deg,zrot_deg, ax)
+    # utils.plot_lines_str_grph(lines,center_Dec_deg,center_ra_deg, zrot_deg, ax)
+
+    # plt.grid()
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.xlim([-1,1])
+    plt.ylim([-1,1])
+    plt.tight_layout(pad=0)
+    plt.axis('off')
+    plt.margins(0)
+    plt.savefig("str_grph_proj.pdf", dpi=DPI, pad_inches=0)
+    # plt.savefig("str_grph_proj.png", dpi=DPI, pad_inches=0)
+    # plt.show()
+
 
 
 if CYLINDRICAL:

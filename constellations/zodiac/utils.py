@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy import sin, cos, pi
 from dataclasses import dataclass
+import trimesh
+from shapely.geometry import Polygon
 
 
 ORDER_OF_ECLIPTIC_LINE  = 0
@@ -82,6 +84,36 @@ class SkyLine():
     color: str
     width: str
     alpha: str
+
+    def __repr__(self):
+        ra1 = self.point_data_1.ra_dec_deg.right_ascension_deg
+        dec1 = self.point_data_1.ra_dec_deg.declination_deg
+        ra2 = self.point_data_2.ra_dec_deg.right_ascension_deg
+        dec2 = self.point_data_2.ra_dec_deg.declination_deg
+        return f"({ra1:.2f}, {dec1:.2f}) - ({ra2:.2f}, {dec2:.2f})"
+
+@dataclass
+class ListOfSkylines():
+
+    list_of_skylines: list[SkyLine]
+
+    def get_only_the_borders_from_this_constellation(self, constellation: str):
+        output_borders = []
+        for i in self.list_of_skylines:
+            if (i.point_data_1.constellation == constellation):
+                output_borders.append(i)
+        return(output_borders)
+
+    def get_a_list_of_separated_constellations(self):
+        constellation_already_used = []
+        for i in self.list_of_skylines:
+            if not (i.point_data_1.constellation in constellation_already_used):
+                constellation_already_used.append(i.point_data_1.constellation)
+        return(constellation_already_used)
+
+    def print_points(self):
+        for i in self.list_of_skylines:
+            print(i)
 
 
 def abs_vector(v:np.ndarray) -> float:
@@ -395,6 +427,154 @@ def plot_borders_str_grph(borders: list[SkyLine], center_Dec_deg,center_ra_deg,z
 
                 ra_now_rad = ra_next_rad
                 dec_now_rad = dec_next_rad
+
+
+@dataclass
+class Drawing():
+    points: list
+    name: str
+
+    def plot_my_drawing(self):
+        self.points.append(self.points[0])
+        for idx in range(len(self.points)-1):
+            A=self.points[idx]
+            B=self.points[idx+1]
+            plt.plot([A[0],B[0]],[A[1],B[1]],marker = "o", color="black")
+        plt.show()
+
+    def multiply_with_scalar(self,a):
+        out_list=[]
+        for idx, p in enumerate(self.points):
+            # print(self.points[idx][0])
+            out_list.append((p[0]*a, p[1]*a))
+
+        self.points = out_list
+        
+
+
+def get_a_fragmented_line(iteration_num, line, ra_step_rad, dec_step_rad, center_Dec_deg, center_ra_deg, zrot_deg):
+    ra1_rad  = line.point_data_1.ra_dec_deg.right_ascension_deg/180*pi
+    dec1_rad = line.point_data_1.ra_dec_deg.declination_deg/180*pi
+
+    ra_now_rad = ra1_rad    
+    dec_now_rad = dec1_rad
+
+    one_line=[]
+
+    for i in range(int(iteration_num)):
+        ra_next_rad = ra_now_rad + ra_step_rad
+        dec_next_rad = dec_now_rad + dec_step_rad
+
+        ra_dec_now_deg = RaDecDegCoord_deg(right_ascension_deg=ra_now_rad/np.pi*180,
+                                            declination_deg=dec_now_rad/np.pi*180)
+
+        v1 = get_transformed_vector(ra_dec_now_deg, center_Dec_deg, center_ra_deg, zrot_deg)
+        # theta_R1 = polar_upproject(v1)
+        x_y_z__1 = upproject(v1)
+
+        ra_dec_next_deg = RaDecDegCoord_deg(right_ascension_deg=    ra_next_rad/np.pi*180,
+                                            declination_deg=        dec_next_rad/np.pi*180)
+
+        v2 = get_transformed_vector(ra_dec_next_deg, center_Dec_deg, center_ra_deg, zrot_deg)
+        # theta_R2 = polar_upproject(v2)
+        x_y_z__2 = upproject(v2)
+
+
+        x1=x_y_z__1[0]
+        x2=x_y_z__2[0]
+        y1=x_y_z__1[1]
+        y2=x_y_z__2[1]
+        color="red"
+        one_line.append((y1,x1))
+
+        # plt.plot([y1,y2],[x1,x2],linewidth=0.5,linestyle="-",alpha=1,color=color)
+
+        ra_now_rad = ra_next_rad
+        dec_now_rad = dec_next_rad
+
+    return one_line
+
+
+
+def get_radec_step_rad(line: SkyLine):
+    ra1_rad  = line.point_data_1.ra_dec_deg.right_ascension_deg/180*pi
+    dec1_rad = line.point_data_1.ra_dec_deg.declination_deg/180*pi
+    ra2_rad  = line.point_data_2.ra_dec_deg.right_ascension_deg/180*pi
+    dec2_rad = line.point_data_2.ra_dec_deg.declination_deg/180*pi
+
+
+
+    ra_diff_rad = (ra2_rad-ra1_rad)
+    if abs(ra_diff_rad)>pi:
+        if ra1_rad<ra2_rad:
+            ra1_rad=ra1_rad+2*pi
+        else:
+            ra1_rad=ra1_rad-2*pi  
+        ra_diff_rad = (ra2_rad-ra1_rad)
+
+    dec_diff_rad = (dec2_rad-dec1_rad)
+    if abs(dec_diff_rad)>pi:
+        if dec1_rad<dec2_rad:
+            dec1_rad=dec1_rad+2*pi
+        else:
+            dec1_rad=dec1_rad-2*pi   
+        dec_diff_rad = (dec2_rad-dec1_rad)
+    iteration_num = max((np.floor(abs(ra_diff_rad)/(2*np.pi)*360))+1 , (np.floor(abs(dec_diff_rad)/(2*np.pi)*360))+1)
+
+    ra_step_rad = ra_diff_rad/iteration_num
+    dec_step_rad = dec_diff_rad/iteration_num
+
+    return ra_step_rad, dec_step_rad, iteration_num
+
+
+def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListOfSkylines, center_Dec_deg,center_ra_deg,zrot_deg, ax):
+
+    borders.print_points()
+    list_of_separated_constellations = borders.get_a_list_of_separated_constellations()
+
+    for constellation in list_of_separated_constellations:
+        my_drawing=Drawing(
+            points=[],
+            name=constellation
+            )
+
+        only_given_borders = borders.get_only_the_borders_from_this_constellation(constellation)
+        for idx,line in enumerate(only_given_borders):
+
+            if idx%100 == 0:
+                print(f"str_graph_borders:\t{idx/len(borders.list_of_skylines)*100:.2f}%")
+
+            ra_step_rad, dec_step_rad, iteration_num = get_radec_step_rad(line)
+            one_line = get_a_fragmented_line(iteration_num, line, ra_step_rad, dec_step_rad, center_Dec_deg, center_ra_deg, zrot_deg)
+            my_drawing.points.extend(reversed(one_line))
+            
+
+
+        # Define a 2D polygon
+        # polygon = Polygon(my_drawing.points)
+        # print(my_drawing.points)
+
+        multiplier=90
+        clearance = 0.5
+        height = 3
+        my_drawing.plot_my_drawing()
+
+        my_drawing.multiply_with_scalar(multiplier)
+
+        polygon = Polygon(my_drawing.points)
+
+
+        # Extrude it into 3D
+        prism = trimesh.creation.extrude_polygon(
+            polygon,
+            height=height
+        )
+
+        # Save as STL
+        prism.export(f"{my_drawing.name}.stl")
+
+        print("Created stl")
+        
 
 
 

@@ -116,7 +116,9 @@ def read_lines_csv(filename):
 
             data.append(current_line)
 
-    return data
+    output = utils.ListOfSkylines(list_of_skylines=data)
+
+    return output
 
 
 
@@ -125,12 +127,15 @@ if __name__ == "__main__":
     filename_lines = 'zodiac_lines.csv'  # Replace 'stars.csv' with the path to your CSV file
     lines_data = read_lines_csv(filename_lines)
 
-    np.save("lines_data.npy", lines_data)
+    import pickle
 
+    with open("lines_data.pkl", "wb") as f:
+        pickle.dump(lines_data, f)
 
 
     # Example usage
     filename_borders = 'zodiac_borders.csv'  # Replace 'stars.csv' with the path to your CSV file
     borders_data = read_lines_csv(filename_borders)
 
-    np.save("borders_data.npy", borders_data)
+    with open("borders_data.pkl", "wb") as f:
+        pickle.dump(borders_data, f)
