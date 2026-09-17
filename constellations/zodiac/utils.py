@@ -627,9 +627,15 @@ class OnePieceOfPuzzle():
 
 def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListOfSkylines, center_Dec_deg,center_ra_deg,zrot_deg, ax):
 
+    multiplier = 103.27
+    clearance = 0.02
+    base_thickness_mm = 3
+    line_depth_mm = 1
+    stripe_width = 0.005
+
     # borders.print_points()
     list_of_separated_constellations = borders.get_a_list_of_separated_constellations()
-    # list_of_separated_constellations = ["DRA"]
+    # list_of_separated_constellations = ["UMI", "DRA", "CAS"]
 
     for constellation in list_of_separated_constellations:
 
@@ -644,8 +650,8 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListO
         only_given_borders = borders.get_only_the_borders_from_this_constellation(constellation)
         for idx,line in enumerate(only_given_borders):
 
-            if idx%100 == 0:
-                print(f"str_graph_borders:\t{idx/len(borders.list_of_skylines)*100:.2f}%")
+            # if idx%100 == 0:
+                # print(f"str_graph_borders:\t{idx/len(borders.list_of_skylines)*100:.2f}%")
 
             ra_step_rad, dec_step_rad, iteration_num = get_radec_step_rad(line)
             one_line = get_a_fragmented_line(iteration_num, line, ra_step_rad, dec_step_rad, center_Dec_deg, center_ra_deg, zrot_deg)
@@ -654,15 +660,10 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListO
 
 
         stripes: list[ClosedDrawing] = []
-        all_dots: list[ClosedDrawing] = []
-
-
-
+        only_given_lines: list[SkyLine]
         only_given_lines = constellation_lines.get_only_the_borders_from_this_constellation(constellation)
-
-
         for idx,line in enumerate(only_given_lines):
-            print(f"str_grp lines:\t{idx/len(only_given_lines)*100:.2f}%")
+            # print(f"str_grp lines:\t{idx/len(only_given_lines)*100:.2f}%")
 
             v1 = get_transformed_vector(line.point_data_1.ra_dec_deg,center_Dec_deg, center_ra_deg, zrot_deg)
             xyz_1 = upproject(v1)
@@ -680,18 +681,16 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListO
             end_point = Vector(x=x2, y=y2, z=0)
             descartes_line = Line(start_point=start_point,end_point=end_point)
 
-            stripe = descartes_line.get_stripe()
+            stripe = descartes_line.get_stripe(width=stripe_width)
             stripes.append(stripe)
 
             dots = descartes_line.get_dots()
             stripes.append(dots[0])
             stripes.append(dots[1])
+            # print(f"{dots[0]} - {dots[1]}")
 
 
-
-
-
-        
+       
 
         one_piece_of_puzzle = OnePieceOfPuzzle(
             border=contour,
@@ -705,11 +704,8 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListO
         # polygon = Polygon(my_drawing.points)
         # print(my_drawing.points)
 
-        multiplier=103.27
-        clearance = 0
-        height = 3
-        depth = 1
-        one_piece_of_puzzle.plot_my_drawing()
+
+        # one_piece_of_puzzle.plot_my_drawing()
 
         one_piece_of_puzzle.border.multiply_with_scalar(multiplier)
         for line in one_piece_of_puzzle.lines:
@@ -725,7 +721,7 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListO
         # Extrude it into 3D
         base_plate = trimesh.creation.extrude_polygon(
             polygon,
-            height=height
+            height=base_thickness_mm
         )
 
 
@@ -733,16 +729,19 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListO
 
         topping_prism_list=[]
 
-        for thing in lines:
+
+
+        for idx,thing in enumerate(lines):
+
             topping = Polygon(thing.points)
 
             # Extrude it into 3D
             current_prism_topping = trimesh.creation.extrude_polygon(
                 topping,
-                height=depth
+                height=line_depth_mm
             )
 
-            current_prism_topping.apply_translation([0, 0, height-depth])
+            current_prism_topping.apply_translation([0, 0, base_thickness_mm-line_depth_mm])
             topping_prism_list.append(current_prism_topping)
 
 
@@ -756,9 +755,12 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListO
 
         # combined = trimesh.util.concatenate([prism])
         # to_remove = trimesh.util.concatenate([topping_prism_list[0]])
-        for ize in topping_prism_list:
+        for idx,ize in enumerate(topping_prism_list):
             # to_remove = trimesh.util.concatenate([to_remove, ize])
             base_plate = trimesh.boolean.difference([base_plate, ize],engine="manifold")   
+            # combined.export(f"WTF.stl")
+
+        
 
         combined = base_plate
 
