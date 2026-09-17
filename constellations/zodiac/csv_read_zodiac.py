@@ -86,60 +86,39 @@ def read_lines_csv(filename):
         for row in reader:
             ra_deg1, dec_deg1 = convert_coords(row['Right Ascension1'], row['Declination1'])
             ra_deg2, dec_deg2 = convert_coords(row['Right Ascension2'], row['Declination2'])
-            # Append the processed data to the list
-            # print(row['Name1'])
-            data.append({
-                'Name1': row['Name1'],
-                'Right Ascension (deg)1': ra_deg1,
-                'Declination (deg)1': dec_deg1,
-                'Apparent Magnitude1': float(row['Apparent Magnitude1']),
-                'Constellation1': row['Constellation1'],
-                'Name2': row['Name2'],
-                'Right Ascension (deg)2': ra_deg2,
-                'Declination (deg)2': dec_deg2,
-                'Apparent Magnitude2': float(row['Apparent Magnitude2']),
-                'Constellation2': row['Constellation2'],
-                'linestyle': row['linestyle'],
-                'color': row['color'],
-                'width': row['width'],
-                'alpha': row['alpha']
-                })
+
+            current_line = utils.SkyLine(
+                point_data_1=utils.PointDatas(
+                    name=row['Name1'],
+                    ra_dec_deg=utils.RaDecDegCoord_deg(
+                        right_ascension_deg=ra_deg1,
+                        declination_deg=dec_deg1
+                    ),
+                    apparent_mag=float(row['Apparent Magnitude1']),
+                    constellation=row['Constellation1'],
+                    ),
+
+                point_data_2=utils.PointDatas(
+                    name=row['Name2'],
+                    ra_dec_deg=utils.RaDecDegCoord_deg(
+                        right_ascension_deg=ra_deg2,
+                        declination_deg=dec_deg2
+                    ),
+                    apparent_mag=float(row['Apparent Magnitude2']),
+                    constellation=row['Constellation2'],
+                    ),
+
+                linestyle=row['linestyle'],
+                color =  row['color'],
+                width =  row['width'],
+                alpha =  row['alpha']
+            )
+
+            data.append(current_line)
+
     return data
 
-# def get_ecliptic_lines(n_points=100):
-#     data = []
 
-#     sun_positons_3dv=[]
-
-#     EQINOX_POINT = utils.get_3d_vec_from_RaDec(ra=0, dec=0)
-#     for i in range(0,24,1):
-#         time_rot = utils.zrot(EQINOX_POINT,i/24*360)
-#         space_rot= utils.xrot(time_rot,23.5)
-
-#         sun_positons_3dv.append(space_rot)
-
-#         ra_deg1, dec_deg1 = convert_coords(row['Right Ascension1'], row['Declination1'])
-#         ra_deg2, dec_deg2 = convert_coords(row['Right Ascension2'], row['Declination2'])
-#         # Append the processed data to the list
-#         # print(row['Name1'])
-        
-#         data.append({
-#             'Name1': row['Name1'],
-#             'Right Ascension (deg)1': ra_deg1,
-#             'Declination (deg)1': dec_deg1,
-#             'Apparent Magnitude1': float(row['Apparent Magnitude1']),
-#             'Constellation1': row['Constellation1'],
-#             'Name2': row['Name2'],
-#             'Right Ascension (deg)2': ra_deg2,
-#             'Declination (deg)2': dec_deg2,
-#             'Apparent Magnitude2': float(row['Apparent Magnitude2']),
-#             'Constellation2': row['Constellation2'],
-#             'linestyle': row['linestyle'],
-#             'color': row['color'],
-#             'width': row['width'],
-#             'alpha': row['alpha']
-#             })
-#     return data
 
 if __name__ == "__main__":
     # Example usage
