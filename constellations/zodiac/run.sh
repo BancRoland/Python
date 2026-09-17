@@ -87,7 +87,6 @@ awk 'NF' zodiac0_borders.csv >> zodiac_borders.csv
 rm zodiac0_borders.csv
 
 
-echo NOW I WILL START CSV_READ_ZODIAC
 python3 csv_read_zodiac.py
 echo FINISHED CSV_READ_ZODIAC
 
