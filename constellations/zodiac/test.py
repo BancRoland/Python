@@ -39,4 +39,4 @@ for constellation_for_borders in constellations_for_borders_list:
 for constellation_for_stars in constellations_for_stars_list:
     line_data_file_path=f"{root}/constellations/prev/{constellation_for_stars}.csv"
 
-    data = csv_read_zodiac.read_csv(line_data_file_path)
+    data = csv_read_zodiac.read_stars_csv(line_data_file_path)

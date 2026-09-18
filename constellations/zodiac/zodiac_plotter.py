@@ -120,12 +120,15 @@ a       = args.a
 hmg     = args.hmg
 hmg2    = args.hmg2
 
-const=np.load("stars_test.npy", allow_pickle=True)
+star_list=np.load("stars_test.npy", allow_pickle=True)
 # lines=np.load("lines_data.npy", allow_pickle=True)
 # borders=np.load("borders_data.npy", allow_pickle=True)
 
 
 import pickle
+
+with open("stars_data.pkl", "rb") as f:
+    stars = pickle.load(f)
 
 with open("lines_data.pkl", "rb") as f:
     lines = pickle.load(f)
@@ -147,7 +150,7 @@ if STR_GRPH_PROJ:
     ax=plt.figure(figsize=(10, 10)) 
     x=[]
     y=[]
-    for star in const:
+    for star in star_list:
 
         ra_dec_coord = utils.RaDecDegCoord_deg(
             right_ascension_deg=star['Right Ascension (deg)'],
@@ -177,37 +180,8 @@ if STR_GRPH_PROJ:
 
 
 if STR_GRPH_PROJ_3D:
-    ax=plt.figure(figsize=(10, 10)) 
-    x=[]
-    y=[]
-    for star in const:
 
-        ra_dec_coord = utils.RaDecDegCoord_deg(
-            right_ascension_deg=star['Right Ascension (deg)'],
-            declination_deg=star['Declination (deg)']
-        )
-
-        v = utils.get_transformed_vector(ra_dec_coord, proj_vals)
-        x_y_z = utils.upproject(v)
-        S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
-        # plt.scatter(x_y_z[1], x_y_z[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha, zorder=3)
-        x.append(x_y_z[1])
-        y.append(x_y_z[0])
-
-    
-    utils.plot_borders_str_grph_3D(borders, lines, proj_vals, ax)
-    # utils.plot_lines_str_grph(lines,center_Dec_deg,center_ra_deg, zrot_deg, ax)
-
-    # plt.grid()
-    plt.gca().set_aspect('equal', adjustable='box')
-    plt.xlim([-1,1])
-    plt.ylim([-1,1])
-    plt.tight_layout(pad=0)
-    plt.axis('off')
-    plt.margins(0)
-    plt.savefig("str_grph_proj.pdf", dpi=DPI, pad_inches=0)
-    # plt.savefig("str_grph_proj.png", dpi=DPI, pad_inches=0)
-    # plt.show()
+    utils.plot_borders_str_grph_3D(borders, lines, stars, proj_vals, hmg, hmg2)
 
 
 
@@ -254,7 +228,7 @@ print("polar DONE")
 if SPHERRICAL:
     plt.figure(figsize=(10, 8)) 
     ax = plt.subplot(111, projection='polar')
-    for star in const:
+    for star in star_list:
         ra_dec_coord = utils.RaDecDegCoord_deg(
             right_ascension_deg=star['Right Ascension (deg)'],
             declination_deg=star['Declination (deg)']
@@ -278,6 +252,6 @@ if SPHERRICAL:
 
 
 
-import move_files
+# import move_files
 
-move_files.main(scenario)
+# move_files.main(scenario)

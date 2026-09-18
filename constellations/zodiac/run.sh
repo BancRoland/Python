@@ -103,4 +103,7 @@ mv stars_\&_lines.pdf scenarios/$name
 mv borders_\&_stars.pdf scenarios/$name
 mv borders.pdf scenarios/$name
 mv stars.pdf scenarios/$name
+mkdir stl_files
+mv *.stl stl_files
+mv stl_files scenarios/$name
 

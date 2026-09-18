@@ -70,7 +70,7 @@ def print_pol(constellations_for_borders_list,
             print(f"stars\t{idx} len: {len(constellations_for_stars_list)}")
             data_file_path=f"{root}/constellations/prev/{constellation_for_stars}.csv"
 
-            data = csv_read_zodiac.read_csv(data_file_path)
+            data = csv_read_zodiac.read_stars_csv(data_file_path)
             DATA.append(data)
         # utils.plot_stars_polar(DATA,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a)
         utils.plot_stars_polar(DATA,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a)

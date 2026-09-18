@@ -130,7 +130,7 @@ class ListOfSkylines():
 
     list_of_skylines: list[SkyLine]
 
-    def get_only_the_borders_from_this_constellation(self, constellation: str):
+    def get_only_the_lines_from_this_constellation(self, constellation: str):
         output_borders = []
         for i in self.list_of_skylines:
             if (i.point_data_1.constellation == constellation):
@@ -184,6 +184,18 @@ class Vector:
                       y=self.y/L,
                       z=self.z/L)
 
+    def get_dots(self, width=0.005)->ClosedDrawing:
+        
+        edge_points = []
+        for i in range(0,360,10):
+            edge_point0 = self + Vector(x=width*np.cos(i/180*np.pi), y=width*np.sin(i/180*np.pi), z=0)
+            edge_points.append((edge_point0.y, edge_point0.x))
+
+        output_closed_drawig = ClosedDrawing(points = edge_points, name ="")
+                
+        return output_closed_drawig
+
+
 @dataclass
 class Line():
     start_point: Vector
@@ -214,13 +226,8 @@ class Line():
         
         output_closed_drawig_list=[]
         for point in [self.start_point, self.end_point]:
-            edge_points = []
 
-            for i in range(0,360,10):
-                edge_point0 = point + Vector(x=width*np.cos(i/180*np.pi), y=width*np.sin(i/180*np.pi), z=0)
-                edge_points.append((edge_point0.y, edge_point0.x))
-
-            output_closed_drawig_list.append(ClosedDrawing(points=edge_points, name =""))    
+            output_closed_drawig_list.append(point.get_dots())    
                 
         return output_closed_drawig_list
 
@@ -631,7 +638,42 @@ class OnePieceOfPuzzle():
         plt.show()
 
 
-def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListOfSkylines, proj_vals: ProjVals, ax):
+def generate_stars_str_grph_3d(stars: list[PointDatas], proj_vals, hmg, hmg2, clearance, base_thickness_mm, radius=0.01, multiplier=1):
+
+    star_body_list = []
+
+    for star in stars:
+
+        v = get_transformed_vector(star.ra_dec_deg, proj_vals)
+        x_y_z = upproject(v)
+        # S,marker,alpha = condition_magnitudes(star, hmg,hmg2)
+        # plt.scatter(x_y_z[1], x_y_z[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha, zorder=3)
+        x=(x_y_z[1])
+        y=(x_y_z[0])
+
+        current_projected_point = Vector(y,x,z=0)
+        object = current_projected_point.get_dots(width=radius)
+        object.multiply_with_scalar(multiplier)
+
+        star_polygon = Polygon(object.points)
+        # star_polygon = star_polygon.buffer(-clearance)
+        star_body = trimesh.creation.extrude_polygon(star_polygon, height = base_thickness_mm*2)
+        star_body_list.append(star_body)
+
+    combined_star_body = trimesh.boolean.union(star_body_list, engine="manifold")
+    return combined_star_body
+
+
+
+
+    
+
+def plot_borders_str_grph_3D(borders: ListOfSkylines, 
+                             constellation_lines: ListOfSkylines, 
+                             stars: list[PointDatas], 
+                             proj_vals: ProjVals, 
+                             hmg,
+                             hmg2):
 
     multiplier = 103.27
     clearance = 0.02
@@ -650,6 +692,9 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListO
     # list_of_separated_constellations = ['LMI', 'CNC', 'GEM', 'ARI', 'CAM', 'BOO']
 
 
+    combined_star_body = generate_stars_str_grph_3d(stars, proj_vals, hmg, hmg2, clearance, base_thickness_mm, radius=0.004, multiplier=multiplier)
+
+
     remover_element_list=[]
     for constellation in list_of_separated_constellations:
         stripes: list[ClosedDrawing] = []
@@ -657,7 +702,7 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListO
         print(constellation)
 
         only_given_lines: list[SkyLine]
-        only_given_lines = constellation_lines.get_only_the_borders_from_this_constellation(constellation)
+        only_given_lines = constellation_lines.get_only_the_lines_from_this_constellation(constellation)
         for line in only_given_lines:
 
             v1 = get_transformed_vector(line.point_data_1.ra_dec_deg, proj_vals)
@@ -678,7 +723,7 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListO
             stripe = descartes_line.get_stripe(width=stripe_width)
             stripes.append(stripe)
 
-            dots = descartes_line.get_dots(width=stripe_width)
+            dots = descartes_line.get_dots(width=stripe_width/2)
             stripes.append(dots[0])
             stripes.append(dots[1])
 
@@ -702,6 +747,8 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListO
             # print(remover_element)
 
             # print(idx)
+
+    remover_element_list.append(combined_star_body)
     ultimate_remover = trimesh.boolean.union(remover_element_list, engine="manifold")
 
 
@@ -711,7 +758,7 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListO
 
         base_contour = ClosedDrawing(points=[], name=constellation)
 
-        only_given_borders = borders.get_only_the_borders_from_this_constellation(constellation)
+        only_given_borders = borders.get_only_the_lines_from_this_constellation(constellation)
         for line in only_given_borders:
 
             ra_step_rad, dec_step_rad, iteration_num = get_radec_step_rad(line)
@@ -734,7 +781,7 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListO
         base_countour_polygon = base_countour_polygon.buffer(-clearance)
         base_plate = trimesh.creation.extrude_polygon(base_countour_polygon, height = base_thickness_mm)
 
-
+        one_piece_of_puzzle.plot_my_drawing()
 
         #remove the things
         base_plate = trimesh.boolean.difference([base_plate, ultimate_remover],engine="manifold")   

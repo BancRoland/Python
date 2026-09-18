@@ -4,6 +4,8 @@ import astropy.units as u
 import numpy as np
 import re
 import utils
+import pickle
+
 
 
 
@@ -54,28 +56,22 @@ def convert_coords(ra, dec):
 
 
 # Function to read the CSV file
-def read_csv(filename):
+def read_stars_csv(filename):
     data = []
     with open(filename, newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             ra_deg, dec_deg = convert_coords(row['Right Ascension'], row['Declination'])
-            data.append({
-                'Name': row['Name'],
-                'Right Ascension (deg)': ra_deg,
-                'Declination (deg)': dec_deg,
-                'Apparent Magnitude': float(row['Apparent Magnitude']),
-                'Constellation': row['Constellation']
-                })
+
+            current_star = utils.PointDatas(name = row['Name'], 
+                                            ra_dec_deg = utils.RaDecDegCoord_deg(right_ascension_deg=ra_deg, declination_deg= dec_deg),
+                                            apparent_mag = float(row['Apparent Magnitude']),
+                                            constellation = row['Constellation'])
+
+            data.append(current_star)
+
     return data
 
-# Example usage
-filename = 'zodiac.csv'  # Replace 'stars.csv' with the path to your CSV file
-stars_data = read_csv(filename)
-
-np.save("stars_test.npy", stars_data)
-# for star in stars_data:
-#     print(star)
 
 
 # Function to read the CSV file
@@ -123,17 +119,24 @@ def read_lines_csv(filename):
 
 
 if __name__ == "__main__":
-    # Example usage
+    
+    #Export stars
+    filename = 'zodiac.csv'  # Replace 'stars.csv' with the path to your CSV file
+    data = read_stars_csv(filename)
+
+    with open("stars_data.pkl", "wb") as f:
+        pickle.dump(data, f)
+
+
+    #Export lines
     filename_lines = 'zodiac_lines.csv'  # Replace 'stars.csv' with the path to your CSV file
     lines_data = read_lines_csv(filename_lines)
-
-    import pickle
 
     with open("lines_data.pkl", "wb") as f:
         pickle.dump(lines_data, f)
 
 
-    # Example usage
+    #Export borders
     filename_borders = 'zodiac_borders.csv'  # Replace 'stars.csv' with the path to your CSV file
     borders_data = read_lines_csv(filename_borders)
 
