@@ -629,41 +629,30 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListO
 
     multiplier = 103.27
     clearance = 0.02
-    base_thickness_mm = 3
-    line_depth_mm = 1
-    stripe_width = 0.005
+    base_thickness_mm = 2
+    line_depth_mm = 0.1
+    stripe_width = 0.001
 
     # borders.print_points()
     list_of_separated_constellations = borders.get_a_list_of_separated_constellations()
+    # print(list_of_separated_constellations)
+    # import time
+    # time.sleep(10000)
     # list_of_separated_constellations = ["UMI", "DRA", "CAS"]
+    # list_of_separated_constellations = ["DRA", "LMI"]
+    # list_of_separated_constellations = ['CAS', 'AND', 'CVN', 'CMI', 'DRA', 'LMI', 'CNC', 'GEM', 'ARI', 'CAM', 'BOO', 'AUR', 'PEG', 'PER', 'CEP', 'COM', 'LAC', 'HER', 'EQU', 'TRI', 'LYN', 'UMI', 'CYG', 'LYR', 'SGE', 'VUL', 'DEL', 'UMA', 'CRB', 'SER1']
+    # list_of_separated_constellations = ['LMI', 'CNC', 'GEM', 'ARI', 'CAM', 'BOO']
 
+
+    remover_element_list=[]
     for constellation in list_of_separated_constellations:
-
-        contour=ClosedDrawing(
-            points=[],
-            name=constellation
-            )
-
-
-
-
-        only_given_borders = borders.get_only_the_borders_from_this_constellation(constellation)
-        for idx,line in enumerate(only_given_borders):
-
-            # if idx%100 == 0:
-                # print(f"str_graph_borders:\t{idx/len(borders.list_of_skylines)*100:.2f}%")
-
-            ra_step_rad, dec_step_rad, iteration_num = get_radec_step_rad(line)
-            one_line = get_a_fragmented_line(iteration_num, line, ra_step_rad, dec_step_rad, center_Dec_deg, center_ra_deg, zrot_deg)
-            contour.points.extend(reversed(one_line))
-
-
-
         stripes: list[ClosedDrawing] = []
+
+        print(constellation)
+
         only_given_lines: list[SkyLine]
         only_given_lines = constellation_lines.get_only_the_borders_from_this_constellation(constellation)
-        for idx,line in enumerate(only_given_lines):
-            # print(f"str_grp lines:\t{idx/len(only_given_lines)*100:.2f}%")
+        for line in only_given_lines:
 
             v1 = get_transformed_vector(line.point_data_1.ra_dec_deg,center_Dec_deg, center_ra_deg, zrot_deg)
             xyz_1 = upproject(v1)
@@ -675,7 +664,6 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListO
             x2=xyz_2[0]
             y1=xyz_1[1]
             y2=xyz_2[1]
-            plt.plot([y1,y2],[x1,x2],linewidth=line.width,linestyle=line.linestyle,alpha=0.9,color=line.color,zorder=ORDER_OF_LINES)
 
             start_point = Vector(x=x1,y=y1,z=0)
             end_point = Vector(x=x2, y=y2, z=0)
@@ -684,96 +672,74 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListO
             stripe = descartes_line.get_stripe(width=stripe_width)
             stripes.append(stripe)
 
-            dots = descartes_line.get_dots()
+            dots = descartes_line.get_dots(width=stripe_width)
             stripes.append(dots[0])
             stripes.append(dots[1])
-            # print(f"{dots[0]} - {dots[1]}")
+
+        for stripe in stripes:
+            stripe = stripe.multiply_with_scalar(multiplier)
 
 
-       
 
-        one_piece_of_puzzle = OnePieceOfPuzzle(
-            border=contour,
-            lines=stripes
-        )
+        # remover_poly = Polygon(lines[0].points)
+        # remover_element = trimesh.creation.extrude_polygon(remover_poly, height = line_depth_mm)
+        # remover_element.apply_translation([0, 0, base_thickness_mm-line_depth_mm])
+        
+        # ultimate_remover = trimesh.boolean.union([remover_element], engine="manifold")
+        for idx, line in enumerate(stripes):
 
-        # one_piece_of_puzzle.plot_my_drawing()
+            remover_poly = Polygon(line.points)
+
+            remover_element = trimesh.creation.extrude_polygon(remover_poly, height = line_depth_mm)
+            remover_element.apply_translation([0, 0, base_thickness_mm-line_depth_mm])
+            remover_element_list.append(remover_element)
+            # print(remover_element)
+
+            # print(idx)
+    ultimate_remover = trimesh.boolean.union(remover_element_list, engine="manifold")
 
 
-        # Define a 2D polygon
-        # polygon = Polygon(my_drawing.points)
-        # print(my_drawing.points)
 
 
-        # one_piece_of_puzzle.plot_my_drawing()
+    for constellation in list_of_separated_constellations:
 
+        base_contour = ClosedDrawing(points=[], name=constellation)
+
+        only_given_borders = borders.get_only_the_borders_from_this_constellation(constellation)
+        for line in only_given_borders:
+
+            ra_step_rad, dec_step_rad, iteration_num = get_radec_step_rad(line)
+            one_line = get_a_fragmented_line(iteration_num, line, ra_step_rad, dec_step_rad, center_Dec_deg, center_ra_deg, zrot_deg)
+            base_contour.points.extend(reversed(one_line))
+
+
+
+        #define a piece
+        one_piece_of_puzzle = OnePieceOfPuzzle(border = base_contour,lines = stripes)
+
+        #scale up
         one_piece_of_puzzle.border.multiply_with_scalar(multiplier)
         for line in one_piece_of_puzzle.lines:
             line.multiply_with_scalar(multiplier)
 
-
-        contour = one_piece_of_puzzle.border
-
-        polygon = Polygon(contour.points)
-        polygon = polygon.buffer(-clearance)
-
-
-        # Extrude it into 3D
-        base_plate = trimesh.creation.extrude_polygon(
-            polygon,
-            height=base_thickness_mm
-        )
-
-
-        lines = one_piece_of_puzzle.lines
-
-        topping_prism_list=[]
+        #separate and create the base of piece
+        base_contour = one_piece_of_puzzle.border
+        base_countour_polygon = Polygon(base_contour.points)
+        base_countour_polygon = base_countour_polygon.buffer(-clearance)
+        base_plate = trimesh.creation.extrude_polygon(base_countour_polygon, height = base_thickness_mm)
 
 
 
-        for idx,thing in enumerate(lines):
-
-            topping = Polygon(thing.points)
-
-            # Extrude it into 3D
-            current_prism_topping = trimesh.creation.extrude_polygon(
-                topping,
-                height=line_depth_mm
-            )
-
-            current_prism_topping.apply_translation([0, 0, base_thickness_mm-line_depth_mm])
-            topping_prism_list.append(current_prism_topping)
-
-
-
-        # Move the top prism upward
-
-
-        # -------------------------
-        # Combine them
-        # -------------------------
-
-        # combined = trimesh.util.concatenate([prism])
-        # to_remove = trimesh.util.concatenate([topping_prism_list[0]])
-        for idx,ize in enumerate(topping_prism_list):
-            # to_remove = trimesh.util.concatenate([to_remove, ize])
-            base_plate = trimesh.boolean.difference([base_plate, ize],engine="manifold")   
-            # combined.export(f"WTF.stl")
-
-        
+        #remove the things
+        base_plate = trimesh.boolean.difference([base_plate, ultimate_remover],engine="manifold")   
 
         combined = base_plate
 
-        # combined = trimesh.boolean.difference(meshes=[base_plate, to_remove], check_volume=True)
-        # combined = base_plate
-        # combined = to_remove
-
-
         # # Save as STL
-        combined.export(f"{contour.name}.stl")
+        combined.export(f"{base_contour.name}.stl")
         # to_remove.export(f"{contour.name}.stl")
 
-        print(f"Created {contour.name}.stl")
+        print(f"Created {base_contour.name}.stl")
 
         
         
