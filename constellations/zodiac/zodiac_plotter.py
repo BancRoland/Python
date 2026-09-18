@@ -6,6 +6,7 @@ import argparse
 import toml
 import time
 import csv_read_zodiac
+import stereographic
 
 def read_from_file(root: str):
     items = []
@@ -56,8 +57,8 @@ constellations_for_stars_list = read_from_file(f"{scenario_folder}/list.sh")
 
 print("zodiac_plotter.py started")
 
-STR_GRPH_PROJ    =   False
-STR_GRPH_PROJ_3D =   True
+STR_GRPH_PROJ    =   True
+STR_GRPH_PROJ_3D =   False
 
 CYLINDRICAL      =   False
 POLAR            =   False
@@ -164,8 +165,8 @@ if STR_GRPH_PROJ:
         x.append(x_y_z[1])
         y.append(x_y_z[0])
         
-    utils.plot_borders_str_grph(borders, proj_vals, ax)
-    utils.plot_lines_str_grph(lines, proj_vals, ax)
+    stereographic.plot_borders_str_grph(borders, proj_vals, ax)
+    stereographic.plot_lines_str_grph(lines, proj_vals, ax)
 
     # plt.grid()
     plt.gca().set_aspect('equal', adjustable='box')
@@ -181,7 +182,7 @@ if STR_GRPH_PROJ:
 
 if STR_GRPH_PROJ_3D:
 
-    utils.plot_borders_str_grph_3D(borders, lines, stars, proj_vals, hmg, hmg2)
+    stereographic.plot_borders_str_grph_3D(borders, lines, stars, proj_vals, hmg, hmg2)
 
 
 
