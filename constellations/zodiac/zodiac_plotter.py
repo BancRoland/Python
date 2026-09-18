@@ -56,13 +56,13 @@ constellations_for_stars_list = read_from_file(f"{scenario_folder}/list.sh")
 
 print("zodiac_plotter.py started")
 
-STR_GRPH_PROJ   =   False
-STR_GRPH_PROJ_3D=   True
+STR_GRPH_PROJ    =   False
+STR_GRPH_PROJ_3D =   True
 
-CYLINDRICAL     =   False
-POLAR           =   False
-POLAR_LINES     =   False
-SPHERRICAL      =   False
+CYLINDRICAL      =   False
+POLAR            =   False
+POLAR_LINES      =   False
+SPHERRICAL       =   False
 
 DPI = 500
 # DPI=50
@@ -139,6 +139,10 @@ with open("borders_data.pkl", "rb") as f:
 # plt.show()
 
 
+proj_vals = utils.ProjVals(center_Dec_deg=center_Dec_deg,
+                           center_ra_deg=center_ra_deg,
+                           zrot_deg=zrot_deg)
+
 if STR_GRPH_PROJ:
     ax=plt.figure(figsize=(10, 10)) 
     x=[]
@@ -150,15 +154,15 @@ if STR_GRPH_PROJ:
             declination_deg=star['Declination (deg)']
         )
 
-        v = utils.get_transformed_vector(ra_dec_coord,center_Dec_deg, center_ra_deg, zrot_deg)
+        v = utils.get_transformed_vector(ra_dec_coord, proj_vals)
         x_y_z = utils.upproject(v)
         S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
         plt.scatter(x_y_z[1], x_y_z[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha, zorder=3)
         x.append(x_y_z[1])
         y.append(x_y_z[0])
         
-    utils.plot_borders_str_grph(borders, center_Dec_deg,center_ra_deg,zrot_deg, ax)
-    utils.plot_lines_str_grph(lines,center_Dec_deg,center_ra_deg, zrot_deg, ax)
+    utils.plot_borders_str_grph(borders, proj_vals, ax)
+    utils.plot_lines_str_grph(lines, proj_vals, ax)
 
     # plt.grid()
     plt.gca().set_aspect('equal', adjustable='box')
@@ -183,7 +187,7 @@ if STR_GRPH_PROJ_3D:
             declination_deg=star['Declination (deg)']
         )
 
-        v = utils.get_transformed_vector(ra_dec_coord,center_Dec_deg, center_ra_deg, zrot_deg)
+        v = utils.get_transformed_vector(ra_dec_coord, proj_vals)
         x_y_z = utils.upproject(v)
         S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
         # plt.scatter(x_y_z[1], x_y_z[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha, zorder=3)
@@ -191,7 +195,7 @@ if STR_GRPH_PROJ_3D:
         y.append(x_y_z[0])
 
     
-    utils.plot_borders_str_grph_3D(borders, lines, center_Dec_deg,center_ra_deg,zrot_deg, ax)
+    utils.plot_borders_str_grph_3D(borders, lines, proj_vals, ax)
     # utils.plot_lines_str_grph(lines,center_Dec_deg,center_ra_deg, zrot_deg, ax)
 
     # plt.grid()
@@ -256,7 +260,7 @@ if SPHERRICAL:
             declination_deg=star['Declination (deg)']
         )
 
-        v = utils.get_transformed_vector(ra_dec_coord,center_Dec_deg, center_ra_deg, zrot_deg)
+        v = utils.get_transformed_vector(ra_dec_coord, proj_vals)
         ra2,dec2 = utils.vector2ra_dec(v)
         S,marker,alpha = utils.condition_magnitudes(star,hmg,hmg2)
         ax.scatter(ra2, np.pi/2-dec2, c="black", marker=marker, s=a*(1+hmg-S), alpha=alpha)

@@ -13,6 +13,12 @@ ORDER_OF_STARS_MAJOR    = 3
 ORDER_OF_BORDES         = 4
 
 @dataclass
+class ProjVals():
+    center_Dec_deg: float
+    center_ra_deg: float
+    zrot_deg: float
+
+@dataclass
 class ClosedDrawing():
     points: list
     name: str
@@ -324,17 +330,17 @@ def get_RaDec_from_3dVector(v:np.ndarray):
     dec = np.arcsin(v_z)*180/np.pi
     return ra,dec
 
-def get_transformed_vector(ra_dec_coord_deg: RaDecDegCoord_deg, center_Dec_deg: float, center_ra_deg: float, zrot_deg: float):   
+def get_transformed_vector(ra_dec_coord_deg: RaDecDegCoord_deg, proj_vals: ProjVals):   
     ra = ra_dec_coord_deg.right_ascension_deg/180*np.pi
     dec = ra_dec_coord_deg.declination_deg/180*np.pi
     v = get_3d_vec_from_RaDec(ra,dec)
-    v = center_to_RaDec(v,center_Dec_deg,center_ra_deg)
-    v = zrot(v,zrot_deg)
+    v = center_to_RaDec(v, proj_vals.center_Dec_deg, proj_vals.center_ra_deg)
+    v = zrot(v, proj_vals.zrot_deg)
     return v
 
-def get_transformed_vector_from3d(v: np.ndarray, center_Dec_deg: float, center_ra_deg: float, zrot_deg: float):   
-    v = center_to_RaDec(v,center_Dec_deg,center_ra_deg)
-    v = zrot(v,zrot_deg)
+def get_transformed_vector_from3d(v: np.ndarray, proj_vals: ProjVals):   
+    v = center_to_RaDec(v, proj_vals.center_Dec_deg, proj_vals.center_ra_deg)
+    v = zrot(v, proj_vals.zrot_deg)
     return v
 
 def condition_magnitudes(star, hmg, hmg2):
@@ -364,14 +370,14 @@ def vector2ra_dec(v):
 
 
 
-def plot_lines_polar(lines: list[SkyLine], center_Dec_deg,center_ra_deg,zrot_deg, ax):
+def plot_lines_polar(lines: list[SkyLine], proj_vals: ProjVals, ax):
     for idx,line in enumerate(lines):
         print(f"polar lines:\t{idx/len(lines)*100:.2f}%")
 
-        v1 = get_transformed_vector(line.point_data_1.ra_dec_deg, center_Dec_deg, center_ra_deg, zrot_deg)
+        v1 = get_transformed_vector(line.point_data_1.ra_dec_deg, proj_vals)
         theta_R1 = polar_upproject(v1)
 
-        v2 = get_transformed_vector(line.point_data_2.ra_dec_deg, center_Dec_deg, center_ra_deg, zrot_deg)
+        v2 = get_transformed_vector(line.point_data_2.ra_dec_deg, proj_vals)
         theta_R2 = polar_upproject(v2)
 
         theta1=theta_R1[0]
@@ -380,24 +386,24 @@ def plot_lines_polar(lines: list[SkyLine], center_Dec_deg,center_ra_deg,zrot_deg
         R2=theta_R2[1]
         ax.plot([theta1,theta2],[R1,R2],linewidth=line.width,linestyle=line.linestyle,alpha=1,color=line.color,zorder=ORDER_OF_LINES)
 
-def plot_lines_str_grph(lines: list[SkyLine], center_Dec_deg,center_ra_deg,zrot_deg, ax):
-    for idx,line in enumerate(lines):
-        print(f"str_grp lines:\t{idx/len(lines)*100:.2f}%")
+def plot_lines_str_grph(lines: ListOfSkylines, proj_vals: ProjVals, ax):
+    for idx,line in enumerate(lines.list_of_skylines):
+        print(f"str_grp lines:\t{idx/len(lines.list_of_skylines)*100:.2f}%")
 
-        v1 = get_transformed_vector(line.point_data_1.ra_dec_deg,center_Dec_deg, center_ra_deg, zrot_deg)
+        v1 = get_transformed_vector(line.point_data_1.ra_dec_deg, proj_vals)
         xyz_1 = upproject(v1)
 
-        v2 = get_transformed_vector(line.point_data_2.ra_dec_deg,center_Dec_deg, center_ra_deg, zrot_deg)
+        v2 = get_transformed_vector(line.point_data_2.ra_dec_deg, proj_vals)
         xyz_2 = upproject(v2)
 
         x1=xyz_1[0]
         x2=xyz_2[0]
         y1=xyz_1[1]
         y2=xyz_2[1]
-        plt.plot([y1,y2],[x1,x2],linewidth=line.width,linestyle=line.linestyle,alpha=0.9,color=line.color,zorder=ORDER_OF_LINES)
+        plt.plot([y1,y2],[x1,x2], linewidth=line.width, linestyle=line.linestyle, alpha=0.9, color=line.color, zorder=ORDER_OF_LINES)
                         
 
-def plot_borders_polar(borders: list[SkyLine], center_Dec_deg,center_ra_deg,zrot_deg, ax):
+def plot_borders_polar(borders: list[SkyLine], proj_vals: ProjVals, ax):
     for idx,line in enumerate(borders):
         if idx%100==0:
             print(f"polar borders:\t{idx/len(borders)*100:.2f}%")
@@ -441,10 +447,10 @@ def plot_borders_polar(borders: list[SkyLine], center_Dec_deg,center_ra_deg,zrot
             )
 
 
-            v1 = get_transformed_vector(ra_dec_now_deg, center_Dec_deg, center_ra_deg, zrot_deg)
+            v1 = get_transformed_vector(ra_dec_now_deg, proj_vals)
             theta_R1 = polar_upproject(v1)
 
-            v2 = get_transformed_vector(ra_dec_next_deg, center_Dec_deg, center_ra_deg, zrot_deg)
+            v2 = get_transformed_vector(ra_dec_next_deg, proj_vals)
             theta_R2 = polar_upproject(v2)
 
             theta1=theta_R1[0]
@@ -460,11 +466,11 @@ def plot_borders_polar(borders: list[SkyLine], center_Dec_deg,center_ra_deg,zrot
 
 
 
-def plot_borders_str_grph(borders: list[SkyLine], center_Dec_deg,center_ra_deg,zrot_deg, ax):
+def plot_borders_str_grph(borders: ListOfSkylines, proj_vals: ProjVals, ax):
     used_borders = []
-    for idx,line in enumerate(borders):
+    for idx,line in enumerate(borders.list_of_skylines):
         if idx%100 == 0:
-            print(f"str_graph_borders:\t{idx/len(borders)*100:.2f}%")
+            print(f"str_graph_borders:\t{idx/len(borders.list_of_skylines)*100:.2f}%")
 
         ra1_rad  = line.point_data_1.ra_dec_deg.right_ascension_deg/180*pi
         dec1_rad = line.point_data_1.ra_dec_deg.declination_deg/180*pi
@@ -509,14 +515,14 @@ def plot_borders_str_grph(borders: list[SkyLine], center_Dec_deg,center_ra_deg,z
                 ra_dec_now_deg = RaDecDegCoord_deg(right_ascension_deg=ra_now_rad/np.pi*180,
                                                    declination_deg=dec_now_rad/np.pi*180)
 
-                v1 = get_transformed_vector(ra_dec_now_deg, center_Dec_deg, center_ra_deg, zrot_deg)
+                v1 = get_transformed_vector(ra_dec_now_deg, proj_vals)
                 # theta_R1 = polar_upproject(v1)
                 x_y_z__1 = upproject(v1)
 
                 ra_dec_next_deg = RaDecDegCoord_deg(right_ascension_deg=    ra_next_rad/np.pi*180,
                                                     declination_deg=        dec_next_rad/np.pi*180)
 
-                v2 = get_transformed_vector(ra_dec_next_deg, center_Dec_deg, center_ra_deg, zrot_deg)
+                v2 = get_transformed_vector(ra_dec_next_deg, proj_vals)
                 # theta_R2 = polar_upproject(v2)
                 x_y_z__2 = upproject(v2)
 
@@ -536,7 +542,7 @@ def plot_borders_str_grph(borders: list[SkyLine], center_Dec_deg,center_ra_deg,z
         
 
 
-def get_a_fragmented_line(iteration_num, line, ra_step_rad, dec_step_rad, center_Dec_deg, center_ra_deg, zrot_deg):
+def get_a_fragmented_line(iteration_num, line, ra_step_rad, dec_step_rad, proj_vals: ProjVals):
     ra1_rad  = line.point_data_1.ra_dec_deg.right_ascension_deg/180*pi
     dec1_rad = line.point_data_1.ra_dec_deg.declination_deg/180*pi
 
@@ -552,14 +558,14 @@ def get_a_fragmented_line(iteration_num, line, ra_step_rad, dec_step_rad, center
         ra_dec_now_deg = RaDecDegCoord_deg(right_ascension_deg=ra_now_rad/np.pi*180,
                                             declination_deg=dec_now_rad/np.pi*180)
 
-        v1 = get_transformed_vector(ra_dec_now_deg, center_Dec_deg, center_ra_deg, zrot_deg)
+        v1 = get_transformed_vector(ra_dec_now_deg, proj_vals)
         # theta_R1 = polar_upproject(v1)
         x_y_z__1 = upproject(v1)
 
         ra_dec_next_deg = RaDecDegCoord_deg(right_ascension_deg=    ra_next_rad/np.pi*180,
                                             declination_deg=        dec_next_rad/np.pi*180)
 
-        v2 = get_transformed_vector(ra_dec_next_deg, center_Dec_deg, center_ra_deg, zrot_deg)
+        v2 = get_transformed_vector(ra_dec_next_deg, proj_vals)
         # theta_R2 = polar_upproject(v2)
         x_y_z__2 = upproject(v2)
 
@@ -625,7 +631,7 @@ class OnePieceOfPuzzle():
         plt.show()
 
 
-def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListOfSkylines, center_Dec_deg,center_ra_deg,zrot_deg, ax):
+def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListOfSkylines, proj_vals: ProjVals, ax):
 
     multiplier = 103.27
     clearance = 0.02
@@ -654,10 +660,10 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListO
         only_given_lines = constellation_lines.get_only_the_borders_from_this_constellation(constellation)
         for line in only_given_lines:
 
-            v1 = get_transformed_vector(line.point_data_1.ra_dec_deg,center_Dec_deg, center_ra_deg, zrot_deg)
+            v1 = get_transformed_vector(line.point_data_1.ra_dec_deg, proj_vals)
             xyz_1 = upproject(v1)
 
-            v2 = get_transformed_vector(line.point_data_2.ra_dec_deg,center_Dec_deg, center_ra_deg, zrot_deg)
+            v2 = get_transformed_vector(line.point_data_2.ra_dec_deg, proj_vals)
             xyz_2 = upproject(v2)
 
             x1=xyz_1[0]
@@ -709,7 +715,7 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListO
         for line in only_given_borders:
 
             ra_step_rad, dec_step_rad, iteration_num = get_radec_step_rad(line)
-            one_line = get_a_fragmented_line(iteration_num, line, ra_step_rad, dec_step_rad, center_Dec_deg, center_ra_deg, zrot_deg)
+            one_line = get_a_fragmented_line(iteration_num, line, ra_step_rad, dec_step_rad, proj_vals)
             base_contour.points.extend(reversed(one_line))
 
 
@@ -746,7 +752,7 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines, constellation_lines: ListO
 
 
 
-def plot_stars_polar(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a):
+def plot_stars_polar(const_list, proj_vals: ProjVals, hmg, hmg2, a):
     x_list=[]
     y_list=[]
     S_list=[]
@@ -759,7 +765,7 @@ def plot_stars_polar(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a
         for i,star in enumerate(list_elem):
             ra  = star['Right Ascension (deg)']/180*np.pi
             dec = star['Declination (deg)']/180*np.pi
-            v = get_transformed_vector(ra,dec,center_Dec_deg, center_ra_deg, zrot_deg)
+            v = get_transformed_vector(ra,dec, proj_vals)
             theta_R = polar_upproject(v)
             S,marker,alpha = condition_magnitudes(star,hmg,hmg2)
             plt.scatter(theta_R[0], theta_R[1], c="black", marker=marker, s=a*(1+hmg-S), alpha=alpha, zorder=ORDER_OF_STARS_MINOR)
@@ -769,7 +775,7 @@ def plot_stars_polar(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a
 
 
 
-def plot_cylindrical_stars(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a):
+def plot_cylindrical_stars(const_list,  proj_vals: ProjVals, hmg, hmg2, a):
     x_list=[]
     y_list=[]
     S_list=[]
@@ -787,7 +793,7 @@ def plot_cylindrical_stars(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hmg,
             declination_deg=star['Declination (deg)']
             )
 
-            v = get_transformed_vector(ra_dec_coord,center_Dec_deg, center_ra_deg, zrot_deg)
+            v = get_transformed_vector(ra_dec_coord, proj_vals)
             
             x_y_z = cylindrical_project(v)
 
@@ -817,7 +823,7 @@ def plot_cylindrical_stars(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hmg,
     # x.append(x_y_z[0])
 
 ecliptic_color="#ddddddff"
-def plot_cylindrical_ecliptic(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a):
+def plot_cylindrical_ecliptic(const_list, proj_vals: ProjVals, hmg,hmg2,a):
     x_list=[]
     y_list=[]
     S_list=[]
@@ -833,7 +839,7 @@ def plot_cylindrical_ecliptic(const_list,center_Dec_deg,center_ra_deg,zrot_deg,h
             declination_deg=star['Declination (deg)']
             )
 
-            v = get_transformed_vector(ra_dec_coord,center_Dec_deg, center_ra_deg, zrot_deg)
+            v = get_transformed_vector(ra_dec_coord, proj_vals)
             x_y_z = cylindrical_project(v)
 
             S,marker,alpha = condition_magnitudes(star,hmg,hmg2)
@@ -866,7 +872,7 @@ def plot_cylindrical_ecliptic(const_list,center_Dec_deg,center_ra_deg,zrot_deg,h
 
 
 
-def plot_cylindrical_equinox(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hmg,hmg2,a):
+def plot_cylindrical_equinox(const_list, proj_vals: ProjVals, hmg,hmg2,a):
     star_color=ecliptic_color
 
     for list_elem in const_list:
@@ -877,7 +883,7 @@ def plot_cylindrical_equinox(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hm
             declination_deg=star['Declination (deg)']
             )
 
-            v = get_transformed_vector(ra_dec_coord,center_Dec_deg, center_ra_deg, zrot_deg)
+            v = get_transformed_vector(ra_dec_coord, proj_vals)
             x_y_z = cylindrical_project(v)
 
             S=1
@@ -893,7 +899,7 @@ def plot_cylindrical_equinox(const_list,center_Dec_deg,center_ra_deg,zrot_deg,hm
 
 
 
-def plot_cylindrical_lines(lines: list[SkyLine],center_Dec_deg,center_ra_deg,zrot_deg,*,Break_line=0):
+def plot_cylindrical_lines(lines: list[SkyLine], proj_vals: ProjVals, *,Break_line=0):
     
     segmentation_flag = False
     lines_to_print_list=[]
@@ -903,11 +909,11 @@ def plot_cylindrical_lines(lines: list[SkyLine],center_Dec_deg,center_ra_deg,zro
         if idx%10 == 0:
             print(f"cylindrical lines:\t{idx/len(lines)*100:.2f}%")
 
-        v1 = get_transformed_vector(line.point_data_1.ra_dec_deg,center_Dec_deg, center_ra_deg, zrot_deg)
+        v1 = get_transformed_vector(line.point_data_1.ra_dec_deg, proj_vals)
         xyz_1 = cylindrical_project(v1)
 
 
-        v2 = get_transformed_vector(line.point_data_2.ra_dec_deg,center_Dec_deg, center_ra_deg, zrot_deg)
+        v2 = get_transformed_vector(line.point_data_2.ra_dec_deg, proj_vals)
         xyz_2 = cylindrical_project(v2)
 
         x1=xyz_1[0]
@@ -983,7 +989,7 @@ def is_not_yet_used_line(line_params,used_borders_list):
 
 
 
-def plot_cylindrical_borders(border_line_list: list[SkyLine], center_Dec_deg,center_ra_deg,zrot_deg, used_borders_list):
+def plot_cylindrical_borders(border_line_list: list[SkyLine], proj_vals: ProjVals, used_borders_list):
     # used_borders=[]
     crossing_border_flag = False
     break_flag = False
@@ -994,10 +1000,10 @@ def plot_cylindrical_borders(border_line_list: list[SkyLine], center_Dec_deg,cen
 
     for idx,border_line in enumerate(border_line_list):
         
-        v1 = get_transformed_vector(border_line.point_data_1.ra_dec_deg,center_Dec_deg, center_ra_deg, zrot_deg)
+        v1 = get_transformed_vector(border_line.point_data_1.ra_dec_deg, proj_vals)
         xyz_1 = cylindrical_project(v1)
 
-        v2 = get_transformed_vector(border_line.point_data_2.ra_dec_deg,center_Dec_deg, center_ra_deg, zrot_deg)
+        v2 = get_transformed_vector(border_line.point_data_2.ra_dec_deg, proj_vals)
         xyz_2 = cylindrical_project(v2)
 
         x1=xyz_1[0]
