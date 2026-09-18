@@ -85,7 +85,7 @@ def generate_3d(borders: ListOfSkylines,
                 hmg,
                 hmg2):
 
-    multiplier = 103.27
+    multiplier = 103.27*69.5/71.6
     clearance = 0.02
     base_thickness_mm = 2
     line_depth_mm = 0.1
@@ -117,7 +117,14 @@ def generate_3d(borders: ListOfSkylines,
         # Get the holes of stars
         stars_of_constellation: ListOfSkypoints = stars.get_only_the_stars_from_this_constellation(constellation)
         for star in stars_of_constellation.list_of_skypoints:
-            remover_list_of_drawing.extend(get_projection_for_star(star, proj_vals, radius=0.01, thickness= base_thickness_mm*3, offset=-base_thickness_mm))
+            if star.apparent_mag < hmg2:
+                rad=0.006
+            elif star.apparent_mag < hmg:
+                rad=0.005
+            else:
+                rad=0.004
+
+            remover_list_of_drawing.extend(get_projection_for_star(star, proj_vals, radius=rad, thickness= base_thickness_mm*3, offset=-base_thickness_mm))
 
 
         for remover in remover_list_of_drawing:
@@ -127,11 +134,6 @@ def generate_3d(borders: ListOfSkylines,
 
 
 
-        # remover_poly = Polygon(lines[0].points)
-        # remover_element = trimesh.creation.extrude_polygon(remover_poly, height = line_depth_mm)
-        # remover_element.apply_translation([0, 0, base_thickness_mm-line_depth_mm])
-        
-        # ultimate_remover = trimesh.boolean.union([remover_element], engine="manifold")
         for remover in remover_list_of_drawing:
 
             remover_poly = Polygon(remover.points)
@@ -139,11 +141,8 @@ def generate_3d(borders: ListOfSkylines,
             remover_element = trimesh.creation.extrude_polygon(remover_poly, height = remover.thickness)
             remover_element.apply_translation([0, 0, remover.offset])
             remover_element_list.append(remover_element)
-            # print(remover_element)
 
-            # print(idx)
 
-    # remover_element_list.append(combined_star_body)
     ultimate_remover = trimesh.boolean.union(remover_element_list, engine="manifold")
 
 
