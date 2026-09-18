@@ -1,10 +1,10 @@
 from utils import *
 
-def generate_stars_str_grph_3d(stars: list[PointDatas], proj_vals, hmg, hmg2, clearance, base_thickness_mm, radius=0.01, multiplier=1):
+def generate_stars_str_grph_3d(stars: ListOfSkypoints, proj_vals, hmg, hmg2, clearance, base_thickness_mm, radius=0.01, multiplier=1):
 
     star_body_list = []
 
-    for star in stars:
+    for star in stars.list_of_skypoints:
 
         v = get_transformed_vector(star.ra_dec_deg, proj_vals)
         x_y_z = upproject(v)
@@ -14,10 +14,11 @@ def generate_stars_str_grph_3d(stars: list[PointDatas], proj_vals, hmg, hmg2, cl
         y=(x_y_z[0])
 
         current_projected_point = Vector(y,x,z=0)
-        object = current_projected_point.get_dots(width=radius)
-        object.multiply_with_scalar(multiplier)
+        star_circles = current_projected_point.get_dots(width=radius)
+        star_circles.multiply_with_scalar(multiplier)
+        # star_circles.just_plot_dont_show()
 
-        star_polygon = Polygon(object.points)
+        star_polygon = Polygon(star_circles.points)
         # star_polygon = star_polygon.buffer(-clearance)
         star_body = trimesh.creation.extrude_polygon(star_polygon, height = base_thickness_mm*2)
         star_body_list.append(star_body)
@@ -27,15 +28,62 @@ def generate_stars_str_grph_3d(stars: list[PointDatas], proj_vals, hmg, hmg2, cl
 
 
 
+def get_projection_for_star(stars: SkyPoint, proj_vals, radius=0.01, thickness=1, offset=0):
 
+    star_body_list = []
+
+    v = get_transformed_vector(stars.ra_dec_deg, proj_vals)
+    x_y_z = upproject(v)
+    # S,marker,alpha = condition_magnitudes(star, hmg,hmg2)
+    # plt.scatter(x_y_z[1], x_y_z[0], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha, zorder=3)
+    x=(x_y_z[1])
+    y=(x_y_z[0])
+
+    current_projected_point = Vector(y,x,z=0)
+    star_circles = current_projected_point.get_dots(width=radius, thickness=thickness, offset=offset)
+    star_body_list.append(star_circles)
+
+    return star_body_list
+
+
+
+
+def get_projection_for_lines(line: SkyLine, proj_vals, stripe_width, thickness: float, offset: float):
+    v1 = get_transformed_vector(line.point_data_1.ra_dec_deg, proj_vals)
+    xyz_1 = upproject(v1)
+
+    v2 = get_transformed_vector(line.point_data_2.ra_dec_deg, proj_vals)
+    xyz_2 = upproject(v2)
+
+    x1=xyz_1[0]
+    x2=xyz_2[0]
+    y1=xyz_1[1]
+    y2=xyz_2[1]
+
+    start_point     = Vector(x=x1,y=y1,z=0)
+    end_point       = Vector(x=x2, y=y2, z=0)
+
+    descartes_line  = Line(start_point=start_point,end_point=end_point)
+
+    stripes = descartes_line.get_stripes_and_dots(width=stripe_width, thickness=thickness, offset=offset)
+
+    return stripes
+
+
+def plot_a_list_of_closedDrawing(mylist :list[ClosedDrawing]):
+    for l in mylist:
+        l.just_plot_dont_show()
+
+    plt.axis("equal")
+    plt.show()
     
 
-def plot_borders_str_grph_3D(borders: ListOfSkylines, 
-                             constellation_lines: ListOfSkylines, 
-                             stars: list[PointDatas], 
-                             proj_vals: ProjVals, 
-                             hmg,
-                             hmg2):
+def generate_3d(borders: ListOfSkylines, 
+                constellation_lines: ListOfSkylines, 
+                stars: ListOfSkypoints, 
+                proj_vals: ProjVals, 
+                hmg,
+                hmg2):
 
     multiplier = 103.27
     clearance = 0.02
@@ -53,44 +101,29 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines,
     # list_of_separated_constellations = ['CAS', 'AND', 'CVN', 'CMI', 'DRA', 'LMI', 'CNC', 'GEM', 'ARI', 'CAM', 'BOO', 'AUR', 'PEG', 'PER', 'CEP', 'COM', 'LAC', 'HER', 'EQU', 'TRI', 'LYN', 'UMI', 'CYG', 'LYR', 'SGE', 'VUL', 'DEL', 'UMA', 'CRB', 'SER1']
     # list_of_separated_constellations = ['LMI', 'CNC', 'GEM', 'ARI', 'CAM', 'BOO']
 
-
-    combined_star_body = generate_stars_str_grph_3d(stars, proj_vals, hmg, hmg2, clearance, base_thickness_mm, radius=0.004, multiplier=multiplier)
-
+    # combined_star_body = generate_stars_str_grph_3d(stars, proj_vals, hmg, hmg2, clearance, base_thickness_mm, radius=0.004, multiplier=multiplier)
 
     remover_element_list=[]
     for constellation in list_of_separated_constellations:
-        stripes: list[ClosedDrawing] = []
+        remover_list_of_drawing: list[ClosedDrawing] = []
 
         print(constellation)
 
-        only_given_lines: list[SkyLine]
-        only_given_lines = constellation_lines.get_only_the_lines_from_this_constellation(constellation)
-        for line in only_given_lines:
+        # Get the stripes of constellation_lines
+        lines_of_constellation: list[SkyLine] = constellation_lines.get_only_the_lines_from_this_constellation(constellation)
+        for remover in lines_of_constellation:
+            remover_list_of_drawing.extend(get_projection_for_lines(remover, proj_vals, stripe_width=0.005, thickness= line_depth_mm*2, offset=base_thickness_mm-line_depth_mm))
 
-            v1 = get_transformed_vector(line.point_data_1.ra_dec_deg, proj_vals)
-            xyz_1 = upproject(v1)
+        # Get the holes of stars
+        stars_of_constellation: ListOfSkypoints = stars.get_only_the_stars_from_this_constellation(constellation)
+        for star in stars_of_constellation.list_of_skypoints:
+            remover_list_of_drawing.extend(get_projection_for_star(star, proj_vals, radius=0.01, thickness= base_thickness_mm*3, offset=-base_thickness_mm))
 
-            v2 = get_transformed_vector(line.point_data_2.ra_dec_deg, proj_vals)
-            xyz_2 = upproject(v2)
 
-            x1=xyz_1[0]
-            x2=xyz_2[0]
-            y1=xyz_1[1]
-            y2=xyz_2[1]
+        for remover in remover_list_of_drawing:
+            remover.multiply_with_scalar(multiplier)
 
-            start_point = Vector(x=x1,y=y1,z=0)
-            end_point = Vector(x=x2, y=y2, z=0)
-            descartes_line = Line(start_point=start_point,end_point=end_point)
-
-            stripe = descartes_line.get_stripe(width=stripe_width)
-            stripes.append(stripe)
-
-            dots = descartes_line.get_dots(width=stripe_width/2)
-            stripes.append(dots[0])
-            stripes.append(dots[1])
-
-        for stripe in stripes:
-            stripe = stripe.multiply_with_scalar(multiplier)
+        # plot_a_list_of_closedDrawing(remover_list_of_drawing)
 
 
 
@@ -99,20 +132,19 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines,
         # remover_element.apply_translation([0, 0, base_thickness_mm-line_depth_mm])
         
         # ultimate_remover = trimesh.boolean.union([remover_element], engine="manifold")
-        for idx, line in enumerate(stripes):
+        for remover in remover_list_of_drawing:
 
-            remover_poly = Polygon(line.points)
+            remover_poly = Polygon(remover.points)
 
-            remover_element = trimesh.creation.extrude_polygon(remover_poly, height = line_depth_mm)
-            remover_element.apply_translation([0, 0, base_thickness_mm-line_depth_mm])
+            remover_element = trimesh.creation.extrude_polygon(remover_poly, height = remover.thickness)
+            remover_element.apply_translation([0, 0, remover.offset])
             remover_element_list.append(remover_element)
             # print(remover_element)
 
             # print(idx)
 
-    remover_element_list.append(combined_star_body)
+    # remover_element_list.append(combined_star_body)
     ultimate_remover = trimesh.boolean.union(remover_element_list, engine="manifold")
-
 
 
 
@@ -121,21 +153,21 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines,
         base_contour = ClosedDrawing(points=[], name=constellation)
 
         only_given_borders = borders.get_only_the_lines_from_this_constellation(constellation)
-        for line in only_given_borders:
+        for remover in only_given_borders:
 
-            ra_step_rad, dec_step_rad, iteration_num = get_radec_step_rad(line)
-            one_line = get_a_fragmented_line(iteration_num, line, ra_step_rad, dec_step_rad, proj_vals)
+            ra_step_rad, dec_step_rad, iteration_num = get_radec_step_rad(remover)
+            one_line = get_a_fragmented_line(iteration_num, remover, ra_step_rad, dec_step_rad, proj_vals)
             base_contour.points.extend(reversed(one_line))
 
 
 
         #define a piece
-        one_piece_of_puzzle = OnePieceOfPuzzle(border = base_contour,lines = stripes)
+        one_piece_of_puzzle = OnePieceOfPuzzle(border = base_contour,lines = remover_list_of_drawing)
 
         #scale up
         one_piece_of_puzzle.border.multiply_with_scalar(multiplier)
-        for line in one_piece_of_puzzle.lines:
-            line.multiply_with_scalar(multiplier)
+        for remover in one_piece_of_puzzle.lines:
+            remover.multiply_with_scalar(multiplier)
 
         #separate and create the base of piece
         base_contour = one_piece_of_puzzle.border
@@ -143,7 +175,7 @@ def plot_borders_str_grph_3D(borders: ListOfSkylines,
         base_countour_polygon = base_countour_polygon.buffer(-clearance)
         base_plate = trimesh.creation.extrude_polygon(base_countour_polygon, height = base_thickness_mm)
 
-        one_piece_of_puzzle.plot_my_drawing()
+        # one_piece_of_puzzle.plot_my_drawing()
 
         #remove the things
         base_plate = trimesh.boolean.difference([base_plate, ultimate_remover],engine="manifold")   

@@ -57,8 +57,8 @@ constellations_for_stars_list = read_from_file(f"{scenario_folder}/list.sh")
 
 print("zodiac_plotter.py started")
 
-STR_GRPH_PROJ    =   True
-STR_GRPH_PROJ_3D =   False
+STR_GRPH_PROJ    =   False
+STR_GRPH_PROJ_3D =   True
 
 CYLINDRICAL      =   False
 POLAR            =   False
@@ -182,7 +182,7 @@ if STR_GRPH_PROJ:
 
 if STR_GRPH_PROJ_3D:
 
-    stereographic.plot_borders_str_grph_3D(borders, lines, stars, proj_vals, hmg, hmg2)
+    stereographic.generate_3d(borders, lines, stars, proj_vals, hmg, hmg2)
 
 
 

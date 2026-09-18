@@ -57,18 +57,21 @@ def convert_coords(ra, dec):
 
 # Function to read the CSV file
 def read_stars_csv(filename):
-    data = []
+    data0 = []
     with open(filename, newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             ra_deg, dec_deg = convert_coords(row['Right Ascension'], row['Declination'])
 
-            current_star = utils.PointDatas(name = row['Name'], 
+            current_star = utils.SkyPoint(name = row['Name'], 
                                             ra_dec_deg = utils.RaDecDegCoord_deg(right_ascension_deg=ra_deg, declination_deg= dec_deg),
                                             apparent_mag = float(row['Apparent Magnitude']),
                                             constellation = row['Constellation'])
+            current_star.correct_name()
 
-            data.append(current_star)
+            data0.append(current_star)
+
+    data=utils.ListOfSkypoints(data0)
 
     return data
 
@@ -84,7 +87,7 @@ def read_lines_csv(filename):
             ra_deg2, dec_deg2 = convert_coords(row['Right Ascension2'], row['Declination2'])
 
             current_line = utils.SkyLine(
-                point_data_1=utils.PointDatas(
+                point_data_1=utils.SkyPoint(
                     name=row['Name1'],
                     ra_dec_deg=utils.RaDecDegCoord_deg(
                         right_ascension_deg=ra_deg1,
@@ -94,7 +97,7 @@ def read_lines_csv(filename):
                     constellation=row['Constellation1'],
                     ),
 
-                point_data_2=utils.PointDatas(
+                point_data_2=utils.SkyPoint(
                     name=row['Name2'],
                     ra_dec_deg=utils.RaDecDegCoord_deg(
                         right_ascension_deg=ra_deg2,

@@ -22,6 +22,8 @@ class ProjVals():
 class ClosedDrawing():
     points: list
     name: str
+    thickness: float =1
+    offset: float = 0
 
     def just_plot_dont_show(self):
         self.points.append(self.points[0])
@@ -100,18 +102,154 @@ class RaDecDegCoord_deg():
     right_ascension_deg: float
     declination_deg: float
 
+
 @dataclass
-class PointDatas():
+class ConstellationNameAndAbbrev():
+    fullname: str
+    abbrev: str
+
+list_of_const_names = [
+
+    ConstellationNameAndAbbrev("Andromeda", "AND"),
+    ConstellationNameAndAbbrev("Antlia", "ANT"),
+    ConstellationNameAndAbbrev("Apus", "APS"),
+    ConstellationNameAndAbbrev("Aquarius", "AQR"),
+    ConstellationNameAndAbbrev("Aquila", "AQL"),
+    ConstellationNameAndAbbrev("Ara", "ARA"),
+    ConstellationNameAndAbbrev("Aries", "ARI"),
+    ConstellationNameAndAbbrev("Auriga", "AUR"),
+    ConstellationNameAndAbbrev("Boötes", "BOO"),
+    ConstellationNameAndAbbrev("Caelum", "CAE"),
+    ConstellationNameAndAbbrev("Camelopardalis", "CAM"),
+    ConstellationNameAndAbbrev("Cancer", "CNC"),
+    ConstellationNameAndAbbrev("Canes Venatici", "CVN"),
+    ConstellationNameAndAbbrev("Canis Major", "CMA"),
+    ConstellationNameAndAbbrev("Canis Minor", "CMI"),
+    ConstellationNameAndAbbrev("Capricornus", "CAP"),
+    ConstellationNameAndAbbrev("Carina", "CAR"),
+    ConstellationNameAndAbbrev("Cassiopeia", "CAS"),
+    ConstellationNameAndAbbrev("Centaurus", "CEN"),
+    ConstellationNameAndAbbrev("Cepheus", "CEP"),
+    ConstellationNameAndAbbrev("Cetus", "CET"),
+    ConstellationNameAndAbbrev("Chamaeleon", "CHA"),
+    ConstellationNameAndAbbrev("Circinus", "CIR"),
+    ConstellationNameAndAbbrev("Columba", "COL"),
+    ConstellationNameAndAbbrev("Coma Berenices", "COM"),
+    ConstellationNameAndAbbrev("Corona Australis", "CRA"),
+    ConstellationNameAndAbbrev("Corona Borealis", "CRB"),
+    ConstellationNameAndAbbrev("Corvus", "CRV"),
+    ConstellationNameAndAbbrev("Crater", "CRT"),
+    ConstellationNameAndAbbrev("Crux", "CRU"),
+    ConstellationNameAndAbbrev("Cygnus", "CYG"),
+    ConstellationNameAndAbbrev("Delphinus", "DEL"),
+    ConstellationNameAndAbbrev("Dorado", "DOR"),
+    ConstellationNameAndAbbrev("Draco", "DRA"),
+    ConstellationNameAndAbbrev("Equuleus", "EQU"),
+    ConstellationNameAndAbbrev("Eridanus", "ERI"),
+    ConstellationNameAndAbbrev("Fornax", "FOR"),
+    ConstellationNameAndAbbrev("Gemini", "GEM"),
+    ConstellationNameAndAbbrev("Grus", "GRU"),
+    ConstellationNameAndAbbrev("Hercules", "HER"),
+    ConstellationNameAndAbbrev("Horologium", "HOR"),
+    ConstellationNameAndAbbrev("Hydra", "HYA"),
+    ConstellationNameAndAbbrev("Hydrus", "HYI"),
+    ConstellationNameAndAbbrev("Indus", "IND"),
+    ConstellationNameAndAbbrev("Lacerta", "LAC"),
+    ConstellationNameAndAbbrev("Leo", "LEO"),
+    ConstellationNameAndAbbrev("Leo Minor", "LMI"),
+    ConstellationNameAndAbbrev("Lepus", "LEP"),
+    ConstellationNameAndAbbrev("Libra", "LIB"),
+    ConstellationNameAndAbbrev("Lupus", "LUP"),
+    ConstellationNameAndAbbrev("Lynx", "LYN"),
+    ConstellationNameAndAbbrev("Lyra", "LYR"),
+    ConstellationNameAndAbbrev("Mensa", "MEN"),
+    ConstellationNameAndAbbrev("Microscopium", "MIC"),
+    ConstellationNameAndAbbrev("Monoceros", "MON"),
+    ConstellationNameAndAbbrev("Musca", "MUS"),
+    ConstellationNameAndAbbrev("Norma", "NOR"),
+    ConstellationNameAndAbbrev("Octans", "OCT"),
+    ConstellationNameAndAbbrev("Ophiuchus", "OPH"),
+    ConstellationNameAndAbbrev("Orion", "ORI"),
+    ConstellationNameAndAbbrev("Pavo", "PAV"),
+    ConstellationNameAndAbbrev("Pegasus", "PEG"),
+    ConstellationNameAndAbbrev("Perseus", "PER"),
+    ConstellationNameAndAbbrev("Phoenix", "PHE"),
+    ConstellationNameAndAbbrev("Pictor", "PIC"),
+    ConstellationNameAndAbbrev("Pisces", "PSC"),
+    ConstellationNameAndAbbrev("Piscis Austrinus", "PSA"),
+    ConstellationNameAndAbbrev("Puppis", "PUP"),
+    ConstellationNameAndAbbrev("Pyxis", "PYX"),
+    ConstellationNameAndAbbrev("Reticulum", "RET"),
+    ConstellationNameAndAbbrev("Sagitta", "SGE"),
+    ConstellationNameAndAbbrev("Sagittarius", "SGR"),
+    ConstellationNameAndAbbrev("Scorpius", "SCO"),
+    ConstellationNameAndAbbrev("Sculptor", "SCL"),
+    ConstellationNameAndAbbrev("Scutum", "SCT"),
+    ConstellationNameAndAbbrev("Serpens", "SER"),
+    ConstellationNameAndAbbrev("Sextans", "SEX"),
+    ConstellationNameAndAbbrev("Taurus", "TAU"),
+    ConstellationNameAndAbbrev("Telescopium", "TEL"),
+    ConstellationNameAndAbbrev("Triangulum", "TRI"),
+    ConstellationNameAndAbbrev("Triangulum Australe", "TRA"),
+    ConstellationNameAndAbbrev("Tucana", "TUC"),
+    ConstellationNameAndAbbrev("Ursa Major", "UMA"),
+    ConstellationNameAndAbbrev("Ursa Minor", "UMI"),
+    ConstellationNameAndAbbrev("Vela", "VEL"),
+    ConstellationNameAndAbbrev("Virgo", "VIR"),
+    ConstellationNameAndAbbrev("Volans", "VOL"),
+    ConstellationNameAndAbbrev("Vulpecula", "VUL"),
+]
+
+
+
+@dataclass
+class SkyPoint():
     name: str
     ra_dec_deg: RaDecDegCoord_deg
     apparent_mag: float
     constellation: str
 
+    def __repr__(self):
+        ra1 = self.ra_dec_deg.right_ascension_deg
+        dec1 = self.ra_dec_deg.declination_deg
+
+        return f"({ra1:.2f}, {dec1:.2f})"
+
+    def correct_name(self):
+        for const in list_of_const_names:
+            if self.constellation == const.fullname:
+                self.constellation = const.abbrev
+
+        
+
+@dataclass
+class ListOfSkypoints():
+
+    list_of_skypoints: list[SkyPoint]
+
+    def get_only_the_stars_from_this_constellation(self, constellation: str):
+        output_borders = []
+        for i in self.list_of_skypoints:
+            if (i.constellation == constellation):
+                output_borders.append(i)
+        return(ListOfSkypoints(output_borders))
+
+    def get_a_list_of_separated_constellations(self):
+        constellation_already_used = []
+        for i in self.list_of_skypoints:
+            if not (i.constellation in constellation_already_used):
+                constellation_already_used.append(i.constellation)
+        return(constellation_already_used)
+
+    def print_points(self):
+        for i in self.list_of_skypoints:
+            print(i)
+
 
 @dataclass
 class SkyLine():
-    point_data_1: PointDatas
-    point_data_2: PointDatas
+    point_data_1: SkyPoint
+    point_data_2: SkyPoint
 
     linestyle: str
     color: str
@@ -119,11 +257,9 @@ class SkyLine():
     alpha: str
 
     def __repr__(self):
-        ra1 = self.point_data_1.ra_dec_deg.right_ascension_deg
-        dec1 = self.point_data_1.ra_dec_deg.declination_deg
-        ra2 = self.point_data_2.ra_dec_deg.right_ascension_deg
-        dec2 = self.point_data_2.ra_dec_deg.declination_deg
-        return f"({ra1:.2f}, {dec1:.2f}) - ({ra2:.2f}, {dec2:.2f})"
+        s1 = self.point_data_1
+        s2 = self.point_data_2
+        return f"{s1:.2f} - {s2:.2f}"
 
 @dataclass
 class ListOfSkylines():
@@ -184,14 +320,14 @@ class Vector:
                       y=self.y/L,
                       z=self.z/L)
 
-    def get_dots(self, width=0.005)->ClosedDrawing:
+    def get_dots(self, width=0.005, thickness=1, offset=1)->ClosedDrawing:
         
         edge_points = []
         for i in range(0,360,10):
             edge_point0 = self + Vector(x=width*np.cos(i/180*np.pi), y=width*np.sin(i/180*np.pi), z=0)
             edge_points.append((edge_point0.y, edge_point0.x))
 
-        output_closed_drawig = ClosedDrawing(points = edge_points, name ="")
+        output_closed_drawig = ClosedDrawing(points = edge_points, name ="", thickness = thickness, offset = offset)
                 
         return output_closed_drawig
 
@@ -202,7 +338,7 @@ class Line():
     end_point: Vector
 
 
-    def get_stripe(self, width=0.005)->ClosedDrawing:
+    def get_stripe(self, width=0.005, thickness=1, offset=1)->ClosedDrawing:
         dir = self.end_point - self.start_point
         step_aside_vector = Vector(x=dir.y, y=-1*dir.x, z = 0)
         step_aside_vector = width*(step_aside_vector.norm())
@@ -219,10 +355,10 @@ class Line():
         points.append((D.y, D.x))
 
 
-        return ClosedDrawing(points=points,name ="")
+        return ClosedDrawing(points=points,name ="",thickness=thickness,offset=offset)
 
 
-    def get_dots(self, width=0.005)->list[ClosedDrawing]:
+    def get_dots(self, width=0.005, thickness=1, offset=1)->list[ClosedDrawing]:
         
         output_closed_drawig_list=[]
         for point in [self.start_point, self.end_point]:
@@ -230,6 +366,12 @@ class Line():
             output_closed_drawig_list.append(point.get_dots())    
                 
         return output_closed_drawig_list
+
+    def get_stripes_and_dots(self, width=0.005, thickness=1, offset=0):
+        out = []
+        out.append(self.get_stripe(width, thickness, offset))
+        out.extend(self.get_dots(width, thickness, offset))
+        return out
 
 
 def abs_vector(v:np.ndarray) -> float:
