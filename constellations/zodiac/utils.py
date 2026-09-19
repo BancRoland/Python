@@ -323,8 +323,22 @@ class Vector:
     def get_dots(self, width=0.005, thickness=1, offset=1)->ClosedDrawing:
         
         edge_points = []
-        for i in range(0,360,10):
+        for i in range(0,360,20):
             edge_point0 = self + Vector(x=width*np.cos(i/180*np.pi), y=width*np.sin(i/180*np.pi), z=0)
+            edge_points.append((edge_point0.y, edge_point0.x))
+
+        output_closed_drawig = ClosedDrawing(points = edge_points, name ="", thickness = thickness, offset = offset)
+                
+        return output_closed_drawig
+
+    def get_star_shaped_dots(self, width=0.005, thickness=1, offset=1)->ClosedDrawing:
+        
+        edge_points = []
+        for i in range(0,360,5):
+            R = 1+0.25 * np.sin(5*i/180*np.pi) - 0.1* np.cos(10*i/180*np.pi)
+            edge_point0 = self + Vector(x = width*np.cos(i/180*np.pi)*R, 
+                                        y = width*np.sin(i/180*np.pi)*R, 
+                                        z = 0)
             edge_points.append((edge_point0.y, edge_point0.x))
 
         output_closed_drawig = ClosedDrawing(points = edge_points, name ="", thickness = thickness, offset = offset)

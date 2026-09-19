@@ -40,7 +40,7 @@ def get_projection_for_star(stars: SkyPoint, proj_vals, radius=0.01, thickness=1
     y=(x_y_z[0])
 
     current_projected_point = Vector(y,x,z=0)
-    star_circles = current_projected_point.get_dots(width=radius, thickness=thickness, offset=offset)
+    star_circles = current_projected_point.get_star_shaped_dots(width=radius, thickness=thickness, offset=offset)
     star_body_list.append(star_circles)
 
     return star_body_list
@@ -118,9 +118,9 @@ def generate_3d(borders: ListOfSkylines,
         stars_of_constellation: ListOfSkypoints = stars.get_only_the_stars_from_this_constellation(constellation)
         for star in stars_of_constellation.list_of_skypoints:
             if star.apparent_mag < hmg2:
-                rad=0.006
+                rad=0.008
             elif star.apparent_mag < hmg:
-                rad=0.005
+                rad=0.006
             else:
                 rad=0.004
 
@@ -130,7 +130,7 @@ def generate_3d(borders: ListOfSkylines,
         for remover in remover_list_of_drawing:
             remover.multiply_with_scalar(multiplier)
 
-        # plot_a_list_of_closedDrawing(remover_list_of_drawing)
+        plot_a_list_of_closedDrawing(remover_list_of_drawing)
 
 
 
