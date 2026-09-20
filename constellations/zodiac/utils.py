@@ -266,7 +266,7 @@ class ListOfSkylines():
 
     list_of_skylines: list[SkyLine]
 
-    def get_only_the_lines_from_this_constellation(self, constellation: str):
+    def get_only_the_lines_realted_to_this_constellation(self, constellation: str) -> list[SkyLine]:
         output_borders = []
         for i in self.list_of_skylines:
             if (i.point_data_1.constellation == constellation):
@@ -381,7 +381,7 @@ class Line():
                 
         return output_closed_drawig_list
 
-    def get_stripes_and_dots(self, width=0.005, thickness=1, offset=0):
+    def get_stripes_and_dots(self, width=0.005, thickness=1, offset=0) -> list[ClosedDrawing]:
         out = []
         out.append(self.get_stripe(width, thickness, offset))
         out.extend(self.get_dots(width, thickness, offset))
@@ -506,14 +506,14 @@ def get_transformed_vector_from3d(v: np.ndarray, proj_vals: ProjVals):
     v = zrot(v, proj_vals.zrot_deg)
     return v
 
-def condition_magnitudes(star, hmg, hmg2):
-    if star['Apparent Magnitude'] <= hmg:
-        S=star['Apparent Magnitude']
+def condition_magnitudes(star: SkyPoint, hmg, hmg2):
+    if star.apparent_mag <= hmg:
+        S=star.apparent_mag
         alpha=1
     else:
         S=hmg
         alpha=0.5
-    if star['Apparent Magnitude'] <= hmg2:
+    if star.apparent_mag <= hmg2:
         marker='*'
     else:
         marker='.'
@@ -735,199 +735,6 @@ def plot_stars_polar(const_list, proj_vals: ProjVals, hmg, hmg2, a):
 
 
 
-def plot_cylindrical_stars(const_list,  proj_vals: ProjVals, hmg, hmg2, a):
-    x_list=[]
-    y_list=[]
-    S_list=[]
-    alpha_list=[]
-
-    # star_color="orange"
-    star_color2="black"
-    star_color="black"
-    for list_elem in const_list:
-        for i,star in enumerate(list_elem):
-
-
-            ra_dec_coord = RaDecDegCoord_deg(
-            right_ascension_deg=star['Right Ascension (deg)'],
-            declination_deg=star['Declination (deg)']
-            )
-
-            v = get_transformed_vector(ra_dec_coord, proj_vals)
-            
-            x_y_z = cylindrical_project(v)
-
-            S,marker,alpha = condition_magnitudes(star,hmg,hmg2)
-            s=a*(1+hmg-S)
-            x=x_y_z[0]
-            y=x_y_z[1]
-
-            if x<0:
-                x=x+2*np.pi
-            
-            if marker == ".":
-                S_list.append(s)
-
-                x_list.append(x)
-                y_list.append(y)
-                alpha_list.append(alpha)
-            else:
-                plt.scatter(x, y, color=star_color,  s=s, marker=marker, alpha=alpha, zorder=ORDER_OF_STARS_MAJOR)  
-                plt.scatter(x-2*pi, y, color=star_color,  s=s, marker=marker, alpha=alpha, zorder=ORDER_OF_STARS_MAJOR) 
-
-
-    plt.scatter(x_list, y_list, color=star_color2,  s=S_list, marker=".", alpha=alpha_list, zorder=ORDER_OF_STARS_MINOR)
-    # plt.scatter(x_y_z[0]+2*pi, x_y_z[1], color="black",  s=a*(1+hmg-S), marker=marker, alpha=alpha, zorder=3)
-    plt.scatter(x_list-2*pi*np.ones(len(x_list)), y_list, color=star_color2,  s=a*(1+hmg-S), marker=marker, alpha=alpha_list, zorder=ORDER_OF_STARS_MINOR)
-    # y.append(x_y_z[1])
-    # x.append(x_y_z[0])
-
-ecliptic_color="#ddddddff"
-def plot_cylindrical_ecliptic(const_list, proj_vals: ProjVals, hmg,hmg2,a):
-    x_list=[]
-    y_list=[]
-    S_list=[]
-    alpha_list=[]
-
-    star_color="orange"
-    star_color2="black"
-    for list_elem in const_list:
-        for i,star in enumerate(list_elem):
-
-            ra_dec_coord = RaDecDegCoord_deg(
-            right_ascension_deg=star['Right Ascension (deg)'],
-            declination_deg=star['Declination (deg)']
-            )
-
-            v = get_transformed_vector(ra_dec_coord, proj_vals)
-            x_y_z = cylindrical_project(v)
-
-            S,marker,alpha = condition_magnitudes(star,hmg,hmg2)
-            s=a*(1+hmg-S)
-            x=x_y_z[0]
-            y=x_y_z[1]
-
-            if x<0:
-                x=x+2*np.pi
-            
-            S_list.append(s)
-
-            x_list.append(x)
-            y_list.append(y)
-            alpha_list.append(alpha)
-
-    x_wrapped = np.concatenate([np.array(x_list) - 2*np.pi, x_list])
-    y_wrapped = np.concatenate([y_list, y_list])
-
-    idx = np.argsort(x_wrapped)
-
-    x_list = x_wrapped[idx]
-    y_list = y_wrapped[idx]
-
-
-    # plt.scatter(x_list, y_list, color=star_color2,  s=1, marker=".", alpha=1, zorder=5)
-    
-    for i in range(len(x_list)-1):
-        plt.plot([x_list[i],x_list[i+1]],[y_list[i],y_list[i+1]],linewidth=1.0,linestyle="-",alpha=1,color=ecliptic_color,zorder=ORDER_OF_ECLIPTIC_LINE)
-
-
-
-def plot_cylindrical_equinox(const_list, proj_vals: ProjVals, hmg,hmg2,a):
-    star_color=ecliptic_color
-
-    for list_elem in const_list:
-        for i,star in enumerate(list_elem):
-
-            ra_dec_coord = RaDecDegCoord_deg(
-            right_ascension_deg=star['Right Ascension (deg)'],
-            declination_deg=star['Declination (deg)']
-            )
-
-            v = get_transformed_vector(ra_dec_coord, proj_vals)
-            x_y_z = cylindrical_project(v)
-
-            S=1
-            lw = 1.5
-            x=x_y_z[0]
-            y=x_y_z[1]
-
-            if x<0:
-                x=x+2*np.pi
-            
-            plt.scatter(x, y, color=star_color,  s=S, marker="o", alpha=1, zorder=ORDER_OF_STARS_MAJOR,linewidths=lw)   # <— skinny!)  
-            plt.scatter(x-2*pi, y, color=star_color,  s=S, marker="o", alpha=1, zorder=ORDER_OF_STARS_MAJOR,linewidths=lw)   # <— skinny!) 
-
-
-
-def plot_cylindrical_lines(lines: list[SkyLine], proj_vals: ProjVals, *,Break_line=0):
-    
-    segmentation_flag = False
-    lines_to_print_list=[]
-    # alpha_list=[]
-    width_list=[]
-    for idx,line in enumerate(lines):
-        if idx%10 == 0:
-            print(f"cylindrical lines:\t{idx/len(lines)*100:.2f}%")
-
-        v1 = get_transformed_vector(line.point_data_1.ra_dec_deg, proj_vals)
-        xyz_1 = cylindrical_project(v1)
-
-
-        v2 = get_transformed_vector(line.point_data_2.ra_dec_deg, proj_vals)
-        xyz_2 = cylindrical_project(v2)
-
-        x1=xyz_1[0]
-        x2=xyz_2[0]
-        y1=xyz_1[1]
-        y2=xyz_2[1]
-
-        if abs(x1-x2)>np.pi:    
-            segmentation_flag = True
-            print("FLAG!!!")
-
-        lines_to_print_list.append([[x1,x2],[y1,y2]])
-        width_list.append(line.width)
-        # alpha_list.append(alpha)
-
-
-    for idx,lines_to_print in enumerate(lines_to_print_list):
-
-        x1 = lines_to_print[0][0]       
-        x2 = lines_to_print[0][1]
-        y1 = lines_to_print[1][0]
-        y2 = lines_to_print[1][1]
-
-        if segmentation_flag:
-            if x1<0:
-                x1=x1+2*np.pi
-            if x2<0:
-                x2=x2+2*np.pi
-
-        teasing_lines = False
-
-        width=width_list[idx]
-        if width == "1":
-            width=0.6  
-        else:
-            width = 0.4
-
-        if teasing_lines:
-            # R=0.02
-            R=0.0
-            
-            v1 = np.array([x1,y1,0])
-            v2 = np.array([x2,y2,0])
-            if abs_vector(v1-v2)> 2*R:
-                v3 = norm_vector(v2-v1)*R
-                v10 = v1 + v3
-                v20 = v2 - v3
-
-                x1,y1,_ = disolve_vector(v10)
-                x2,y2,_ = disolve_vector(v20)
-
-                plt.plot([x1,x2],[y1,y2],linewidth=width,linestyle=line.linestyle ,alpha=1,color=line.color,zorder=ORDER_OF_LINES)
-        else:   
-            plt.plot([x1,x2],[y1,y2],linewidth=width,linestyle=line.linestyle, alpha=1,color=line.color,zorder=ORDER_OF_LINES)
 
 def revese_line_params(line_params):
     ra10 = line_params[0][0]
@@ -949,65 +756,12 @@ def is_not_yet_used_line(line_params,used_borders_list):
 
 
 
-def plot_cylindrical_borders(border_line_list: list[SkyLine], proj_vals: ProjVals, used_borders_list):
-    # used_borders=[]
-    crossing_border_flag = False
-    break_flag = False
-    segmented_lines_to_print_list=[]
-    possibly_broken_lines_list=[]
-    unsegmented_lines_to_print_list=[]
-    current_constellation_used_lines=[]
 
-    for idx,border_line in enumerate(border_line_list):
-        
-        v1 = get_transformed_vector(border_line.point_data_1.ra_dec_deg, proj_vals)
-        xyz_1 = cylindrical_project(v1)
 
-        v2 = get_transformed_vector(border_line.point_data_2.ra_dec_deg, proj_vals)
-        xyz_2 = cylindrical_project(v2)
+def plot_a_list_of_closedDrawing(mylist :list[ClosedDrawing]):
+    for l in mylist:
+        l.just_plot_dont_show()
 
-        x1=xyz_1[0]
-        x2=xyz_2[0]
-        y1=xyz_1[1]
-        y2=xyz_2[1]
-
-        if abs(x1-x2)>np.pi:    
-            break_flag = True
-            print("FLAG!!!")
-
-        possibly_boken_line = [x1,x2],[y1,y2]
-
-        possibly_broken_lines_list.append(possibly_boken_line)
+    plt.axis("equal")
+    plt.show()
     
-    for possibly_boken_line in possibly_broken_lines_list:
-
-        x1 = possibly_boken_line[0][0]       
-        x2 = possibly_boken_line[0][1]
-        y1 = possibly_boken_line[1][0]
-        y2 = possibly_boken_line[1][1]
-
-        if break_flag:
-            if x1<0:
-                x1=x1+2*np.pi
-            if x2<0:
-                x2=x2+2*np.pi
-
-        unsegmented_line = [x1,x2],[y1,y2]
-
-        unsegmented_lines_to_print_list.append(unsegmented_line)
-
-        
-        if is_not_yet_used_line(unsegmented_line,used_borders_list):
-            
-            used_borders_list.append(unsegmented_line)  
-            current_constellation_used_lines.append(unsegmented_line)
-
-
-
-
-    for line_coordinate in current_constellation_used_lines:
-        x_coordinates = line_coordinate[0]+np.random.random(2)/20*0
-        y_coordinates = line_coordinate[1]+np.random.random(2)/20*0
-        
-        plt.plot(x_coordinates, y_coordinates, linewidth=0.5, linestyle="-", alpha=1, color="red", zorder=ORDER_OF_BORDES)
-

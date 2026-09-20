@@ -7,6 +7,8 @@ import toml
 import time
 import csv_read_zodiac
 import stereographic
+import cylindrial
+
 
 def read_from_file(root: str):
     items = []
@@ -22,8 +24,8 @@ def read_from_file(root: str):
     return items
 
 # scenario = "orion"
-scenario = "north_puzzle_inside"
-# scenario = 'cylindrical_puzzle'
+# scenario = "north_puzzle_inside"
+scenario = 'cylindrical_puzzle'
 # scenario = 'urtabor_2026'
 
 # scenario = 'centaur'
@@ -58,9 +60,11 @@ constellations_for_stars_list = read_from_file(f"{scenario_folder}/list.sh")
 print("zodiac_plotter.py started")
 
 STR_GRPH_PROJ    =   False
-STR_GRPH_PROJ_3D =   True
+STR_GRPH_PROJ_3D =   False
 
 CYLINDRICAL      =   False
+CYLINDRICAL_3D      =   True
+
 POLAR            =   False
 POLAR_LINES      =   False
 SPHERRICAL       =   False
@@ -204,6 +208,9 @@ if CYLINDRICAL:
 print("cylindrical DONE")
 
 
+if CYLINDRICAL_3D:
+
+    cylindrial.generate_3d(borders, lines, stars, proj_vals, hmg, hmg2)
 
 if POLAR:
 

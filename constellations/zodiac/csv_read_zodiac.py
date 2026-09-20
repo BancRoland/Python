@@ -83,6 +83,7 @@ def read_lines_csv(filename):
     with open(filename, newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
+            print(row['Constellation1'])
             ra_deg1, dec_deg1 = convert_coords(row['Right Ascension1'], row['Declination1'])
             ra_deg2, dec_deg2 = convert_coords(row['Right Ascension2'], row['Declination2'])
 

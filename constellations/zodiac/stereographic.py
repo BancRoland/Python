@@ -70,13 +70,7 @@ def get_projection_for_lines(line: SkyLine, proj_vals, stripe_width, thickness: 
     return stripes
 
 
-def plot_a_list_of_closedDrawing(mylist :list[ClosedDrawing]):
-    for l in mylist:
-        l.just_plot_dont_show()
 
-    plt.axis("equal")
-    plt.show()
-    
 
 def generate_3d(borders: ListOfSkylines, 
                 constellation_lines: ListOfSkylines, 
@@ -110,7 +104,7 @@ def generate_3d(borders: ListOfSkylines,
         print(constellation)
 
         # Get the stripes of constellation_lines
-        lines_of_constellation: list[SkyLine] = constellation_lines.get_only_the_lines_from_this_constellation(constellation)
+        lines_of_constellation: list[SkyLine] = constellation_lines.get_only_the_lines_realted_to_this_constellation(constellation)
         for remover in lines_of_constellation:
             remover_list_of_drawing.extend(get_projection_for_lines(remover, proj_vals, stripe_width=0.005, thickness= line_depth_mm*2, offset=base_thickness_mm-line_depth_mm))
 
@@ -151,7 +145,7 @@ def generate_3d(borders: ListOfSkylines,
 
         base_contour = ClosedDrawing(points=[], name=constellation)
 
-        only_given_borders = borders.get_only_the_lines_from_this_constellation(constellation)
+        only_given_borders = borders.get_only_the_lines_realted_to_this_constellation(constellation)
         for remover in only_given_borders:
 
             ra_step_rad, dec_step_rad, iteration_num = get_radec_step_rad(remover)

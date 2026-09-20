@@ -19,10 +19,10 @@ source ../venv/bin/activate
 # name=full
 # name=easy_north
 # name=north_puzzle_outside
-name=north_puzzle_inside
+# name=north_puzzle_inside
 # name=TOTAL_template
 # name=south
-# name=cylindrical_puzzle
+name=cylindrical_puzzle
 
 mkdir scenarios/$name/polar
 
