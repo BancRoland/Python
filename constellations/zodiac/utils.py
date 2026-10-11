@@ -21,16 +21,16 @@ class ProjVals():
 @dataclass
 class ClosedDrawing():
     points: list
-    name: str
+    name: str = ""
     thickness: float =1
     offset: float = 0
 
-    def just_plot_dont_show(self):
+    def just_plot_dont_show(self, colour = "black"):
         self.points.append(self.points[0])
         for idx in range(len(self.points)-1):
             A=self.points[idx]
             B=self.points[idx+1]
-            plt.plot([A[0],B[0]],[A[1],B[1]],marker = "o", color="black")
+            plt.plot([A[1],B[1]],[A[0],B[0]],marker = "o", color=colour)
 
     def plot_my_drawing(self):
         self.just_plot_dont_show()
@@ -251,27 +251,29 @@ class SkyLine():
     point_data_1: SkyPoint
     point_data_2: SkyPoint
 
-    linestyle: str
-    color: str
-    width: str
-    alpha: str
+    linestyle: str = ""
+    color: str = ""
+    width: str = ""
+    alpha: str = ""
 
     def __repr__(self):
         s1 = self.point_data_1
         s2 = self.point_data_2
-        return f"{s1:.2f} - {s2:.2f}"
+        return f"{s1} - {s2}"
 
 @dataclass
 class ListOfSkylines():
 
     list_of_skylines: list[SkyLine]
 
-    def get_only_the_lines_realted_to_this_constellation(self, constellation: str) -> list[SkyLine]:
+    def get_only_the_lines_realted_to_this_constellation(self, constellation: str):
         output_borders = []
         for i in self.list_of_skylines:
+            i.point_data_1.correct_name()
+            # print(f"#{i.point_data_1.constellation}# =? #{constellation}# : {i.point_data_1.constellation == constellation}")
             if (i.point_data_1.constellation == constellation):
                 output_borders.append(i)
-        return(output_borders)
+        return(ListOfSkylines(output_borders))
 
     def get_a_list_of_separated_constellations(self):
         constellation_already_used = []
@@ -697,16 +699,29 @@ def get_radec_step_rad(line: SkyLine):
 @dataclass
 class OnePieceOfPuzzle():
     border: ClosedDrawing
-    lines: list[ClosedDrawing]
+    line_contours: list[ClosedDrawing]
+    star_contours: list[ClosedDrawing]
+    name: str = ""
 
 
-    def plot_my_drawing(self):
+    def plot_my_drawing(self, save: bool = False, dest = ""):
+        if dest == "":
+            dest = f"{self.name}.png"
+
         self.border.just_plot_dont_show()
 
-        for line in self.lines:
-            line.just_plot_dont_show()
+        for line in self.line_contours:
+            line.just_plot_dont_show(colour="C00")
+        for star in self.star_contours:
+            star.just_plot_dont_show(colour="C01")
+
+        plt.title(self.border.name)
         plt.axis("equal")
-        plt.show()
+        if save:
+            plt.savefig(dest)
+            plt.close()
+        else:
+            plt.show()
 
 
 

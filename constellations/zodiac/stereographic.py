@@ -155,11 +155,11 @@ def generate_3d(borders: ListOfSkylines,
 
 
         #define a piece
-        one_piece_of_puzzle = OnePieceOfPuzzle(border = base_contour,lines = remover_list_of_drawing)
+        one_piece_of_puzzle = OnePieceOfPuzzle(border = base_contour,line_contours = remover_list_of_drawing)
 
         #scale up
         one_piece_of_puzzle.border.multiply_with_scalar(multiplier)
-        for remover in one_piece_of_puzzle.lines:
+        for remover in one_piece_of_puzzle.line_contours:
             remover.multiply_with_scalar(multiplier)
 
         #separate and create the base of piece
