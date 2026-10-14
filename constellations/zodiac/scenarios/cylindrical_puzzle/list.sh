@@ -2,6 +2,11 @@
 constellations=(
 # ecliptic
 # eqinox
+combined_Delphinus_Equuleus
+combined_Sagitta_Vulpecula
+combined_Scutum_Serpens_cauda
+combined_Columba_caelum
+combined_Monoceros_Canis_minor
 Andromeda
 Antlia
 Apus
@@ -11,12 +16,12 @@ Ara
 Aries
 Auriga
 Boötes
-Caelum
+# Caelum
 Camelopardalis
 Cancer
 Canes_Venatici
 Canis_Major
-Canis_Minor
+# Canis_Minor
 Capricornus
 Carina
 Cassiopeia
@@ -25,7 +30,7 @@ Cepheus
 Cetus
 Chameleon
 Circinus
-Columba
+# Columba
 Coma_Berenices
 Corona_Australis
 Corona_Borealis
@@ -33,10 +38,10 @@ Corvus
 Crater
 Crux
 Cygnus
-Delphinus
+# Delphinus
 Dorado
 Draco
-Equuleus
+# Equuleus
 Eridanus
 Fornax
 Gemini
@@ -56,7 +61,7 @@ Lynx
 Lyra
 Mensa
 Microscopium
-Monoceros
+# Monoceros
 Musca
 Norma
 Octans
@@ -72,13 +77,13 @@ Piscis_Austrinus
 Puppis
 Pyxis
 Reticulum
-Sagitta
+# Sagitta
 Sagittarius
 Scorpius
 Sculptor
-Scutum
+# Scutum
 Serpens_caput
-Serpens_cauda
+# Serpens_cauda
 Sextans
 Taurus
 Telescopium
@@ -90,5 +95,5 @@ Ursa_Minor
 Vela
 Virgo
 Volans
-Vulpecula
+# Vulpecula
 )

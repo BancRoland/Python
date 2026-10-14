@@ -1,0 +1,16 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+
+Beta Columbae,05h 50m 57.55s,-35° 46′ 09.5″,3.12,COL_CAE,Eta Columbae,05h 59m 08.79s,-42° 48′ 54.4″,3.96,COL_CAE,-,grey,1,0.5
+
+Beta Columbae,05h 50m 57.55s,-35° 46′ 09.5″,3.12,COL_CAE,Gamma Columbae,05h 57m 32.21s,-35° 16′ 59.9″,4.36,COL_CAE,-,grey,1,0.5
+Gamma Columbae,05h 57m 32.21s,-35° 16′ 59.9″,4.36,COL_CAE,Kappa Columbae,06h 16m 33.14s,-35° 08′ 26.6″,4.37,COL_CAE,-,grey,1,0.5
+Kappa Columbae,06h 16m 33.14s,-35° 08′ 26.6″,4.37,COL_CAE,Delta Columbae,06h 22m 06.85s,-33° 26′ 10.6″,3.85,COL_CAE,-,grey,1,0.5
+
+Beta Columbae,05h 50m 57.55s,-35° 46′ 09.5″,3.12,COL_CAE,Alpha Columbae,05h 39m 38.94s,-34° 04′ 26.6″,2.65,COL_CAE,-,grey,1,0.5
+Alpha Columbae,05h 39m 38.94s,-34° 04′ 26.6″,2.65,COL_CAE,Epsilon Columbae,05h 31m 12.74s,-35° 28′ 13.6″,3.86,COL_CAE,-,grey,1,0.5
+
+
+Beta Caeli,04h 42m 03.45s,-37° 08′ 41.2″,5.04,COL_CAE,Alpha Caeli,04h 40m 33.82s,-41° 51′ 48.9″,4.44,COL_CAE,-,grey,1,0.5
+Alpha Caeli,04h 40m 33.82s,-41° 51′ 48.9″,4.44,COL_CAE,Delta Caeli,04h 30m 50.10s,-44° 57′ 13.5″,5.07,COL_CAE,-,grey,1,0.5
+

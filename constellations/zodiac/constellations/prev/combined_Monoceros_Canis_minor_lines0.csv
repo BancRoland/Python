@@ -1,0 +1,27 @@
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+-,07h18m23.9199s, -0.2243290˚00'00",0,CMI,-,08h11m23.7617s, -0.3693900˚00'00",0,CMI,-,black,1,1 
+-,08h11m23.7617s, -0.3693900˚00'00",0,MON,-,07h18m23.9199s, -0.2243290˚00'00",0,MON,-,black,1,1  
+-,07h18m28.0605s,  1.2755718˚00'00",0,MON,-,07h07m28.1751s,  1.3074419˚00'00",0,MON,-,black,1,1  
+-,07h07m28.1751s,  1.3074419˚00'00",0,CMI,-,07h18m28.0605s,  1.2755718˚00'00",0,CMI,-,black,1,1 
+-,07h07m39.4259s,  5.3071680˚00'00",0,CMI,-,07h07m28.1751s,  1.3074419˚00'00",0,CMI,-,black,1,1 
+-,07h07m28.1751s,  1.3074419˚00'00",0,MON,-,07h07m39.4259s,  5.3071680˚00'00",0,MON,-,black,1,1  
+-,07h06m52.2911s,  9.8097754˚00'00",0,CMI,-,07h06m39.4373s,  5.3100886˚00'00",0,CMI,-,black,1,1 
+-,07h06m39.4373s,  5.3100886˚00'00",0,MON,-,07h06m52.2911s,  9.8097754˚00'00",0,MON,-,black,1,1  
+-,07h06m39.4373s,  5.3100886˚00'00",0,CMI,-,07h07m39.4259s,  5.3071680˚00'00",0,CMI,-,black,1,1 
+-,07h07m39.4259s,  5.3071680˚00'00",0,MON,-,07h06m39.4373s,  5.3100886˚00'00",0,MON,-,black,1,1  
+-,07h18m28.0605s,  1.2755718˚00'00",0,CMI,-,07h18m23.9199s, -0.2243290˚00'00",0,CMI,-,black,1,1 
+-,07h18m23.9199s, -0.2243290˚00'00",0,MON,-,07h18m28.0605s,  1.2755718˚00'00",0,MON,-,black,1,1  
+
+MON_CMI
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+13 Monocerotis,06h 32m 54.23s,+07° 19′ 58.7″,4.47,Monoceros,Epsilon Monocerotis,06h 23m 46.10s,+04° 35′ 34.2″,4.39,Monoceros,-,grey,1,0.5
+Epsilon Monocerotis,06h 23m 46.10s,+04° 35′ 34.2″,4.39,Monoceros,18 Monocerotis,06h 47m 51.66s,+02° 24′ 43.9″,4.48,Monoceros,-,grey,1,0.5
+18 Monocerotis,06h 47m 51.66s,+02° 24′ 43.9″,4.48,Monoceros,Delta Monocerotis,07h 11m 51.86s,-00° 29′ 34.0″,4.15,Monoceros,-,grey,1,0.5
+Delta Monocerotis,07h 11m 51.86s,-00° 29′ 34.0″,4.15,Monoceros,Zeta Monocerotis,08h 08m 35.66s,-02° 59′ 01.6″,4.36,Monoceros,-,grey,1,0.5
+Zeta Monocerotis,08h 08m 35.66s,-02° 59′ 01.6″,4.36,Monoceros,Alpha Monocerotis,07h 41m 14.88s,-09° 33′ 03.9″,3.94,Monoceros,-,grey,1,0.5
+Delta Monocerotis,07h 11m 51.86s,-00° 29′ 34.0″,4.15,Monoceros,Beta Monocerotis,06h 28m 49.07s,-07° 01′ 59.0″,4.6,Monoceros,-,grey,1,0.5
+Beta Monocerotis,06h 28m 49.07s,-07° 01′ 59.0″,4.6,Monoceros,Gamma Monocerotis,06h 14m 51.34s,-06° 16′ 29.0″,3.99,Monoceros,-,grey,1,0.5
+Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha
+
+Procyon,07h 39m 18.54s,+05° 13′ 39.0″,0.34,CMI,Beta Canis Minoris,07h 27m 09.07s,+08° 17′ 21.9″,2.89,Canis Minor,-,grey,1,0.5

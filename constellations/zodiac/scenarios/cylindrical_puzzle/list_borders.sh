@@ -2,7 +2,7 @@
 borders=(
 combined_Delphinus_Equuleus_borders
 combined_Sagitta_Vulpecula_borders
-Combined_Scutum_Serpens_cauda_borders
+combined_Scutum_Serpens_cauda_borders
 combined_Columba_caelum_borders
 combined_Monoceros_Canis_minor_borders
 Antlia_borders

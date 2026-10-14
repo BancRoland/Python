@@ -62,6 +62,8 @@ rm zodiac_lines.csv
 echo "Name1,Right Ascension1,Declination1,Apparent Magnitude1,Constellation1,Name2,Right Ascension2,Declination2,Apparent Magnitude2,Constellation2,linestyle,color,width,alpha" >> zodiac0_lines.csv
 for line in "${lines[@]}"; do
 
+    echo constellations/prev/$line.csv
+
 
     tail -n +2 constellations/prev/$line.csv >> zodiac0_lines.csv
     echo "" >> zodiac0_lines.csv

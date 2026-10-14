@@ -2,7 +2,7 @@
 lines=(
 combined_Delphinus_Equuleus_lines
 combined_Sagitta_Vulpecula_lines
-Combined_Scutum_Serpens_cauda_lines
+combined_Scutum_Serpens_cauda_lines
 combined_Columba_caelum_lines
 combined_Monoceros_Canis_minor_lines
 Antlia_lines

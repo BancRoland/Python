@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import sin, cos, pi
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import trimesh
 from shapely.geometry import Polygon
 
@@ -12,6 +12,74 @@ ORDER_OF_STARS_MINOR    = 2
 ORDER_OF_STARS_MAJOR    = 3
 ORDER_OF_BORDES         = 4
 
+
+@dataclass
+class Vector:
+    x: float
+    y: float
+    z: float
+
+    def __sub__(self, other: "Vector"):
+        return Vector(
+            x=self.x - other.x,
+            y=self.y - other.y,
+            z=self.z - other.z,
+        )
+
+    def __add__(self, other: "Vector"):
+        return Vector(
+            x=self.x + other.x,
+            y=self.y + other.y,
+            z=self.z + other.z,
+        )
+
+    def __rmul__(self, m):
+        return Vector(
+            x=m*self.x,
+            y=m*self.y,
+            z=m*self.z,
+        )
+
+    def abs(self):
+        return np.sqrt(self.x**2+self.y**2+self.z**2)
+
+    def norm(self):
+        L=self.abs()
+        return Vector(x=self.x/L,
+                      y=self.y/L,
+                      z=self.z/L)
+
+    def get_dots(self, width=0.005, thickness=1, offset=1): #->ClosedDrawing:
+        
+        edge_points = []
+        for i in range(0,360,20):
+            edge_point0 = self + Vector(x=width*np.cos(i/180*np.pi), y=width*np.sin(i/180*np.pi), z=0)
+            edge_points.append(Vector(edge_point0.y, edge_point0.x,0))
+
+        output_closed_drawig = ClosedDrawing(points = edge_points, name ="", thickness = thickness, offset = offset)
+                
+        return output_closed_drawig
+
+    def get_star_shaped_dots(self, width=0.005, thickness=1, offset=1): #->ClosedDrawing:
+        
+        edge_points = []
+        for i in range(0,360,5):
+            R = 1+0.25 * np.sin(5*i/180*np.pi) - 0.1* np.cos(10*i/180*np.pi)
+            edge_point0 = self + Vector(x = width*np.cos(i/180*np.pi)*R, 
+                                        y = width*np.sin(i/180*np.pi)*R, 
+                                        z = 0)
+            edge_points.append(Vector(edge_point0.y, edge_point0.x,0))
+
+        output_closed_drawig = ClosedDrawing(points = edge_points, name ="", thickness = thickness, offset = offset)
+                
+        return output_closed_drawig
+
+    def __repr__(self):
+        str = f"({self.x}; {self.y}; {self.z})"
+        return str
+
+    
+
 @dataclass
 class ProjVals():
     center_Dec_deg: float
@@ -20,9 +88,9 @@ class ProjVals():
 
 @dataclass
 class ClosedDrawing():
-    points: list
+    points: list[Vector] = field(default_factory=list)
     name: str = ""
-    thickness: float =1
+    thickness: float = 1
     offset: float = 0
 
     def just_plot_dont_show(self, colour = "black"):
@@ -30,7 +98,8 @@ class ClosedDrawing():
         for idx in range(len(self.points)-1):
             A=self.points[idx]
             B=self.points[idx+1]
-            plt.plot([A[1],B[1]],[A[0],B[0]],marker = "o", color=colour)
+
+            plt.plot([A.y,B.y],[A.x,B.x],marker = "o", color=colour)
 
     def plot_my_drawing(self):
         self.just_plot_dont_show()
@@ -40,13 +109,30 @@ class ClosedDrawing():
         out_list=[]
         for idx, p in enumerate(self.points):
             # print(self.points[idx][0])
-            out_list.append((p[0]*a, p[1]*a))
+            out_list.append(Vector(p.x*a, p.y*a, 0))
 
         self.points = out_list
 
     def print(self):
         for p in self.points:
-            print(f"{p}")
+            print(p)
+
+    def get_diffs(self)-> list[Vector]:
+        work_vectors = self.points
+        work_vectors.append(work_vectors[0])
+
+        diff = []
+        for i in range(len(work_vectors)-1):
+            diff.append(work_vectors[i+1]-work_vectors[i])
+        
+        return diff
+
+    def is_this_segmented(self) -> bool:
+        diff = self.get_diffs()
+        for d in diff:
+            if d.abs()> np.pi:
+                return True
+        return False
 
 
 @dataclass
@@ -109,6 +195,12 @@ class ConstellationNameAndAbbrev():
     abbrev: str
 
 list_of_const_names = [
+
+    ConstellationNameAndAbbrev("Columba_Caelum", "COL_CAE"),
+    ConstellationNameAndAbbrev("Delphinus_Equuleus", "DEL_EQU"),
+    ConstellationNameAndAbbrev("Monoceros_Canis Minor", "MON_CMI"),
+    ConstellationNameAndAbbrev("Sagitta_Vulpecula", "SGE_VUL"),
+    ConstellationNameAndAbbrev("Scutum_Serpens_cauda", "SCT_SER2"),
 
     ConstellationNameAndAbbrev("Andromeda", "AND"),
     ConstellationNameAndAbbrev("Antlia", "ANT"),
@@ -198,6 +290,8 @@ list_of_const_names = [
     ConstellationNameAndAbbrev("Virgo", "VIR"),
     ConstellationNameAndAbbrev("Volans", "VOL"),
     ConstellationNameAndAbbrev("Vulpecula", "VUL"),
+
+
 ]
 
 
@@ -275,7 +369,7 @@ class ListOfSkylines():
                 output_borders.append(i)
         return(ListOfSkylines(output_borders))
 
-    def get_a_list_of_separated_constellations(self):
+    def get_a_list_of_separated_constellations(self) -> list[str]:
         constellation_already_used = []
         for i in self.list_of_skylines:
             if not (i.point_data_1.constellation in constellation_already_used):
@@ -286,66 +380,8 @@ class ListOfSkylines():
         for i in self.list_of_skylines:
             print(i)
 
-@dataclass
-class Vector:
-    x: float
-    y: float
-    z: float
 
-    def __sub__(self, other: "Vector"):
-        return Vector(
-            x=self.x - other.x,
-            y=self.y - other.y,
-            z=self.z - other.z,
-        )
 
-    def __add__(self, other: "Vector"):
-        return Vector(
-            x=self.x + other.x,
-            y=self.y + other.y,
-            z=self.z + other.z,
-        )
-
-    def __rmul__(self, m):
-        return Vector(
-            x=m*self.x,
-            y=m*self.y,
-            z=m*self.z,
-        )
-
-    def abs(self):
-        return np.sqrt(self.x**2+self.y**2+self.z**2)
-
-    def norm(self):
-        L=self.abs()
-        return Vector(x=self.x/L,
-                      y=self.y/L,
-                      z=self.z/L)
-
-    def get_dots(self, width=0.005, thickness=1, offset=1)->ClosedDrawing:
-        
-        edge_points = []
-        for i in range(0,360,20):
-            edge_point0 = self + Vector(x=width*np.cos(i/180*np.pi), y=width*np.sin(i/180*np.pi), z=0)
-            edge_points.append((edge_point0.y, edge_point0.x))
-
-        output_closed_drawig = ClosedDrawing(points = edge_points, name ="", thickness = thickness, offset = offset)
-                
-        return output_closed_drawig
-
-    def get_star_shaped_dots(self, width=0.005, thickness=1, offset=1)->ClosedDrawing:
-        
-        edge_points = []
-        for i in range(0,360,5):
-            R = 1+0.25 * np.sin(5*i/180*np.pi) - 0.1* np.cos(10*i/180*np.pi)
-            edge_point0 = self + Vector(x = width*np.cos(i/180*np.pi)*R, 
-                                        y = width*np.sin(i/180*np.pi)*R, 
-                                        z = 0)
-            edge_points.append((edge_point0.y, edge_point0.x))
-
-        output_closed_drawig = ClosedDrawing(points = edge_points, name ="", thickness = thickness, offset = offset)
-                
-        return output_closed_drawig
 
 
 @dataclass
@@ -365,10 +401,10 @@ class Line():
         D = C -dir        
 
         points=[]
-        points.append((A.y, A.x))
-        points.append((B.y, B.x))
-        points.append((C.y, C.x))
-        points.append((D.y, D.x))
+        points.append(Vector(A.y, A.x, 0))
+        points.append(Vector(B.y, B.x, 0))
+        points.append(Vector(C.y, C.x, 0))
+        points.append(Vector(D.y, D.x, 0))
 
 
         return ClosedDrawing(points=points,name ="",thickness=thickness,offset=offset)
@@ -388,6 +424,10 @@ class Line():
         out.append(self.get_stripe(width, thickness, offset))
         out.extend(self.get_dots(width, thickness, offset))
         return out
+
+    def len(self):
+        diff_vec = self.end_point - self.start_point
+        return diff_vec.abs()
 
 
 def abs_vector(v:np.ndarray) -> float:
@@ -697,10 +737,54 @@ def get_radec_step_rad(line: SkyLine):
     return ra_step_rad, dec_step_rad, iteration_num
 
 @dataclass
+class ListOfLines():
+    list_of_lines: list[Line] = field(default_factory=list)
+
+    def is_this_segmented(self) -> bool:
+        if len(self.list_of_lines) == 0:
+            return False
+        # print(self.list_of_lines)
+        for l in self.list_of_lines:
+
+            if l.len()> np.pi:
+                return True
+        return False
+
+    def __repr__(self) -> str:
+        return "\n".join(str(l) for l in self.list_of_lines)
+
+@dataclass
+class ListOfVectors():
+    list_of_vector: list[Vector] = field(default_factory=list)
+
+    def get_full_graph(self) -> ListOfLines:
+        out=[]
+        for v1 in self.list_of_vector:
+            for v2 in self.list_of_vector:
+                line = Line(v1,v2)
+                out.append(line)
+        return ListOfLines(out)
+
+
+    def is_this_segmented(self) -> bool:
+        full_graph = self.get_full_graph()
+        return full_graph.is_this_segmented()
+
+    # def __repr__(self)->str:
+    #     out=self.list_of_vector
+    def __repr__(self) -> str:
+        return "\n".join(str(l) for l in self.list_of_vector)
+
+
+@dataclass
 class OnePieceOfPuzzle():
-    border: ClosedDrawing
-    line_contours: list[ClosedDrawing]
-    star_contours: list[ClosedDrawing]
+    border: ClosedDrawing = field(default_factory=ClosedDrawing)
+
+    line_skeleton: ListOfLines = field(default_factory=ListOfLines)
+    line_contours: list[ClosedDrawing] =  field(default_factory=list)
+
+    star_points: ListOfVectors  = field(default_factory=ListOfVectors)
+    star_contours: list[ClosedDrawing] =  field(default_factory=list)
     name: str = ""
 
 
@@ -710,10 +794,14 @@ class OnePieceOfPuzzle():
 
         self.border.just_plot_dont_show()
 
+
         for line in self.line_contours:
             line.just_plot_dont_show(colour="C00")
+
+
         for star in self.star_contours:
             star.just_plot_dont_show(colour="C01")
+
 
         plt.title(self.border.name)
         plt.axis("equal")
@@ -723,6 +811,20 @@ class OnePieceOfPuzzle():
         else:
             plt.show()
 
+    def is_this_piece_segmented(self):
+        border_segmented = self.border.is_this_segmented()
+        lines_segmented = self.line_skeleton.is_this_segmented()
+
+        stars_segmented = self.star_points.is_this_segmented()
+
+        return border_segmented or lines_segmented or stars_segmented
+
+    def __repr__(self) -> str:
+        return (
+            f"OnePieceOfPuzzle(name={self.name!r})\n"
+            f"Border: {self.border}\n"
+            f"Line skeleton: {self.line_skeleton}\n"
+            f"Star points: {self.star_points}\n")
 
 
 

@@ -402,7 +402,12 @@ def generate_stars_cyl_3d(stars: ListOfSkypoints, proj_vals, hmg, hmg2, clearanc
 
 
 
-def get_cyl_projection_for_star(stars: SkyPoint, proj_vals, radius=0.01, thickness=1, offset=0, segmentation_flag: bool = False):
+def get_cyl_projection_for_star(stars: SkyPoint, 
+                                proj_vals, 
+                                radius=0.01, 
+                                thickness=1, 
+                                offset=0, 
+                                segmentation_flag: bool = False)->tuple[list[ClosedDrawing],Vector]:
 
     star_body_list = []
 
@@ -422,11 +427,17 @@ def get_cyl_projection_for_star(stars: SkyPoint, proj_vals, radius=0.01, thickne
     star_circles = current_projected_point.get_star_shaped_dots(width=radius, thickness=thickness, offset=offset)
     star_body_list.append(star_circles)
 
-    return star_body_list
+    return star_body_list, current_projected_point
 
 
-def get_cyl_projection_for_stars(stars_of_constellation: ListOfSkypoints, proj_vals, base_thickness_mm, hmg2, hmg, segmentation_flag = False):
+def get_cyl_projection_for_stars(stars_of_constellation: ListOfSkypoints, 
+                                 proj_vals, 
+                                 base_thickness_mm, 
+                                 hmg2, 
+                                 hmg, 
+                                 segmentation_flag = False)->tuple[list[ClosedDrawing],ListOfVectors]:
     out=[]
+    out_points=[]
     for star in stars_of_constellation.list_of_skypoints:
         if star.apparent_mag < hmg2:
             rad=0.008
@@ -435,15 +446,16 @@ def get_cyl_projection_for_stars(stars_of_constellation: ListOfSkypoints, proj_v
         else:
             rad=0.004
 
-        star_contours = get_cyl_projection_for_star(star, proj_vals, 
+        star_contours, star_points = get_cyl_projection_for_star(star, proj_vals, 
                                                     radius=rad, 
                                                     thickness= base_thickness_mm*3, 
                                                     offset=-base_thickness_mm, 
                                                     segmentation_flag = segmentation_flag)
         # constellation_puzzle_piece.star_contours.extend(star_contours)
         out.extend(star_contours)
+        out_points.append(star_points)
 
-    return out
+    return out, ListOfVectors(out_points)
 
  
 def get_cyl_projection_for_lines(line: SkyLine, proj_vals, segmentation_flag = False) -> Line :
@@ -483,17 +495,19 @@ def get_cyl_projection_for_constellation_line_contours(line_list: ListOfSkylines
                                                        stripe_width, 
                                                        thickness: float, 
                                                        offset: float, 
-                                                       segmentation_flag: bool):
+                                                       segmentation_flag: bool) -> tuple[list[ClosedDrawing], ListOfLines]:
     # segmentation_flag = is_this_linestack_segmented(line_list, proj_vals)
 
-    out_close_drawing_list=[]
+    out_close_drawing_list: list[ClosedDrawing] = []
+    line_skeleton_list: list[Line] = []
     for line in line_list.list_of_skylines:
         descartes_line: Line = get_cyl_projection_for_lines(line, proj_vals, segmentation_flag=segmentation_flag)
+        line_skeleton_list.append(descartes_line)
 
         stripes = descartes_line.get_stripes_and_dots(width=stripe_width, thickness=thickness, offset=offset)
         out_close_drawing_list.extend(stripes)
 
-    return out_close_drawing_list
+    return out_close_drawing_list, ListOfLines(line_skeleton_list)
 
 def is_this_linestack_segmented(line_list: ListOfSkylines, proj_vals):
 
@@ -502,18 +516,20 @@ def is_this_linestack_segmented(line_list: ListOfSkylines, proj_vals):
         x1 = descartes_line.start_point.x
         x2 = descartes_line.end_point.x
 
-        if abs(x1-x2)>np.pi:    
+        if abs(x1-x2)>180.0:    
             return True
 
     return False
 
 
-def get_cyl_projection_for_list_of_lines(line_list: ListOfSkylines, proj_vals, thickness: float, offset: float, segmentation_flag: bool):
+def get_cyl_projection_for_list_of_lines(line_list: ListOfSkylines, proj_vals, thickness: float, offset: float, segmentation_flag: bool) -> ClosedDrawing:
 
     out0=[]
     for sl in line_list.list_of_skylines:
         descartes_line = get_cyl_projection_for_lines(sl, proj_vals, segmentation_flag=segmentation_flag)
-        out0.append((descartes_line.start_point.y, descartes_line.start_point.x))
+        # out0.append((descartes_line.start_point.y, descartes_line.start_point.x))
+        point = Vector(x = descartes_line.start_point.y, y = descartes_line.start_point.x, z = 0)
+        out0.append(point)
 
     out = ClosedDrawing(points=out0, name=line_list.list_of_skylines[0].point_data_1.constellation, thickness=thickness, offset=offset)
 
@@ -555,6 +571,53 @@ def is_this_contellation_segmented(borders, constellation_lines, stars: ListOfSk
 
 
 
+def extract_puzzle_piece_object(constellation, 
+                                constellation_line_list, 
+                                constellation_stars_list, 
+                                constellation_borders_list,
+                                proj_vals,
+                                line_depth_mm,
+                                base_thickness_mm,
+                                hmg2,
+                                hmg,
+                                segmentation_flag = False
+                                )-> OnePieceOfPuzzle:
+
+    constellation_puzzle_piece = OnePieceOfPuzzle(border=ClosedDrawing([]), 
+                                                  line_skeleton= ListOfLines(list_of_lines=[]),
+                                                  line_contours=[],
+                                                  star_points=ListOfVectors(list_of_vector=[]),
+                                                  star_contours=[], 
+                                                  name = constellation)
+
+
+    # for constellation_line in constellation_line_list:
+    constellation_puzzle_piece.line_contours, constellation_puzzle_piece.line_skeleton = get_cyl_projection_for_constellation_line_contours(constellation_line_list, 
+                                                                                proj_vals, 
+                                                                                stripe_width=0.005, 
+                                                                                thickness= line_depth_mm*2, 
+                                                                                offset=base_thickness_mm-line_depth_mm,
+                                                                                segmentation_flag = segmentation_flag)
+
+        
+    
+    constellation_puzzle_piece.star_contours, constellation_puzzle_piece.star_points = get_cyl_projection_for_stars(constellation_stars_list, 
+                                                                            proj_vals, 
+                                                                            base_thickness_mm, 
+                                                                            hmg2, 
+                                                                            hmg, 
+                                                                            segmentation_flag)
+
+
+        # remover_list_of_drawing.extend(get_projection_for_star(star, proj_vals, radius=rad, thickness= base_thickness_mm*3, offset=-base_thickness_mm))
+
+    constellation_puzzle_piece.border = get_cyl_projection_for_list_of_lines(  constellation_borders_list,
+                                                    proj_vals=proj_vals, 
+                                                    thickness=base_thickness_mm,
+                                                    offset=0,
+                                                    segmentation_flag = segmentation_flag)
+
+    return constellation_puzzle_piece
 
 
 
@@ -585,7 +648,9 @@ def generate_3d(borders: ListOfSkylines,
     # list_of_separated_constellations = ["DRA", "LMI"]
     # list_of_separated_constellations = ['CAS', 'AND', 'CVN', 'CMI', 'DRA', 'LMI', 'CNC', 'GEM', 'ARI', 'CAM', 'BOO', 'AUR', 'PEG', 'PER', 'CEP', 'COM', 'LAC', 'HER', 'EQU', 'TRI', 'LYN', 'UMI', 'CYG', 'LYR', 'SGE', 'VUL', 'DEL', 'UMA', 'CRB', 'SER1']
     # list_of_separated_constellations = ['LMI', 'CNC', 'GEM', 'ARI', 'CAM', 'BOO']
-    # list_of_separated_constellations = ['AND', 'ERI']
+    list_of_separated_constellations = ['SER1']
+    # list_of_separated_constellations = ['SGE_VUL', 'DEL_EQU']
+
 
 
     # combined_star_body = generate_stars_str_grph_3d(stars, proj_vals, hmg, hmg2, clearance, base_thickness_mm, radius=0.004, multiplier=multiplier)
@@ -596,56 +661,58 @@ def generate_3d(borders: ListOfSkylines,
     for constellation in list_of_separated_constellations:
         # remover_list_of_drawing: list[ClosedDrawing] = []
 
-        segmentation_flag = is_this_contellation_segmented(borders, constellation_lines, stars, proj_vals, constellation)
-
-        constellation_puzzle_piece = OnePieceOfPuzzle(border=ClosedDrawing([]), line_contours=[],star_contours=[], name = constellation)
-
-
         # Get the stripes of constellation_lines
-        constellation_line_list: list[SkyLine] = constellation_lines.get_only_the_lines_realted_to_this_constellation(constellation)
-        # for constellation_line in constellation_line_list:
-        constellation_line_contour_list = get_cyl_projection_for_constellation_line_contours(constellation_line_list, 
-                                                                                    proj_vals, 
-                                                                                    stripe_width=0.005, 
-                                                                                    thickness= line_depth_mm*2, 
-                                                                                    offset=base_thickness_mm-line_depth_mm,
-                                                                                    segmentation_flag = segmentation_flag)
-        constellation_puzzle_piece.line_contours = constellation_line_contour_list
-            
-            # remover_list_of_drawing.extend(constellation_line_contour_list)
-
+        constellation_line_list: ListOfSkylines = constellation_lines.get_only_the_lines_realted_to_this_constellation(constellation)
 
         # Get the holes of stars
-        stars_of_constellation: ListOfSkypoints = stars.get_only_the_stars_from_this_constellation(constellation)
-        
-
-        constellation_puzzle_piece.star_contours = get_cyl_projection_for_stars(stars_of_constellation, 
-                                                                                proj_vals, 
-                                                                                base_thickness_mm, 
-                                                                                hmg2, 
-                                                                                hmg, 
-                                                                                segmentation_flag)
-
-
-
-            # remover_list_of_drawing.extend(get_projection_for_star(star, proj_vals, radius=rad, thickness= base_thickness_mm*3, offset=-base_thickness_mm))
-
+        constellation_stars_list: ListOfSkypoints = stars.get_only_the_stars_from_this_constellation(constellation)
 
         #Get the base contour
-        only_given_borders = borders.get_only_the_lines_realted_to_this_constellation(constellation)
-        print(constellation)
-        print(len(only_given_borders.list_of_skylines))
+        constellation_borders_list: ListOfSkylines = borders.get_only_the_lines_realted_to_this_constellation(constellation)
 
-        border = get_cyl_projection_for_list_of_lines(  only_given_borders,
-                                                        proj_vals=proj_vals, 
-                                                        thickness=base_thickness_mm,
-                                                        offset=0,
-                                                        segmentation_flag = segmentation_flag)
 
-        constellation_puzzle_piece.border = border
+
+        constellation_puzzle_piece = extract_puzzle_piece_object(   constellation, 
+                                                                    constellation_line_list, 
+                                                                    constellation_stars_list, 
+                                                                    constellation_borders_list,
+                                                                    proj_vals,
+                                                                    line_depth_mm,
+                                                                    base_thickness_mm,
+                                                                    hmg2,
+                                                                    hmg,
+                                                                    segmentation_flag = False
+                                                                    )
+
+
+
+
+
+        if constellation_puzzle_piece.is_this_piece_segmented():
+            constellation_puzzle_piece = extract_puzzle_piece_object(   constellation, 
+                                                                                constellation_line_list, 
+                                                                                constellation_stars_list, 
+                                                                                constellation_borders_list,
+                                                                                proj_vals,
+                                                                                line_depth_mm,
+                                                                                base_thickness_mm,
+                                                                                hmg2,
+                                                                                hmg,
+                                                                                segmentation_flag = True
+                                                                                )
+
+
+
+
+
+
+
+
+
 
 
         constellation_puzzle_piece.plot_my_drawing(save=True, dest = f"pieces/{constellation}.png")
+        print(constellation)
         
 
     # plot_a_list_of_closedDrawing(remover_list_of_drawing)
@@ -670,10 +737,10 @@ def generate_3d(borders: ListOfSkylines,
     for constellation in list_of_separated_constellations:
 
         border = ClosedDrawing(points=[], name=constellation)
-        only_given_borders = borders.get_only_the_lines_realted_to_this_constellation(constellation)
+        constellation_borders_list = borders.get_only_the_lines_realted_to_this_constellation(constellation)
 
 
-        border=get_cyl_projection_for_list_of_lines(only_given_borders,
+        border=get_cyl_projection_for_list_of_lines(constellation_borders_list,
                                                     proj_vals=proj_vals, 
                                                     thickness=base_thickness_mm,
                                                     offset=0)
@@ -684,7 +751,11 @@ def generate_3d(borders: ListOfSkylines,
         plot_a_list_of_closedDrawing(border)
 
         #define a piece
-        one_piece_of_puzzle = OnePieceOfPuzzle(border = border,line_contours = remover_list_of_drawing)
+        one_piece_of_puzzle = OnePieceOfPuzzle( border = border,
+                                                line_contours =  remover_list_of_drawing,
+                                                )
+                                                        
+            
 
         #scale up
         one_piece_of_puzzle.border.multiply_with_scalar(multiplier)
