@@ -648,7 +648,7 @@ def generate_3d(borders: ListOfSkylines,
     # list_of_separated_constellations = ["DRA", "LMI"]
     # list_of_separated_constellations = ['CAS', 'AND', 'CVN', 'CMI', 'DRA', 'LMI', 'CNC', 'GEM', 'ARI', 'CAM', 'BOO', 'AUR', 'PEG', 'PER', 'CEP', 'COM', 'LAC', 'HER', 'EQU', 'TRI', 'LYN', 'UMI', 'CYG', 'LYR', 'SGE', 'VUL', 'DEL', 'UMA', 'CRB', 'SER1']
     # list_of_separated_constellations = ['LMI', 'CNC', 'GEM', 'ARI', 'CAM', 'BOO']
-    list_of_separated_constellations = ['SER1']
+    # list_of_separated_constellations = ['SER1']
     # list_of_separated_constellations = ['SGE_VUL', 'DEL_EQU']
 
 
@@ -656,7 +656,8 @@ def generate_3d(borders: ListOfSkylines,
     # combined_star_body = generate_stars_str_grph_3d(stars, proj_vals, hmg, hmg2, clearance, base_thickness_mm, radius=0.004, multiplier=multiplier)
 
     remover_element_list=[]
-    remover_list_of_drawing: list[ClosedDrawing] = []
+
+    list_of_puzzle_pieces: list[OnePieceOfPuzzle] = []
 
     for constellation in list_of_separated_constellations:
         # remover_list_of_drawing: list[ClosedDrawing] = []
@@ -701,6 +702,7 @@ def generate_3d(borders: ListOfSkylines,
                                                                                 segmentation_flag = True
                                                                                 )
 
+        list_of_puzzle_pieces.append(constellation_puzzle_piece)
 
 
 
@@ -710,66 +712,43 @@ def generate_3d(borders: ListOfSkylines,
 
 
 
-
-        constellation_puzzle_piece.plot_my_drawing(save=True, dest = f"pieces/{constellation}.png")
-        print(constellation)
+        # constellation_puzzle_piece.plot_my_drawing(save=True, dest = f"pieces/{constellation}.png")
+        # print(constellation)
         
 
     # plot_a_list_of_closedDrawing(remover_list_of_drawing)
 
+    remover_list_of_drawing: list[ClosedDrawing] = []
+    for piece in list_of_puzzle_pieces:
+        remover_list_of_drawing.extend(piece.line_contours)
+        remover_list_of_drawing.extend(piece.star_contours)
 
     # Generate 3d objects from remover drawings
-    for constellation_line in remover_list_of_drawing:
+    for constellation_object in remover_list_of_drawing:
 
-        constellation_line.multiply_with_scalar(multiplier)
+        constellation_object.multiply_with_scalar(multiplier)
 
-        remover_poly = Polygon(constellation_line.points)
+        remover_poly = Polygon(constellation_object.i_want_to_make_polygon())
 
-        remover_element = trimesh.creation.extrude_polygon(remover_poly, height = constellation_line.thickness)
-        remover_element.apply_translation([0, 0, constellation_line.offset])
+        remover_element = trimesh.creation.extrude_polygon(remover_poly, height = constellation_object.thickness)
+        remover_element.apply_translation([0, 0, constellation_object.offset])
         remover_element_list.append(remover_element)
 
 
     ultimate_remover = trimesh.boolean.union(remover_element_list, engine="manifold")
 
 
-
-    for constellation in list_of_separated_constellations:
-
-        border = ClosedDrawing(points=[], name=constellation)
-        constellation_borders_list = borders.get_only_the_lines_realted_to_this_constellation(constellation)
+    for piece in list_of_puzzle_pieces:
+        border = piece.border
 
 
-        border=get_cyl_projection_for_list_of_lines(constellation_borders_list,
-                                                    proj_vals=proj_vals, 
-                                                    thickness=base_thickness_mm,
-                                                    offset=0)
-        # print(type(remover_list_of_drawing))
-        # print(len(remover_list_of_drawing))
 
+        border.multiply_with_scalar(multiplier)
 
-        plot_a_list_of_closedDrawing(border)
-
-        #define a piece
-        one_piece_of_puzzle = OnePieceOfPuzzle( border = border,
-                                                line_contours =  remover_list_of_drawing,
-                                                )
-                                                        
-            
-
-        #scale up
-        one_piece_of_puzzle.border.multiply_with_scalar(multiplier)
-        for constellation_line in one_piece_of_puzzle.line_contours:
-            constellation_line.multiply_with_scalar(multiplier)
-
-        #separate and create the base of piece
-        border = one_piece_of_puzzle.border
-        base_countour_polygon = Polygon(border.points)
+        base_countour_polygon = Polygon(border.i_want_to_make_polygon())
         base_countour_polygon = base_countour_polygon.buffer(-clearance)
         base_plate = trimesh.creation.extrude_polygon(base_countour_polygon, height = base_thickness_mm)
 
-
-        one_piece_of_puzzle.plot_my_drawing()
 
         #remove the things
         base_plate = trimesh.boolean.difference([base_plate, ultimate_remover],engine="manifold")   

@@ -134,6 +134,12 @@ class ClosedDrawing():
                 return True
         return False
 
+    def i_want_to_make_polygon(self):
+        out= []
+        for v in self.points:
+            out.append((v.y,v.x))
+        return out
+
 
 @dataclass
 class Sexagesimal:
