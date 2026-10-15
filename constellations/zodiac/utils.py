@@ -426,9 +426,9 @@ class Line():
         return output_closed_drawig_list
 
     def get_stripes_and_dots(self, width=0.005, thickness=1, offset=0) -> list[ClosedDrawing]:
-        out = []
+        out=self.get_dots(width, thickness, offset)
         out.append(self.get_stripe(width, thickness, offset))
-        out.extend(self.get_dots(width, thickness, offset))
+
         return out
 
     def len(self):
