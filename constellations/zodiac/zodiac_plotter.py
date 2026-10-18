@@ -8,6 +8,7 @@ import time
 import csv_read_zodiac
 import stereographic
 import cylindrial
+from utils import *
 
 
 def read_from_file(root: str):
@@ -133,7 +134,7 @@ star_list=np.load("stars_test.npy", allow_pickle=True)
 import pickle
 
 with open("stars_data.pkl", "rb") as f:
-    stars = pickle.load(f)
+    stars: ListOfSkypoints = pickle.load(f)
 
 with open("lines_data.pkl", "rb") as f:
     lines = pickle.load(f)
@@ -209,6 +210,12 @@ if CYLINDRICAL:
 
 
 if CYLINDRICAL_3D:
+
+    # list_of_star_mags = []
+    # for s in stars.list_of_skypoints:
+    #     list_of_star_mags.append(s.apparent_mag)
+    # plt.plot(list_of_star_mags, "o")
+    # plt.show()
 
     cylindrial.generate_3d(borders, lines, stars, proj_vals, hmg, hmg2)
 
