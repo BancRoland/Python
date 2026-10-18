@@ -738,17 +738,17 @@ def generate_3d(borders: ListOfSkylines,
 
         # plot_a_list_of_closedDrawing(remover_list_of_drawing)
 
-        line_remover: list[ClosedDrawing] = []
-        star_remover: list[ClosedDrawing] = []
+        list_of_all_line_contours: list[ClosedDrawing] = []
+        list_of_all_star_contours: list[ClosedDrawing] = []
 
         for piece in list_of_puzzle_pieces:
-            line_remover.extend(piece.line_contours)
-            star_remover.extend(piece.star_contours)
+            list_of_all_line_contours.extend(piece.line_contours)
+            list_of_all_star_contours.extend(piece.star_contours)
 
         line_remover_element_list=[]
 
         # Generate 3d objects from remover drawings
-        for constellation_object in line_remover:
+        for constellation_object in list_of_all_line_contours:
 
             constellation_object.multiply_with_scalar(multiplier)
 
@@ -764,7 +764,7 @@ def generate_3d(borders: ListOfSkylines,
         star_remover_element_list=[]
 
         # Generate 3d objects from remover drawings
-        for constellation_object in star_remover:
+        for constellation_object in list_of_all_star_contours:
 
             constellation_object.multiply_with_scalar(multiplier)
 
@@ -784,8 +784,41 @@ def generate_3d(borders: ListOfSkylines,
 
 
 
+        # get all the transparent stars
+
+        trans_star_list = []
+
+        for star_object in list_of_all_star_contours:
+            # white_object.multiply_with_scalar(multiplier)
+            star_poly = Polygon(star_object.i_want_to_make_polygon())
+            star_poly = star_poly.buffer(-clearance)
+            trans_star = trimesh.creation.extrude_polygon(star_poly, height = 3*base_thickness_mm/3+0.2)
+
+            trans_star_list.append(trans_star)
+
+
+        # get all the white lines
+
+        white_line_list = []
+
+        for line_object in  list_of_all_line_contours:
+            # white_object.multiply_with_scalar(multiplier)
+            white_line_poly = Polygon(line_object.i_want_to_make_polygon())
+            white_line_poly = white_line_poly.buffer(-clearance)
+            white_line = trimesh.creation.extrude_polygon(white_line_poly, height = 2*base_thickness_mm/3+0.1)
+
+            white_line_list.append(white_line)
+
+
+
+
+
+        
+
+
 
         for piece in list_of_puzzle_pieces:
+
             border = piece.border
 
             border.multiply_with_scalar(multiplier)
@@ -798,105 +831,53 @@ def generate_3d(borders: ListOfSkylines,
 
 
 
+
             #remove the things
-            black_part = trimesh.boolean.difference([base_plate, ultimate_remover], engine="manifold")   
-            black_part.apply_translation([0, 0, 2*base_thickness_mm/3])
+            ultimate_black = trimesh.boolean.difference([base_plate, ultimate_remover], engine="manifold")   
+            ultimate_black.apply_translation([0, 0, 2*base_thickness_mm/3])
 
-
-            # # Save as STL
-            black_part.export(f"{border.name}_black.stl")
-            # to_remove.export(f"{contour.name}.stl")
-
-            print(f"Created {border.name}.stl")
-
-
-
-
-
-
+            ultimate_black_stl  = trimesh.boolean.intersection([ultimate_black, base_working_area],     engine="manifold")
+            ultimate_black_stl.export(f"{border.name}_black.stl")
 
 
 
             #White
 
-            white_list = []
-
-            line_part = piece.line_contours
-
-            for line_object in line_part:
-                # white_object.multiply_with_scalar(multiplier)
-                line_poly = Polygon(line_object.i_want_to_make_polygon())
-                line_poly = line_poly.buffer(-clearance)
-                line = trimesh.creation.extrude_polygon(line_poly, height = 2*base_thickness_mm/3+0.1)
-
-                white_list.append(line)
-
-
-            
-            # star_part = piece.star_contours
-
-            # for star_object in star_part:
-            #     # white_object.multiply_with_scalar(multiplier)
-            #     star_poly = Polygon(star_object.i_want_to_make_polygon())
-            #     star_poly = star_poly.buffer(-clearance)
-            #     line = trimesh.creation.extrude_polygon(star_poly, height = star_thickness_mm)
-
-            #     white_list.append(line)
-
             white_base = piece.border
             w_base_countour_polygon = Polygon(white_base.i_want_to_make_polygon())
             w_base_countour_polygon = base_countour_polygon.buffer(-clearance)
-            w_base_plate = trimesh.creation.extrude_polygon(w_base_countour_polygon, height = base_thickness_mm/3)
-            # w_base_plate.apply_translation([0, 0, -base_thickness_mm/3])
+            white_base_plate = trimesh.creation.extrude_polygon(w_base_countour_polygon, height = base_thickness_mm/3)
+            white_line_list.append(white_base_plate)
 
-            white_list.append(w_base_plate)
-
-
-
-            ultimate_white = trimesh.boolean.union(white_list, engine="manifold")
+            ultimate_white = trimesh.boolean.union(white_line_list, engine="manifold")
             ultimate_white.apply_translation([0, 0, base_thickness_mm/3])
-            w_base_plate = trimesh.boolean.difference([ultimate_white, star_remover_body],engine="manifold")
+            ultimate_white = trimesh.boolean.difference([ultimate_white, star_remover_body],engine="manifold")
+
+            ultimate_white_stl  = trimesh.boolean.intersection([ultimate_white, base_working_area],     engine="manifold")
+            ultimate_white_stl.export(f"{border.name}_white.stl")
             
 
 
-            w_base_plate_to_exp = trimesh.boolean.intersection([w_base_plate, base_working_area], engine="manifold")
-
-            w_base_plate_to_exp.export(f"{border.name}_white.stl")
-
-
+            
             #Trans
-            
-            trans_list = []
-
-            star_part = piece.star_contours
-
-            for star_object in star_part:
-                # white_object.multiply_with_scalar(multiplier)
-                star_poly = Polygon(star_object.i_want_to_make_polygon())
-                star_poly = star_poly.buffer(-clearance)
-                line = trimesh.creation.extrude_polygon(star_poly, height = 3*base_thickness_mm/3+0.2)
-
-                trans_list.append(line)
-
+ 
             trans_base = piece.border
             trans_base_countour_polygon = Polygon(trans_base.i_want_to_make_polygon())
             trans_base_countour_polygon = trans_base_countour_polygon.buffer(-clearance)
             trans_base_plate = trimesh.creation.extrude_polygon(w_base_countour_polygon, height = base_thickness_mm/3)
-            # trans_base_plate.apply_translation([0, 0, -base_thickness_mm/3])
+            trans_star_list.append(trans_base_plate)
 
-            trans_list.append(trans_base_plate)
-
-
-
-            ultimate_trans = trimesh.boolean.union(trans_list, engine="manifold")
-            # trans_base_plate = trimesh.boolean.difference([w_base_plate, star_remover_body],engine="manifold")
+            ultimate_trans = trimesh.boolean.union(trans_star_list, engine="manifold")
             ultimate_trans.apply_translation([0, 0, +base_thickness_mm/3])
 
 
+            ultimate_trans_stl  = trimesh.boolean.intersection([ultimate_trans, base_working_area],     engine="manifold")
+            ultimate_trans_stl.export(f"{border.name}_trans.stl")
+            
 
-            # common_parts = trimesh.boolean.intersection([base_plate, ultimate_white], engine="manifold")
-            ultimate_trans_exp = trimesh.boolean.intersection([ultimate_trans, base_working_area], engine="manifold")
 
 
-            ultimate_trans_exp.export(f"{border.name}_trans.stl")
+
+
+
 
