@@ -75,6 +75,8 @@ def get_projection_for_lines(line: SkyLine, proj_vals, stripe_width, thickness: 
 def generate_3d(borders: ListOfSkylines, 
                 constellation_lines: ListOfSkylines, 
                 stars: ListOfSkypoints, 
+                ecliptic: ListOfSkylines,
+                equinox: ListOfSkypoints,
                 proj_vals: ProjVals, 
                 hmg,
                 hmg2):

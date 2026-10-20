@@ -126,10 +126,10 @@ if __name__ == "__main__":
     
     #Export stars
     filename = 'zodiac.csv'  # Replace 'stars.csv' with the path to your CSV file
-    data = read_stars_csv(filename)
+    eclipti_data = read_stars_csv(filename)
 
     with open("stars_data.pkl", "wb") as f:
-        pickle.dump(data, f)
+        pickle.dump(eclipti_data, f)
 
 
     #Export lines
@@ -146,3 +146,17 @@ if __name__ == "__main__":
 
     with open("borders_data.pkl", "wb") as f:
         pickle.dump(borders_data, f)
+
+
+    #Export ecliptic
+    filename_ecliptic=f"constellations/prev/ecliptic.csv"
+    eclipti_data = read_stars_csv(filename_ecliptic)
+    with open("ecliptic_data.pkl", "wb") as f:
+            pickle.dump(eclipti_data, f)
+
+
+    #Export equinox
+    filename_equinox=f"constellations/prev/eqinox.csv"
+    equinox_data = read_stars_csv(filename_equinox)
+    with open("equinox_data.pkl", "wb") as f:
+            pickle.dump(equinox_data, f)

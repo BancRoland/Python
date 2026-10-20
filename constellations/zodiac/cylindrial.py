@@ -644,6 +644,8 @@ def extract_puzzle_piece_object(constellation,
 def generate_3d(borders: ListOfSkylines, 
                 constellation_lines: ListOfSkylines, 
                 stars: ListOfSkypoints, 
+                ecliptic: ListOfSkypoints,
+                equinox: ListOfSkypoints,
                 proj_vals: ProjVals, 
                 hmg,
                 hmg2):
@@ -740,6 +742,29 @@ def generate_3d(borders: ListOfSkylines,
 
         list_of_all_line_contours: list[ClosedDrawing] = []
         list_of_all_star_contours: list[ClosedDrawing] = []
+           
+
+        eclitic_dots: list[ClosedDrawing]
+        eclitic_dots, _ = get_cyl_projection_for_stars(  ecliptic,
+                                                            proj_vals=proj_vals, 
+                                                            base_thickness_mm=base_thickness_mm,
+                                                            hmg2=hmg2, 
+                                                            hmg=hmg )
+
+        ecliptic_remover_list = []
+        for e in eclitic_dots:
+            e.multiply_with_scalar(multiplier)
+            ecliptic_poly = Polygon(e.i_want_to_make_polygon())
+            ecliptic_poly = ecliptic_poly.buffer(5*clearance)
+
+            ecliptic_remover_element = trimesh.creation.extrude_polygon(ecliptic_poly, height = 0.5*base_thickness_mm/3)
+            ecliptic_remover_element.apply_translation([0, 0, 0.5*base_thickness_mm/3])
+            ecliptic_remover_list.append(ecliptic_remover_element)
+        ecliptic_remover = trimesh.boolean.union(ecliptic_remover_list, engine="manifold")
+
+
+
+        
 
         for piece in list_of_puzzle_pieces:
             list_of_all_line_contours.extend(piece.line_contours)
@@ -780,7 +805,7 @@ def generate_3d(borders: ListOfSkylines,
         star_remover_body.apply_translation([0, 0, -0.1])
         star_remover_body.export(f"remover.stl")
 
-        ultimate_remover = trimesh.boolean.union(line_remover_element_list+star_remover_element_list, engine="manifold")
+        ultimate_remover = trimesh.boolean.union([*line_remover_element_list,  *star_remover_element_list, ecliptic_remover], engine="manifold")
 
 
 
@@ -812,7 +837,6 @@ def generate_3d(borders: ListOfSkylines,
 
 
 
-
         
 
 
@@ -831,9 +855,11 @@ def generate_3d(borders: ListOfSkylines,
 
 
 
-
             #remove the things
-            ultimate_black = trimesh.boolean.difference([base_plate, ultimate_remover], engine="manifold")   
+
+            ultimate_black = trimesh.boolean.difference([base_plate, ultimate_remover], engine="manifold") 
+
+            # ultimate_black = trimesh.boolean.union([ultimate_black], engine="manifold")
             ultimate_black.apply_translation([0, 0, 2*base_thickness_mm/3])
 
             ultimate_black_stl  = trimesh.boolean.intersection([ultimate_black, base_working_area],     engine="manifold")
@@ -847,16 +873,14 @@ def generate_3d(borders: ListOfSkylines,
             w_base_countour_polygon = Polygon(white_base.i_want_to_make_polygon())
             w_base_countour_polygon = base_countour_polygon.buffer(-clearance)
             white_base_plate = trimesh.creation.extrude_polygon(w_base_countour_polygon, height = base_thickness_mm/3)
-            white_line_list.append(white_base_plate)
 
-            ultimate_white = trimesh.boolean.union(white_line_list, engine="manifold")
+            ultimate_white = trimesh.boolean.union([*white_line_list, white_base_plate], engine="manifold")
             ultimate_white.apply_translation([0, 0, base_thickness_mm/3])
             ultimate_white = trimesh.boolean.difference([ultimate_white, star_remover_body],engine="manifold")
 
             ultimate_white_stl  = trimesh.boolean.intersection([ultimate_white, base_working_area],     engine="manifold")
             ultimate_white_stl.export(f"{border.name}_white.stl")
             
-
 
             
             #Trans

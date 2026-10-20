@@ -142,6 +142,12 @@ with open("lines_data.pkl", "rb") as f:
 with open("borders_data.pkl", "rb") as f:
     borders = pickle.load(f)
 
+with open("ecliptic_data.pkl", "rb") as f:
+    ecliptic = pickle.load(f)
+
+with open("equinox_data.pkl", "rb") as f:
+    equinox = pickle.load(f)
+
 # if True:
 #     ax=plt.figure(figsize=(10, 8)) 
 #     utils.read_borders__gen_graph(borders)
@@ -187,7 +193,7 @@ if STR_GRPH_PROJ:
 
 if STR_GRPH_PROJ_3D:
 
-    stereographic.generate_3d(borders, lines, stars, proj_vals, hmg, hmg2)
+    stereographic.generate_3d(borders, lines, stars, ecliptic, equinox, proj_vals, hmg, hmg2)
 
 
 
@@ -217,7 +223,7 @@ if CYLINDRICAL_3D:
     # plt.plot(list_of_star_mags, "o")
     # plt.show()
 
-    cylindrial.generate_3d(borders, lines, stars, proj_vals, hmg, hmg2)
+    cylindrial.generate_3d(borders, lines, stars, ecliptic, equinox, proj_vals, hmg, hmg2)
 
 if POLAR:
 
