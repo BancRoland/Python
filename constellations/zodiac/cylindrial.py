@@ -7,6 +7,8 @@ import toml
 import time
 import csv_read_zodiac
 from utils import *
+import copy
+
 
 multiplier = 103.27*69.5/71.6*0.6
 
@@ -635,15 +637,68 @@ def extract_puzzle_piece_object(constellation,
     return constellation_puzzle_piece
 
 
+def get_puzzle_piece(  constellation,
+                        all_constellation_lines,
+                        all_star_places,
+                        all_border_lines,
+                        proj_vals,
+                        line_depth_mm,
+                        base_thickness_mm,
+                        hmg2,
+                        hmg
+                        ) -> OnePieceOfPuzzle :
+
+    # Get the stripes of constellation_lines
+    constellation_line_list: ListOfSkylines = all_constellation_lines.get_only_the_lines_realted_to_this_constellation(constellation)
+
+    # Get the holes of stars
+    constellation_stars_list: ListOfSkypoints = all_star_places.get_only_the_stars_from_this_constellation(constellation)
+
+    #Get the base contour
+    constellation_borders_list: ListOfSkylines = all_border_lines.get_only_the_lines_realted_to_this_constellation(constellation)
+
+
+
+    constellation_puzzle_piece = extract_puzzle_piece_object(   constellation, 
+                                                                constellation_line_list, 
+                                                                constellation_stars_list, 
+                                                                constellation_borders_list,
+                                                                proj_vals,
+                                                                line_depth_mm,
+                                                                base_thickness_mm,
+                                                                hmg2,
+                                                                hmg,
+                                                                segmentation_flag = False
+                                                                )
 
 
 
 
 
+    if constellation_puzzle_piece.is_this_piece_segmented():
+        constellation_puzzle_piece = extract_puzzle_piece_object(   constellation, 
+                                                                            constellation_line_list, 
+                                                                            constellation_stars_list, 
+                                                                            constellation_borders_list,
+                                                                            proj_vals,
+                                                                            line_depth_mm,
+                                                                            base_thickness_mm,
+                                                                            hmg2,
+                                                                            hmg,
+                                                                            segmentation_flag = True
+                                                                            )
 
-def generate_3d(borders: ListOfSkylines, 
-                constellation_lines: ListOfSkylines, 
-                stars: ListOfSkypoints, 
+    return constellation_puzzle_piece
+
+                
+
+
+
+
+
+def generate_3d(all_border_lines: ListOfSkylines, 
+                all_constellation_lines: ListOfSkylines, 
+                all_star_places: ListOfSkypoints, 
                 ecliptic: ListOfSkypoints,
                 equinox: ListOfSkypoints,
                 proj_vals: ProjVals, 
@@ -658,7 +713,7 @@ def generate_3d(borders: ListOfSkylines,
     stripe_width = 0.001
 
     # borders.print_points()
-    list_of_separated_constellations = borders.get_a_list_of_separated_constellations()
+    list_of_separated_constellations = all_border_lines.get_a_list_of_separated_constellations()
     # print(list_of_separated_constellations)
     # import time
     # time.sleep(10000)
@@ -678,52 +733,23 @@ def generate_3d(borders: ListOfSkylines,
     # combined_star_body = generate_stars_str_grph_3d(stars, proj_vals, hmg, hmg2, clearance, base_thickness_mm, radius=0.004, multiplier=multiplier)
 
 
+
     list_of_puzzle_pieces: list[OnePieceOfPuzzle] = []
 
     for constellation in list_of_separated_constellations:
         # remover_list_of_drawing: list[ClosedDrawing] = []
 
-        # Get the stripes of constellation_lines
-        constellation_line_list: ListOfSkylines = constellation_lines.get_only_the_lines_realted_to_this_constellation(constellation)
+        puzzle_piece = get_puzzle_piece(constellation,
+                        all_constellation_lines,
+                        all_star_places,
+                        all_border_lines,
+                        proj_vals,
+                        line_depth_mm,
+                        base_thickness_mm,
+                        hmg2,
+                        hmg)
 
-        # Get the holes of stars
-        constellation_stars_list: ListOfSkypoints = stars.get_only_the_stars_from_this_constellation(constellation)
-
-        #Get the base contour
-        constellation_borders_list: ListOfSkylines = borders.get_only_the_lines_realted_to_this_constellation(constellation)
-
-
-
-        constellation_puzzle_piece = extract_puzzle_piece_object(   constellation, 
-                                                                    constellation_line_list, 
-                                                                    constellation_stars_list, 
-                                                                    constellation_borders_list,
-                                                                    proj_vals,
-                                                                    line_depth_mm,
-                                                                    base_thickness_mm,
-                                                                    hmg2,
-                                                                    hmg,
-                                                                    segmentation_flag = False
-                                                                    )
-
-
-
-
-
-        if constellation_puzzle_piece.is_this_piece_segmented():
-            constellation_puzzle_piece = extract_puzzle_piece_object(   constellation, 
-                                                                                constellation_line_list, 
-                                                                                constellation_stars_list, 
-                                                                                constellation_borders_list,
-                                                                                proj_vals,
-                                                                                line_depth_mm,
-                                                                                base_thickness_mm,
-                                                                                hmg2,
-                                                                                hmg,
-                                                                                segmentation_flag = True
-                                                                                )
-
-        list_of_puzzle_pieces.append(constellation_puzzle_piece)
+        list_of_puzzle_pieces.append(puzzle_piece)
 
 
 
@@ -769,6 +795,13 @@ def generate_3d(borders: ListOfSkylines,
         for piece in list_of_puzzle_pieces:
             list_of_all_line_contours.extend(piece.line_contours)
             list_of_all_star_contours.extend(piece.star_contours)
+            piece_copied = copy.deepcopy(piece)
+
+            print(piece_copied.star_contours[0].points[0])
+            piece2 = piece_copied.shift_points(shifting_vector = Vector(x= 0, y= 0.01, z=0))
+            print(piece2.star_contours[0].points[0])
+            # list_of_all_line_contours.extend(piece_copied.line_contours)
+            list_of_all_star_contours.extend(piece2.star_contours)
 
         line_remover_element_list=[]
 

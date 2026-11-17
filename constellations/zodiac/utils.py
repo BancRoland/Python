@@ -4,6 +4,7 @@ from numpy import sin, cos, pi
 from dataclasses import dataclass, field
 import trimesh
 from shapely.geometry import Polygon
+import copy
 
 
 ORDER_OF_ECLIPTIC_LINE  = 0
@@ -138,6 +139,21 @@ class ClosedDrawing():
         out= []
         for v in self.points:
             out.append((v.y,v.x))
+        return out
+
+    def copy(self):
+        return ClosedDrawing(points=self.points, 
+                             name= self.name,
+                             thickness=self.thickness,
+                             offset=self.offset)
+
+    def shift_points(self, shifting_vector: Vector):
+        out_vetor_list = []
+        for p in self.points:
+            out_vetor_list.append(p + shifting_vector)
+        
+        out = copy.deepcopy(self)
+        out.points = out_vetor_list
         return out
 
 
@@ -434,6 +450,12 @@ class Line():
     def len(self):
         diff_vec = self.end_point - self.start_point
         return diff_vec.abs()
+
+    def __add__(self, shifting_vector: Vector):
+        out = Line(start_point  = self.start_point + shifting_vector,
+                   end_point    = self.end_point + shifting_vector)
+
+        return out
 
 
 def abs_vector(v:np.ndarray) -> float:
@@ -758,6 +780,12 @@ class ListOfLines():
 
     def __repr__(self) -> str:
         return "\n".join(str(l) for l in self.list_of_lines)
+    
+    def __add__(self, shifting_vector: Vector):
+        out_list = []
+        for l in self.list_of_lines:
+            out_list.append(l+shifting_vector)
+        return ListOfLines(list_of_lines=out_list)
 
 @dataclass
 class ListOfVectors():
@@ -780,6 +808,13 @@ class ListOfVectors():
     #     out=self.list_of_vector
     def __repr__(self) -> str:
         return "\n".join(str(l) for l in self.list_of_vector)
+
+    def __add__(self, shifting_vector: Vector):
+        out_list = []
+        for l in self.list_of_vector:
+            out_list.append(l + shifting_vector)
+        return ListOfVectors(list_of_vector = out_list)
+
 
 
 @dataclass
@@ -831,6 +866,49 @@ class OnePieceOfPuzzle():
             f"Border: {self.border}\n"
             f"Line skeleton: {self.line_skeleton}\n"
             f"Star points: {self.star_points}\n")
+
+    # def copy(self):
+    #     return OnePieceOfPuzzle(border=self.border,
+    #                             line_skeleton=self.line_skeleton,
+    #                             line_contours=self.line_contours,
+    #                             star_points = self.star_points,
+    #                             star_contours = self.star_contours,
+    #                             name = self.name)
+
+
+    def shift_points(self, shifting_vector):
+        # out: OnePieceOfPuzzle = self.deepcopy()
+        out: OnePieceOfPuzzle = copy.deepcopy(self)
+
+
+
+        out.border = out.border.shift_points(shifting_vector)
+
+        l_s_list = []
+        for l_s in out.line_skeleton.list_of_lines:
+            l_s_list.append(l_s)
+            # TODO
+        
+        l_c_list = []
+        for l_c in out.line_contours:
+            l_c_list.append(l_c.shift_points(shifting_vector))
+        out.line_contours = l_c_list
+
+        s_p_list = []
+        for s_p in out.star_points.list_of_vector:    
+            s_p_list.append(s_p + shifting_vector)
+        out.star_points.list_of_vector = s_p_list
+
+
+        s_c_list = []
+        for s_c in out.star_contours:
+            s_c_list.append(s_c.shift_points(shifting_vector))
+        out.star_contours = s_c_list
+
+        return out
+        
+
+
 
 
 
